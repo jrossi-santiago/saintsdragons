@@ -1,42 +1,5 @@
 /* Saints & Dragons — content, routing, search, theme */
 
-const POSTS = [
-  {
-    title: "Become Someone You Respect",
-    date: "Apr 25, 2026",
-    tags: ["Growth", "Discipline"],
-    image: "assets/post-1.jpg",
-    alt: "Waves washing onto a beach at sunrise",
-    body: [
-      "It is easy to measure success through external standards like recognition, status, or comparison. But those measures are unstable and temporary.",
-      "A steadier question is quieter: would the person you are becoming earn your respect? Respect is not won in a single decision — it accumulates in the small, unwitnessed ones.",
-      "Discipline is simply the habit of keeping promises to yourself. Keep enough of them and self-trust stops being an idea you argue for and becomes something you can feel."
-    ]
-  },
-  {
-    title: "The Quiet Work of Consistency",
-    date: "Apr 11, 2026",
-    tags: ["Habits", "Focus"],
-    image: "assets/post-2.jpg",
-    alt: "Mountain ridge at sunrise",
-    body: [
-      "Motivation gets the credit, but consistency does the work. The days that shape a life are rarely the dramatic ones.",
-      "Build a floor, not a ceiling. Decide the smallest version of the practice you will not skip, and let the good days take care of themselves."
-    ]
-  },
-  {
-    title: "Clarity Before Speed",
-    date: "Mar 28, 2026",
-    tags: ["Clarity", "Intention"],
-    image: "assets/post-3.jpg",
-    alt: "Lake and mountains at dusk",
-    body: [
-      "Most people are not short on effort. They are short on direction, and effort without direction feels like progress while quietly costing years.",
-      "Before asking how to move faster, ask what you would regret arriving at sooner."
-    ]
-  }
-];
-
 const PAGES = {
   about: {
     title: "About",
@@ -69,34 +32,7 @@ const PAGES = {
 
 const main = document.getElementById("main");
 const searchInput = document.getElementById("search");
-
-function postHTML(p) {
-  return `
-    <article class="post">
-      <h2 class="post-title">${p.title}</h2>
-      <div class="post-meta">
-        <span>${p.date}</span>
-        <span class="tags">${p.tags.map(t => `<span>${t}</span>`).join("")}</span>
-      </div>
-      <div class="post-image"><img src="${p.image}" alt="${p.alt}" loading="lazy" /></div>
-      <div class="post-body">${p.body.map(t => `<p>${t}</p>`).join("")}</div>
-      <a class="read-more" href="#home">Continue reading <svg class="ic"><use href="#i-arrow"/></svg></a>
-    </article>`;
-}
-
-function renderHome(query = "") {
-  const q = query.trim().toLowerCase();
-  const list = q
-    ? POSTS.filter(p =>
-        (p.title + " " + p.tags.join(" ") + " " + p.body.join(" ")).toLowerCase().includes(q))
-    : POSTS;
-
-  main.innerHTML = `<div class="content">${
-    list.length
-      ? list.map(postHTML).join("")
-      : `<p class="empty">No entries match “${query}”.</p>`
-  }</div>`;
-}
+const SIGNUP_ENDPOINT = "https://formspree.io/f/xqpaqzne";
 
 function renderPage(key) {
   const page = PAGES[key];
@@ -194,9 +130,40 @@ function chip(group, field, value, label) {
   return `<button class="chip${on ? " is-on" : ""}" data-group="${group}" data-field="${field}" data-value="${esc(value)}">${esc(label)}</button>`;
 }
 
-/* ------------------------------------------------------------- Tonight */
+/* -------------------------------------------------------------- shelves */
+/* card-builders shared by History for dads, Bedtime stories and Search */
 
-function renderTonight() {
+function briefCardHTML(slug, b) {
+  const tale = TALES[b.tale];
+  return `<article class="shelf-item">
+    <h3>${esc(b.title)}</h3>
+    <p class="shelf-meta">${esc(b.era)} · ${esc(b.kind)} · ${b.minutes} min</p>
+    <p class="shelf-hook">${esc(b.hook)}</p>
+    ${b.stillWithUs ? `<p class="shelf-line"><strong>Still with us:</strong> ${esc(b.stillWithUs)}</p>` : ""}
+    ${tale ? `<p class="shelf-line"><strong>Read it to them:</strong> <a href="#tale/${b.tale}">${esc(tale.title)}</a></p>` : ""}
+    <a class="btn btn-quiet" href="#brief/${slug}">Read the brief</a>
+  </article>`;
+}
+
+function taleCardHTML(slug, t) {
+  const brief = t.brief ? BRIEFS[t.brief] : null;
+  return `<article class="shelf-item">
+    <h3>${esc(t.title)}</h3>
+    <p class="shelf-meta">Age ${t.age} · ${esc(t.minutes)} min read-aloud · ${esc(t.theme)}</p>
+    <p class="shelf-tag">${esc(t.origin)}</p>
+    ${t.night ? `<p class="shelf-line"><strong>Night ${t.night.n} of ${t.night.of}.</strong></p>` : ""}
+    ${brief ? `<p class="shelf-line"><strong>Goes with:</strong> <a href="#brief/${t.brief}">${esc(brief.title)}</a></p>` : ""}
+    <a class="btn btn-quiet" href="#tale/${slug}">Read it aloud</a>
+  </article>`;
+}
+
+/* ------------------------------------------------------------- Home */
+/* Home is Tonight: the card is not behind a click. */
+
+function renderHome(query = "") {
+  const q = query.trim();
+  if (q) return renderSearch(q);
+
   const card = tonightCard();
   const brief = card.brief ? BRIEFS[card.brief] : null;
   const tale = TALES[card.tale];
@@ -207,7 +174,6 @@ function renderTonight() {
       <header class="page-head">
         <h2>History for you at lunch. A tale for them at bedtime.</h2>
         <p>One true story from history for you, one tale to read aloud to them, written to go together. Twenty minutes. No homework.</p>
-        <a class="btn" href="#${brief ? "brief/" + card.brief : "tale/" + card.tale}">Open tonight's card</a>
       </header>
 
       <section class="tonight">
@@ -260,7 +226,61 @@ function renderTonight() {
         </div>
       </section>
 
+      <section class="thesis">
+        <h3>You can't hand on what you don't have.</h3>
+        <p>Most of us were educated but never formed. We know about things. We don't know the stories. That is why every tale comes with a brief. Read it at lunch, and at bedtime you are not performing — you know the thing you are telling.</p>
+      </section>
+
+      <section class="signup">
+        <h3>New cards twice a week.</h3>
+        <p>Put your email in and they come to you.</p>
+        <form class="signup-form" novalidate>
+          <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required aria-label="Email address" />
+          <button class="btn" type="submit">Send them to me</button>
+        </form>
+        <p class="signup-said" hidden>That's in. The next card comes to you.</p>
+      </section>
+
+      <section class="shelves">
+        <h3>More to read</h3>
+        <div class="shelf-list">
+          <a class="shelf-link" href="#history">
+            <span class="shelf-link-text"><strong>History for dads</strong><span>Every brief, by era or kind.</span></span>
+            <svg class="ic"><use href="#i-arrow"/></svg>
+          </a>
+          <a class="shelf-link" href="#today">
+            <span class="shelf-link-text"><strong>Today in history</strong><span>One short true thing, for any date.</span></span>
+            <svg class="ic"><use href="#i-arrow"/></svg>
+          </a>
+          <a class="shelf-link" href="#bedtime">
+            <span class="shelf-link-text"><strong>Bedtime stories</strong><span>Every tale, by age and theme.</span></span>
+            <svg class="ic"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
+      </section>
+
       <p class="night-foot">Our tradition is not a worship of ashes but a preservation of fire. New cards twice a week.</p>
+    </div>`;
+}
+
+function renderSearch(query) {
+  const q = query.toLowerCase();
+  const briefHits = Object.entries(BRIEFS).filter(([, b]) =>
+    (b.title + " " + b.hook + " " + b.era + " " + b.kind).toLowerCase().includes(q));
+  const taleHits = Object.entries(TALES).filter(([, t]) =>
+    (t.title + " " + t.theme + " " + t.origin).toLowerCase().includes(q));
+  const hits = briefHits.length + taleHits.length;
+
+  main.innerHTML = `
+    <div class="content">
+      <header class="page-head">
+        <h2>Search</h2>
+        <p>${hits} match${hits === 1 ? "" : "es"} for “${esc(query)}” across History for dads and Bedtime stories.</p>
+      </header>
+      ${hits ? `<div class="shelf">
+        ${briefHits.map(([slug, b]) => briefCardHTML(slug, b)).join("")}
+        ${taleHits.map(([slug, t]) => taleCardHTML(slug, t)).join("")}
+      </div>` : `<p class="empty">No entries match “${esc(query)}”. Try a name, an era, or a theme.</p>`}
     </div>`;
 }
 
@@ -289,17 +309,8 @@ function renderHistory() {
         <div class="chips">${KINDS.map(k => chip("history", "kind", k, k)).join("")}</div>
       </div>
 
-      ${list.length ? `<div class="shelf">${list.map(([slug, b]) => {
-        const tale = TALES[b.tale];
-        return `<article class="shelf-item">
-          <h3>${esc(b.title)}</h3>
-          <p class="shelf-meta">${esc(b.era)} · ${esc(b.kind)} · ${b.minutes} min</p>
-          <p class="shelf-hook">${esc(b.hook)}</p>
-          ${b.stillWithUs ? `<p class="shelf-line"><strong>Still with us:</strong> ${esc(b.stillWithUs)}</p>` : ""}
-          ${tale ? `<p class="shelf-line"><strong>Read it to them:</strong> <a href="#tale/${b.tale}">${esc(tale.title)}</a></p>` : ""}
-          <a class="btn btn-quiet" href="#brief/${slug}">Read the brief</a>
-        </article>`;
-      }).join("")}</div>` : `<p class="empty">Nothing on this shelf yet. Clear a filter, or come back — new briefs go up twice a week.</p>`}
+      ${list.length ? `<div class="shelf">${list.map(([slug, b]) => briefCardHTML(slug, b)).join("")}</div>`
+        : `<p class="empty">Nothing on this shelf yet. Clear a filter, or come back — new briefs go up twice a week.</p>`}
     </div>`;
 }
 
@@ -379,17 +390,8 @@ function renderBedtime() {
         <div class="chips">${THEMES.map(t => chip("bedtime", "theme", t, t)).join("")}</div>
       </div>
 
-      ${list.length ? `<div class="shelf">${list.map(([slug, t]) => {
-        const brief = t.brief ? BRIEFS[t.brief] : null;
-        return `<article class="shelf-item">
-          <h3>${esc(t.title)}</h3>
-          <p class="shelf-meta">Age ${t.age} · ${esc(t.minutes)} min read-aloud · ${esc(t.theme)}</p>
-          <p class="shelf-tag">${esc(t.origin)}</p>
-          ${t.night ? `<p class="shelf-line"><strong>Night ${t.night.n} of ${t.night.of}.</strong></p>` : ""}
-          ${brief ? `<p class="shelf-line"><strong>Goes with:</strong> <a href="#brief/${t.brief}">${esc(brief.title)}</a></p>` : ""}
-          <a class="btn btn-quiet" href="#tale/${slug}">Read it aloud</a>
-        </article>`;
-      }).join("")}</div>` : `<p class="empty">Nothing on this shelf yet. Clear a filter, or come back — new tales go up twice a week.</p>`}
+      ${list.length ? `<div class="shelf">${list.map(([slug, t]) => taleCardHTML(slug, t)).join("")}</div>`
+        : `<p class="empty">Nothing on this shelf yet. Clear a filter, or come back — new tales go up twice a week.</p>`}
     </div>`;
 }
 
@@ -445,7 +447,7 @@ function renderMissing(msg, hash, label) {
 
 /* per-page title and meta description, from the copy doc */
 const META = {
-  tonight: ["Saints & Dragons | History for dads, tales for bedtime",
+  home:    ["Saints & Dragons | History for dads, tales for bedtime",
             "One true story from history for dads, one tale to read aloud to the kids. Written to go together. About twenty minutes."],
   history: ["History for Dads | Saints & Dragons",
             "Four-minute history notes a dad can actually finish. Battles, builders, knights and Romans, each paired with a bedtime tale."],
@@ -476,6 +478,10 @@ const NAV_OWNER = { brief: "#history", tale: "#bedtime", today: "#today" };
 
 function route() {
   const raw = (location.hash || "#home").slice(1);
+
+  /* Home is Tonight. #tonight is an old link, not a page — send it home. */
+  if (raw === "tonight") { location.hash = "#home"; return; }
+
   const [key, param] = [raw.split("/")[0], raw.split("/").slice(1).join("/")];
   const owner = NAV_OWNER[key] || "#" + key;
 
@@ -483,8 +489,7 @@ function route() {
     a.classList.toggle("is-active", a.getAttribute("href") === owner));
   setMeta(key, param);
 
-  if (key === "tonight") renderTonight();
-  else if (key === "history") renderHistory();
+  if (key === "history") renderHistory();
   else if (key === "today") renderToday(param);
   else if (key === "bedtime") renderBedtime();
   else if (key === "brief") renderBrief(param);
@@ -506,6 +511,31 @@ main.addEventListener("click", ev => {
   if (field === "age") value = Number(value);
   filters[group][field] = filters[group][field] === value ? null : value;
   route();
+});
+
+/* Home's email signup, delegated since the form is rebuilt on every render */
+main.addEventListener("submit", ev => {
+  const form = ev.target.closest(".signup-form");
+  if (!form) return;
+  ev.preventDefault();
+
+  const email = form.email.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { form.email.focus(); return; }
+
+  const btn = form.querySelector("button");
+  btn.disabled = true;
+
+  fetch(SIGNUP_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ email, source: "home" })
+  }).catch(err => {
+    /* Never hold the confirmation hostage to a failed network call. */
+    console.warn("home signup did not reach Formspree", err);
+  }).finally(() => {
+    form.hidden = true;
+    form.nextElementSibling.hidden = false;
+  });
 });
 
 /* search */
