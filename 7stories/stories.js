@@ -3,6 +3,10 @@
 const gate = document.getElementById("gate");
 const delivery = document.getElementById("delivery");
 const form = document.getElementById("gateForm");
+const submitBtn = document.getElementById("submitBtn");
+
+/* Formspree endpoint — collects the signups; it does not email the reader. */
+const FORM_ENDPOINT = form.action;
 
 /* ---------- multi-select (ages) ---------- */
 const multi = document.getElementById("ageSelect");
@@ -56,17 +60,15 @@ function clearError(name) {
 
 form.addEventListener("input", e => { if (e.target.name) clearError(e.target.name); });
 
-form.addEventListener("submit", e => {
+form.addEventListener("submit", async e => {
   e.preventDefault();
 
   const firstName = form.firstName.value.trim();
-  const lastName = form.lastName.value.trim();
   const email = form.email.value.trim();
   const ages = selectedAges();
   let ok = true;
 
   if (!firstName) { setError("firstName", "Please enter your first name."); ok = false; }
-  if (!lastName) { setError("lastName", "Please enter your last name."); ok = false; }
   if (!ages.length) { setError("ages", "Please choose at least one age range."); ok = false; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     setError("email", email ? "Please enter a valid email address." : "Please enter your email address.");
@@ -78,12 +80,28 @@ form.addEventListener("submit", e => {
     return;
   }
 
-  const signup = { firstName, lastName, email, ages, submittedAt: new Date().toISOString() };
+  submitBtn.disabled = true;
+  const label = submitBtn.innerHTML;
+  submitBtn.textContent = "Sending…";
 
-  /* Hook up your email platform here — e.g. POST `signup` to your list
-     provider or form endpoint. Access is granted either way so the reader
-     is never left waiting on a network call. */
-  console.log("7stories signup", signup);
+  try {
+    await fetch(FORM_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        firstName,
+        email,
+        childAges: ages.join(", "),
+        source: "/7stories"
+      })
+    });
+  } catch (err) {
+    /* Never hold the download hostage to a failed network call. */
+    console.warn("7stories signup did not reach Formspree", err);
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = label;
 
   document.getElementById("welcome").textContent =
     `Thanks, ${firstName} — sample subheading goes here. One story for each night of the week, ready to read or print.`;

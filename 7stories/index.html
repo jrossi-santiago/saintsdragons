@@ -109,20 +109,14 @@
             </ul>
           </div>
 
-          <form class="gate-form card" id="gateForm" novalidate>
+          <form class="gate-form card" id="gateForm" method="POST" action="https://formspree.io/f/xqpaqzne" novalidate>
             <h3>Read them now — free</h3>
-            <p class="form-note">Tell us where to send new stories and the download unlocks right below.</p>
+            <p class="form-note">Sample note — enter your details and the download unlocks right below.</p>
 
             <label class="field">
               <span>First name <em>*</em></span>
               <input type="text" id="firstName" name="firstName" autocomplete="given-name" required />
               <small class="err" data-err="firstName"></small>
-            </label>
-
-            <label class="field">
-              <span>Last name <em>*</em></span>
-              <input type="text" id="lastName" name="lastName" autocomplete="family-name" required />
-              <small class="err" data-err="lastName"></small>
             </label>
 
             <div class="field">
@@ -148,8 +142,8 @@
               <small class="err" data-err="email"></small>
             </label>
 
-            <button class="btn btn-wide" type="submit">Get the 7 stories <svg class="ic"><use href="#i-arrow"/></svg></button>
-            <p class="fineprint">Sample privacy line — one email when a new story goes up, unsubscribe any time.</p>
+            <button class="btn btn-wide" type="submit" id="submitBtn">Get the 7 stories <svg class="ic"><use href="#i-arrow"/></svg></button>
+            <p class="fineprint">Sample privacy line — your email stays with us, nothing is shared.</p>
           </form>
         </div>
       </section>
@@ -172,7 +166,7 @@
           </div>
         </div>
 
-        <p class="fineprint fineprint-left">Sample note — a copy is on its way to your inbox as well.</p>
+        <p class="fineprint fineprint-left">Sample note — save the PDF anywhere you like, the link stays on this page.</p>
       </section>
 
     </div>
