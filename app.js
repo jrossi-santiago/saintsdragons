@@ -54,50 +54,6 @@ const PAGES = {
         </ul>
       </div>`
   },
-  now: {
-    title: "Now",
-    sub: "What I'm focused on at the moment.",
-    html: `
-      <div class="prose">
-        <p>Updated September 2026.</p>
-        <ul>
-          <li><strong>Writing</strong> — a new collection of essays on self-respect.</li>
-          <li><strong>Reading</strong> — slowly, and only one book at a time.</li>
-          <li><strong>Training</strong> — five mornings a week, no exceptions.</li>
-          <li><strong>Coaching</strong> — a small number of one-to-one clients.</li>
-        </ul>
-      </div>`
-  },
-  books: {
-    title: "Books",
-    sub: "Longer work, in print and progress.",
-    html: `
-      <div class="card-grid">
-        <div class="card"><h3>The Quiet Standard</h3><p>On building self-trust through small, kept promises. Available now.</p></div>
-        <div class="card"><h3>Slow Mornings</h3><p>A short book about attention and the first hour of the day.</p></div>
-        <div class="card"><h3>Untitled</h3><p>In progress — essays on discipline without self-punishment.</p></div>
-      </div>`
-  },
-  services: {
-    title: "Services",
-    sub: "Ways we can work together.",
-    html: `
-      <div class="card-grid">
-        <div class="card"><h3>1:1 Coaching</h3><p>Twelve weeks of focused work on direction, habits, and follow-through.</p></div>
-        <div class="card"><h3>Intensive Session</h3><p>A single 90-minute session to untangle one decision you keep circling.</p></div>
-        <div class="card"><h3>Speaking</h3><p>Talks and workshops on clarity, discipline, and intentional living.</p></div>
-      </div>`
-  },
-  resources: {
-    title: "Resources",
-    sub: "Free things worth your time.",
-    html: `
-      <div class="card-grid">
-        <div class="card"><h3>The Weekly Review</h3><p>A one-page template for closing the week honestly.</p></div>
-        <div class="card"><h3>Habit Floor Worksheet</h3><p>Define the smallest version you will not skip.</p></div>
-        <div class="card"><h3>Reading List</h3><p>Books that changed how I work, updated twice a year.</p></div>
-      </div>`
-  },
   contact: {
     title: "Contact",
     sub: "Say hello — I read everything.",

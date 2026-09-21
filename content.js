@@ -21,123 +21,123 @@ const THEMES = ["Knights", "Dragons", "Forests", "Courage", "Obedience", "Mercy"
 
 const BRIEFS = {
   "lepanto": {
-    title: "The Day the Sea Went Quiet",
+    title: "The Battle of Lepanto, 1571",
     era: "And everything else",
     kind: "A battle",
     minutes: 4,
-    hook: "Four hours of the loudest fighting in the world, decided by men chained to benches.",
-    stillWithUs: "The word for a ship's lowest, hardest work is still galley, and so is the word for a ship's kitchen.",
+    hook: "The last great battle fought with oared galleys. Most of the men who rowed them were slaves, chained to the bench.",
+    stillWithUs: "A ship's kitchen is still called the galley.",
     tale: "boy-who-counted-oars",
     body: [
-      "On the morning of 7 October 1571, two fleets found each other in the Gulf of Patras, off the west coast of Greece. Between them they had about four hundred ships and something close to a hundred and forty thousand men. Almost none of those men had chosen to be there.",
-      "That is the part nobody tells you. A war galley in 1571 was not a sailing ship. It was a rowing machine a hundred and fifty feet long, and the engine was men. Three or four to an oar, twenty-five or thirty oars a side. On the Ottoman ships and on the Christian ones alike, most of those rowers were slaves or convicts, and most of them were chained to the bench by the ankle. They could not see out. They rowed to a drum.",
-      "The commander on the Christian side was Don John of Austria, twenty-four years old, illegitimate son of an emperor, given the job partly because nobody else could be given it without one of the allied cities walking away. Venice, Spain and Genoa hated each other roughly as much as they feared the fleet coming the other way. Don John's first real act of command was not tactical. He had the chains struck off the Christian galley slaves and promised them their freedom, and he went from ship to ship in a fast boat so the men could see his face.",
-      "His second act was stranger. He had the rams sawn off the front of his own galleys. The ram was the ancient weapon, the thing that made a galley a galley, and it also pointed the guns in the bow uselessly at the sky. Cut it off and the bow guns could fire flat, into the waterline of whatever was coming. He also put six huge Venetian galleasses out in front of his line, floating gun platforms too fat to row properly, and simply towed them into place.",
-      "The Ottoman fleet under Ali Pasha came on in a crescent, which is what a faster fleet does to a slower one. It rowed straight into the galleasses and lost perhaps seventy ships before the two lines ever touched. Then the lines touched, and for four hours the battle was not a naval battle at all. Ships grappled and the fighting went hand to hand across the decks, as if the sea had been paved over.",
-      "It ended in the early afternoon. The Ottoman flagship was boarded, Ali Pasha was killed, and the banner came down. About a hundred and twenty Ottoman galleys were captured whole. Some twelve thousand Christian galley slaves came off the benches alive and free, which is the number that mattered most to the men who had been rowing that morning.",
-      "Strategically it changed less than the celebrations claimed. The Ottoman navy was rebuilt within a year. What it changed was the idea that it could not be done. For a generation the assumption had been that the fleet coming west was simply going to keep coming west.",
-      "One more detail. Aboard the Marquesa, in the thick of it, was a twenty-four-year-old Spanish soldier with a fever. He was told to stay below. He refused, went up, took three gunshot wounds, and lost the use of his left hand for the rest of his life. His name was Miguel de Cervantes, and thirty-four years later he wrote Don Quixote. He called Lepanto the greatest occasion the past or present has seen, and he never stopped being proud of the hand."
+      "On 7 October 1571, two fleets met in the Gulf of Patras, off the west coast of Greece. Between them they had about four hundred ships and roughly a hundred and forty thousand men.",
+      "A war galley was not a sailing ship. It was rowed. A hundred and fifty feet long, twenty-five or thirty oars a side, three or four men to an oar. In both fleets most of those rowers were slaves or convicts, chained at the ankle. They could not see out. They rowed to a drum.",
+      "The Christian fleet was commanded by Don John of Austria. He was twenty-four, the illegitimate son of an emperor, and he had the job mainly because Venice, Spain and Genoa would not serve under each other. Before the battle he had the chains struck off his own rowers and promised them their freedom. Then he went from ship to ship in a fast boat so the men could see him.",
+      "He also had the rams sawn off the front of his galleys. The ram was the traditional weapon, and it pointed the bow guns at the sky. Without it the guns could fire flat, into the waterline of anything coming at them. He put six Venetian galleasses out ahead of his line as well. They were too heavy to row properly, so he had them towed into position.",
+      "Ali Pasha brought the Ottoman fleet on in a crescent. It rowed into the galleasses and lost about seventy ships before the two lines met. Then the lines met, and for four hours it stopped being a naval battle. Ships grappled together and men fought on foot across the decks.",
+      "It ended in the early afternoon. The Ottoman flagship was boarded and Ali Pasha was killed. About a hundred and twenty galleys were captured intact. Some twelve thousand Christian galley slaves came off the benches free.",
+      "It mattered less than the celebrations suggested. The Ottoman navy was rebuilt inside a year. What changed was the assumption that the fleet coming west could not be stopped.",
+      "One of the wounded was a twenty-four-year-old Spanish soldier with a fever. He had been told to stay below deck. He went up anyway, took three gunshot wounds, and never used his left hand again. His name was Miguel de Cervantes. Thirty-four years later he wrote Don Quixote, and he stayed proud of the hand."
     ]
   },
 
   "vienna": {
-    title: "The Morning the Hill Moved",
+    title: "The Siege of Vienna, 1683",
     era: "And everything else",
     kind: "A battle",
     minutes: 4,
-    hook: "Twenty thousand horsemen came down a mountain into the side of an army that had been digging for two months.",
-    stillWithUs: "The croissant is supposed to come from this siege. The story is almost certainly false and everyone tells it anyway.",
+    hook: "Vienna held out for two months against tunnels dug under its walls. Then twenty thousand horsemen came down the mountain behind the besiegers.",
+    stillWithUs: "The story that the croissant was invented at this siege is almost certainly false, and people still tell it.",
     tale: "riders-with-wings",
     body: [
-      "Vienna in July 1683 had about fifteen thousand defenders and walls that were good but not new. Outside was an army of perhaps a hundred and fifty thousand under the Grand Vizier Kara Mustafa. He did not try to storm the walls. He did something slower and much worse.",
-      "He dug. Ottoman siege engineering was the best in the world, and what it did was drive tunnels under the city's defences, pack the ends with gunpowder, and bring the walls down from underneath. For two months the trenches crept forward. The defenders dug their own tunnels to meet them, and men fought each other underground in the dark with knives and shovels. By early September the outer defences had holes in them and the garrison was down to about four thousand men who could still stand.",
-      "They had sent for help in July. Help is a slow word. A relief force had to be assembled out of the Holy Roman Empire's various princes and out of Poland, and it had to be assembled under someone all of them would actually obey. That turned out to be John III Sobieski, King of Poland, who arrived with the one thing nobody else had.",
-      "The Polish winged hussars were heavy cavalry, and they are not quite like anything else in military history. A hussar carried a lance nineteen feet long, longer than a pike, hollowed out to keep the weight down. It shattered on impact by design, and behind it the man had a sabre, a war hammer and two pistols. On his back, or on the saddle, was a wooden frame of eagle feathers. Nobody agrees on what the wings were for. The romantic answer is the noise. The practical answer is that they made the horse and rider look enormous and were hard to lasso.",
-      "On 11 September the relief army finished coming over the Vienna Woods, which is steep, forested ground that no one expected an army with artillery to cross. They came down it anyway, dragging guns by rope. Kara Mustafa had his army facing the city and had to turn it around.",
-      "The fighting took most of 12 September, infantry grinding down the slope through vineyards. In the late afternoon Sobieski formed up about twenty thousand cavalry on the high ground, three thousand of them hussars, and sent them down into the Ottoman flank. It is still the largest cavalry charge ever made. The Ottoman line did not break in the usual sense. It came apart. Within three hours Sobieski was standing in Kara Mustafa's abandoned tent.",
-      "The Grand Vizier got back to Belgrade, where the Sultan had him strangled with a silk cord, which was the traditional courtesy for a defeated commander of high rank. The empire that had been pushing west for three hundred years began, from that autumn, to push the other way.",
-      "Sobieski wrote to his wife the next day. He was fifty-four, he had been riding for weeks, and the letter is mostly about the tent, the horses, and a parrot that got away in the confusion."
+      "In July 1683 Vienna had about fifteen thousand defenders and walls that were good but not new. Outside was an Ottoman army of perhaps a hundred and fifty thousand under the Grand Vizier Kara Mustafa.",
+      "He did not storm the walls. He dug. Ottoman siege engineering was the best in the world, and its method was to drive tunnels under the defences, pack the ends with gunpowder, and bring the walls down from underneath. The trenches crept forward for two months. The defenders dug their own tunnels to meet them and fought underground in the dark. By early September the outer works had holes in them and the garrison was down to about four thousand men who could still fight.",
+      "Vienna had sent for help in July. A relief force had to be assembled out of the German princes and Poland, and it needed a commander all of them would actually obey. That was John III Sobieski, King of Poland.",
+      "Sobieski brought the Polish winged hussars. A hussar carried a lance nineteen feet long, hollowed out to keep the weight down and built to shatter on impact. Behind the lance he had a sabre, a war hammer and two pistols. On his back or his saddle was a wooden frame of eagle feathers. Nobody agrees what the wings were for. The usual answers are the noise they made and the fact that they made horse and rider look much bigger.",
+      "On 11 September the relief army came over the Vienna Woods, steep forested ground nobody expected an army with artillery to cross. They hauled the guns over by rope. Kara Mustafa had his army facing the city and had to turn it round.",
+      "The fighting took most of 12 September, infantry working down the slope through vineyards. In the late afternoon Sobieski formed up about twenty thousand cavalry on the high ground, three thousand of them hussars, and sent them into the Ottoman flank. It is still the largest cavalry charge ever made. Within three hours Sobieski was standing in Kara Mustafa's tent.",
+      "Kara Mustafa got back to Belgrade, where the Sultan had him strangled with a silk cord. That was the customary end for a defeated commander of his rank. The Ottoman empire had been pushing west for three hundred years. From that autumn it went the other way.",
+      "Sobieski wrote to his wife the next day. He was fifty-four and had been riding for weeks. The letter is mostly about the tent, the horses, and a parrot that got loose in the confusion."
     ]
   },
 
   "tours": {
-    title: "The Hammer",
+    title: "Charles Martel at Tours, 732",
     era: "Knights and lords",
     kind: "A battle",
     minutes: 4,
-    hook: "A general spent seven days refusing to fight, and won because of it.",
-    stillWithUs: "Charles's nickname went to his grandson's family name and then to a hundred thousand boys. Charlemagne is just Charles the Great.",
+    hook: "A Frankish army stood on a wooded hill for seven days and would not come down. The cavalry that came up at them could not break the line.",
+    stillWithUs: "His nickname ended up as his grandson's name. Charlemagne is just Charles the Great.",
     tale: "wall-that-would-not-move",
     body: [
-      "In October 732, somewhere between Tours and Poitiers in what is now central France, a Frankish army stood on a wooded hill for seven days and refused to come down.",
-      "The man who put them there was Charles, mayor of the palace. That title needs explaining. The Frankish kings of that generation did almost nothing. They were carried about in ox carts and produced heirs, and the actual government was run by an official whose job had started out as household steward. Charles was that official. He was also, by 732, the most experienced soldier in western Europe, and he had spent years building something nobody else in the West had: a standing army of full-time professional infantry.",
-      "That took money he did not have, so he took it. He confiscated church lands to pay and equip his men, which made him permanently unpopular with the people who wrote the chronicles. It is worth knowing that the man remembered as the defender of Christian Europe funded his army by seizing Christian property, and that the chroniclers who praised him for the first never quite forgave him for the second.",
-      "Coming north was an Umayyad force under Abd al-Rahman al-Ghafiqi, the governor of al-Andalus. It was primarily cavalry, and it was very good. Its method for a century had been simple and nearly undefeated: ride at the enemy line, and the enemy line, which was usually a levy of farmers, would break. Then ride them down from behind. Almost all casualties in ancient and medieval battle happen after one side turns and runs.",
-      "Charles understood the method and built his week around denying it. He got between the raiders and Tours by marching on back roads, so his position was a surprise. He chose high wooded ground, where cavalry has to come uphill through trees. He formed his infantry into a dense square and told them to stand. Then he waited seven days while the weather got colder, because his men had cloaks and the Umayyad cavalry, raiding from the south in autumn, did not.",
-      "Abd al-Rahman eventually had to attack. The chronicler's line is that the Franks stood there like a wall, like a belt of ice frozen together, and it is the only sentence most people ever read about the battle. The cavalry came up the hill and hit the square and did not break it. That had not happened before.",
-      "The battle turned on a rumour. Scouts Charles had sent around the flank got into the Umayyad camp and started freeing prisoners and looting. Word ran through the cavalry that the camp was being taken, and a good part of it disengaged to ride back and save the plunder. Abd al-Rahman tried to stop them, was surrounded, and was killed. By morning the camp was empty. The Franks, expecting a trap, scouted all day before believing it.",
-      "Charles was called Martel afterwards, the Hammer. Whether the battle saved Europe is argued about endlessly, and the honest answer is that it was one of several. What is not arguable is the domestic result. Charles ended the day as the unquestioned power in Francia. His son Pépin took the crown outright. His grandson was Charlemagne."
+      "In October 732, on wooded ground between Tours and Poitiers, a Frankish army stood on a hill for seven days and refused to come down.",
+      "The man who put them there was Charles, mayor of the palace. The Frankish kings of that generation did almost nothing. They were carried about in ox carts and produced heirs, and the government was run by an official whose job had started out as household steward. Charles held that job. He was also the most experienced soldier in western Europe, and he had something nobody else in the West had: a standing army of full-time professional infantry.",
+      "That cost money he did not have, so he confiscated church lands to pay and equip his men. The chroniclers who praised him for the battle never quite forgave him for the funding.",
+      "Coming north was an Umayyad force under Abd al-Rahman al-Ghafiqi, the governor of al-Andalus. It was mostly cavalry and it was very good. Its method had worked for a century: ride at the enemy line, and the line, usually a levy of farmers, breaks. Then ride the men down from behind. Most casualties in a medieval battle happen after one side turns and runs.",
+      "Charles built his week around denying that. He marched on back roads and got between the raiders and Tours, so his position was a surprise. He took high wooded ground, where cavalry has to come uphill through trees. He formed his infantry into a dense square and told them to hold. Then he waited seven days while the weather got colder. His men had cloaks. The Umayyad cavalry, raiding up from the south in autumn, did not.",
+      "Abd al-Rahman had to attack in the end. A chronicler wrote that the Franks stood like a wall, like a belt of ice frozen together. The cavalry came up the hill and did not break the square.",
+      "The battle turned on a rumour. Scouts Charles had sent round the flank got into the Umayyad camp and started freeing prisoners. Word went through the cavalry that the camp was being taken, and a good part of it broke off to ride back and save the plunder. Abd al-Rahman tried to stop them, was surrounded and was killed. By morning the camp was empty. The Franks scouted all day before they believed it.",
+      "Charles was called Martel afterwards, the Hammer. Whether the battle saved Europe is argued about, and the honest answer is that it was one of several. The result at home is not in doubt. Charles ended the day as the only real power in Francia. His son Pépin took the crown outright. His grandson was Charlemagne."
     ]
   },
 
   "dome": {
-    title: "The Man Who Would Not Say How",
+    title: "Brunelleschi and the Dome of Florence, 1420",
     era: "Knights and lords",
     kind: "A builder",
     minutes: 4,
-    hook: "Florence built a cathedral with a hole in the roof and no idea how to close it, and left the hole there for fifty years.",
-    stillWithUs: "Four million bricks, six hundred years, no steel. It is still the largest masonry dome on earth.",
+    hook: "Florence approved a cathedral dome nobody knew how to build, then left a hole in the roof for fifty years waiting for someone to work it out.",
+    stillWithUs: "Four million bricks, no steel, six hundred years. It is still the largest masonry dome in the world.",
     tale: "egg-and-the-dome",
     body: [
-      "In 1367 the city of Florence approved a design for its cathedral that included a dome a hundred and forty-three feet across. Nobody in Europe knew how to build a dome a hundred and forty-three feet across. The city approved it anyway, and it is worth sitting with that for a second. They committed, in writing, to a building they could not finish, on the assumption that somebody would work it out before they got to the top.",
-      "Then they built the rest of the cathedral and got to the top. By 1418 there was a church in the middle of Florence with an octagonal hole in the roof a hundred and forty feet up, open to the weather, and had been for years.",
-      "The problem is not the dome. The problem is the day before the dome. A masonry arch does not stand until the last stone is in, so every arch and vault in Europe was built on centering, a full wooden skeleton holding the stone in place until the mortar cured. To centre a dome of this size you would need a forest, and a scaffold rising from the cathedral floor a hundred and forty feet below. Tuscany did not have the timber. Anyone who costed it honestly came back with a number the city would not pay.",
-      "The city held a competition in 1418. Among the entries was one from Filippo Brunelleschi, a goldsmith by training, difficult, secretive, a man who had lost a competition for the baptistery doors twenty years earlier and had then gone to Rome and spent years crawling over the ruins measuring things. He said he could build it without centering. He declined to say how. He argued that if he explained the method he would simply be thanked and dismissed.",
-      "This is where the egg belongs. The story, told first by Vasari a century later and therefore probably improved, is that the judges pressed him and he proposed instead that whoever could stand an egg upright on a flat slab of marble should get the commission. Everyone tried. Brunelleschi took the egg, cracked its base on the marble, and stood it up. The others said they could have done that. He said yes, and you would say the same about the dome if I told you how.",
-      "He got the job, jointly with his old rival Ghiberti, which he resented for the rest of his life. His actual solution was several solutions at once. Two domes, an inner shell and an outer, braced together, so the load came down in ribs rather than in one dead weight. Herringbone brickwork, where bricks set vertically at intervals lock each course and keep the courses above from sliding inward before the mortar sets. Rings of sandstone and iron cramps around the base, holding the whole thing in like a barrel hoop. And an ox-driven hoist with a reversible gear, so a team of oxen could raise and lower load without being unhitched and turned around.",
-      "It took sixteen years. He kept wine and food up on the platforms so the masons would not spend half a day climbing down and back for lunch. He watered the wine. Four million bricks went up, and the dome was closed in 1436.",
-      "He is buried underneath it. For centuries nobody knew exactly where, and the grave was found by accident during excavations in 1972."
+      "In 1367 Florence approved a design for its cathedral with a dome a hundred and forty-three feet across. Nobody in Europe knew how to build a dome that size. The city approved it anyway, on the assumption that somebody would work it out before they got to the top.",
+      "They built the rest of the cathedral and got to the top. By 1418 there was a church in the middle of Florence with an octagonal hole in its roof a hundred and forty feet up, open to the weather, and it had been that way for years.",
+      "The problem was not the dome. It was the day before the dome. A masonry arch does not stand until the last stone is in, so every vault in Europe was built on centering: a full wooden skeleton holding the stone until the mortar cured. Centering a dome this size needed more timber than Tuscany had, plus a scaffold rising from the cathedral floor a hundred and forty feet below. Anyone who costed it honestly came back with a number the city would not pay.",
+      "The city held a competition in 1418. One entry came from Filippo Brunelleschi, a goldsmith by training, difficult and secretive. He had lost the competition for the baptistery doors twenty years earlier, gone to Rome, and spent years measuring the ruins. He said he could build the dome with no centering at all. He would not say how. His argument was that if he explained the method he would be thanked and then dismissed.",
+      "This is where the egg comes in. Vasari tells the story a century later, so it has probably been improved. The judges pressed him, and Brunelleschi proposed instead that whoever could stand an egg upright on a slab of marble should get the commission. Everyone tried and failed. He took the egg, cracked its base flat on the marble, and stood it up. The others said they could have done that. He said they would say the same about the dome.",
+      "He got the job, jointly with his old rival Ghiberti, which he resented for the rest of his life. His method was several things at once. Two shells, inner and outer, braced together, so the load came down through ribs instead of as one dead weight. Herringbone brickwork, with bricks set vertically at intervals to lock each course and stop the courses above sliding inward before the mortar set. Rings of sandstone and iron cramps around the base, holding the whole thing in like a barrel hoop. And an ox-driven hoist with a reversible gear, so a team could raise and lower loads without being unhitched and turned around.",
+      "It took sixteen years. He kept food and wine up on the platforms so the masons would not spend half a day climbing down and back for lunch, and he watered the wine. Four million bricks went up. The dome was closed in 1436.",
+      "He is buried underneath it. Nobody knew exactly where until the grave was found during excavations in 1972."
     ]
   },
 
   "athelney": {
-    title: "The King in the Marsh",
+    title: "Alfred the Great and the Winter of 878",
     era: "Knights and lords",
     kind: "A person",
     minutes: 4,
-    hook: "In January a king had a kingdom. By February he had a swamp, a handful of men, and a burned loaf of bread.",
-    stillWithUs: "He had the law and the histories put into English because he thought a country that cannot read its own language will eventually stop being one.",
+    hook: "In January he lost his kingdom to a surprise attack at Christmas. In May he came out of a swamp with an army and took it back.",
+    stillWithUs: "He had the law and the histories put into English because he thought a country that cannot read its own language stops being one.",
     tale: "king-who-burnt-the-bread",
     body: [
-      "The Great Heathen Army landed in England in 865, and over the following decade it ended three of the four English kingdoms. Northumbria, East Anglia and Mercia were gone. By the winter of 877 only Wessex was left, and Wessex had a young king named Alfred who had been buying time with money for years.",
-      "In early January 878 the Danish leader Guthrum broke the truce and attacked Chippenham during the twelve days of Christmas, when nobody campaigned and the king's household was dispersed and, in the season's fashion, drunk. It worked completely. Alfred escaped into the Somerset Levels with what one chronicle calls a small company, which is a polite way of saying he was a fugitive.",
-      "The Levels in winter were not farmland. They were a flooded marsh of reeds and alder, crossed by paths you had to know, with occasional islands of dry ground. He spent roughly three months on one of them, at Athelney, raiding for supplies. That is the entire low point of English history compressed into one man in a swamp.",
-      "The cakes belong here. A century later a monk wrote that Alfred sheltered in a swineherd's cottage where the wife, not knowing who he was, set him to watch loaves baking on the hearth and came back to find them burnt and the king staring at nothing, and gave him the rough side of her tongue. It is almost certainly a later invention. It has survived a thousand years because it is the only story anyone tells about a king that begins with him being told off for ruining the dinner.",
-      "In May he came out. He sent word through the shire levies, which is a system of men who farm and are called up, and had them meet him at Egbert's Stone. Asser says the men of Somerset, Wiltshire and Hampshire came and rejoiced to see him, because they had believed he was dead. Two days later he fought Guthrum at Edington and broke him, then followed the survivors to Chippenham and sat outside for fourteen days until they gave in.",
-      "What he did next is the reason he is the only English king called the Great. He did not execute Guthrum. He stood godfather at his baptism, kept him at court for twelve days, loaded him with gifts and sent him home to rule East Anglia under a treaty with a drawn border. It was not softness. Alfred had worked out that a Danish king inside the settlement structure was cheaper and steadier than a dead Danish king and a new one every spring.",
-      "Then he spent twenty years on infrastructure. A ring of fortified towns, the burhs, laid out so no part of Wessex was more than a long day's walk from a wall. The army split in half so one half was always in the fields and the food supply never collapsed mid campaign. Ships built longer than the Danish ones. A law code assembled out of the older English codes.",
-      "And he learned Latin in his thirties and translated books himself, in the evenings, because he had decided that the works most necessary for men to know should exist in English. He wrote that he could not think of a single man south of the Thames, when he came to the throne, who could translate a letter. He was ill for most of his adult life with something that caused him serious pain, and he did the translating anyway."
+      "The Great Heathen Army landed in England in 865. Within ten years it had ended three of the four English kingdoms. Northumbria, East Anglia and Mercia were gone. By the winter of 877 only Wessex was left, under a young king named Alfred who had been buying time with money for years.",
+      "In early January 878 the Danish leader Guthrum broke the truce and attacked Chippenham during the twelve days of Christmas, when nobody campaigned and the king's household was scattered. It worked. Alfred got out into the Somerset Levels with what one chronicle calls a small company.",
+      "The Levels in winter were not farmland. They were flooded marsh, reeds and alder, crossed by paths you had to know, with occasional islands of dry ground. Alfred spent about three months on one of them, at Athelney, raiding for supplies.",
+      "The burnt cakes belong here. A century later a monk wrote that Alfred sheltered in a swineherd's cottage, and the wife, not knowing who he was, set him to watch loaves baking on the hearth. He let them burn and she told him off. It is almost certainly invented. It has lasted a thousand years because it is the only story about a king that starts with him ruining the dinner.",
+      "In May he came out. He sent word through the shire levies, men who farm and are called up, to meet him at Egbert's Stone. Asser says the men of Somerset, Wiltshire and Hampshire came and were glad to see him, because they had thought he was dead. Two days later he broke Guthrum's army at Edington, followed the survivors to Chippenham, and sat outside for fourteen days until they gave in.",
+      "Then he did the thing he is actually remembered for. He did not execute Guthrum. He stood godfather at his baptism, kept him at court for twelve days, gave him presents and sent him home to rule East Anglia under a treaty with a drawn border. It was not softness. A Danish king inside the settlement was cheaper and steadier than a dead one and a new one every spring.",
+      "He spent the next twenty years on infrastructure. A ring of fortified towns, the burhs, laid out so that no part of Wessex was more than a long day's walk from a wall. The army split in half, so one half was always in the fields and the food supply did not collapse mid-campaign. Ships built longer than the Danish ones. A law code assembled out of the older English codes.",
+      "He learned Latin in his thirties and translated books himself, in the evenings. He wrote that when he came to the throne he could not think of one man south of the Thames who could translate a letter. He was ill for most of his adult life with something that caused him serious pain, and he did the translating anyway."
     ]
   },
 
   "cincinnatus": {
-    title: "The Plough He Went Back To",
+    title: "Cincinnatus, Dictator of Rome for Sixteen Days",
     era: "Greece and Rome",
     kind: "A person",
     minutes: 4,
-    hook: "Rome handed one man absolute power, he used it for sixteen days, and then he gave it back.",
+    hook: "Rome had a legal trapdoor: in an emergency, one man got absolute power for six months. He used sixteen days of it and handed the rest back.",
     stillWithUs: "Cincinnati is named after him, by army officers who thought Washington had done the same thing.",
     tale: "farmer-who-was-king-for-sixteen-days",
     body: [
-      "The Roman Republic was built by men who were frightened of kings. They had thrown one out and the whole constitution afterwards was an argument about making sure no one could become another. Power was split between two consuls, each of whom could veto the other, and they held office for one year only.",
-      "This is an excellent system for preventing tyranny and a terrible one for an emergency. So the Romans wrote themselves a trapdoor. In a crisis the Senate could name a dictator: one man, no colleague, no veto, total authority over the state and the army. The office had a hard limit of six months and expired automatically. It was designed to be used and then to disappear.",
-      "In 458 BC they used it. A Roman consular army had got itself trapped in a valley by the Aequi, surrounded and cut off, and five horsemen had ridden through the enemy line to bring the news. The Senate sent a delegation across the Tiber to a small farm, about four acres, worked by a former consul named Lucius Quinctius Cincinnatus.",
-      "Livy says they found him digging, or ploughing, and that he asked whether everything was all right, and then called to his wife Racilia to fetch his toga from the hut so he could hear the Senate's message decently dressed. Then they told him he was dictator of Rome.",
-      "He went into the city, called up every man of military age, ordered each of them to bring cooked rations for five days and twelve stakes, and marched that night. He reached the valley in darkness, put his men in a ring around the outside of the enemy, and had them dig. The Aequi, who had surrounded a Roman army, woke up surrounded themselves by a ditch and a palisade built overnight. They surrendered before the day was out.",
-      "He made the defeated pass under a yoke, which was three spears making a low doorway you had to stoop to walk through. It was designed to be humiliating and not to be fatal. He took no land and killed nobody.",
-      "Then he went back to Rome, held a triumph, resigned the dictatorship, and returned to the farm. The whole thing took fifteen or sixteen days. He had five and a half months of absolute power left and no interest in them.",
-      "Whether the details are true is a fair question. Livy was writing four hundred years later, at the exact moment the Republic was being replaced by an emperor, and the story is too neat. But that is nearly the point. The Romans were telling themselves this story precisely when they were losing the thing it described, the way a family tells stories about a grandfather they are failing to live up to.",
-      "In 1783, having won a war, George Washington resigned his commission and went home to farm. The officers who had served under him formed a society and named it after Cincinnatus. A few years later some of them founded a city in Ohio and named it the same. George III is supposed to have said that if Washington gave up power he would be the greatest man in the world. The bar is that low, and it was set two and a half thousand years ago by a man who wanted to get back to his field."
+      "The Roman Republic was built by men who were frightened of kings. They had thrown one out, and the constitution afterwards was an argument about making sure nobody became another. Power was split between two consuls who could each veto the other, and they held office for one year only.",
+      "That prevents tyranny well and handles an emergency badly. So the Romans wrote themselves a trapdoor. In a crisis the Senate could name a dictator: one man, no colleague, no veto, total authority over the state and the army. The office lasted six months at most and expired on its own.",
+      "In 458 BC they used it. A Roman consular army had got itself trapped in a valley by the Aequi, and five horsemen had ridden out through the enemy line to bring the news. The Senate sent a delegation across the Tiber to a farm of about four acres, worked by a former consul named Lucius Quinctius Cincinnatus.",
+      "Livy says they found him at the plough. He asked whether everything was all right, then called to his wife Racilia to fetch his toga from the hut so he could hear the Senate's message properly dressed. They told him he was dictator of Rome.",
+      "He went into the city, called up every man of military age, told each of them to bring five days of cooked rations and twelve stakes, and marched that night. He reached the valley in the dark, put his men in a ring outside the enemy, and had them dig. The Aequi had surrounded a Roman army. They woke up surrounded themselves, by a ditch and a palisade built overnight. They surrendered before the end of the day.",
+      "He made the defeated pass under a yoke, three spears set in a low doorway you had to stoop to walk through. It was meant to humiliate and not to kill. He took no land and executed nobody.",
+      "Then he went back to Rome, held a triumph, resigned the dictatorship, and returned to the farm. The whole thing took about sixteen days. He had five and a half months of absolute power left and no use for it.",
+      "Whether the details are true is a fair question. Livy wrote four hundred years later, at the exact moment the Republic was being replaced by an emperor, and the story is very neat. The Romans were telling it hardest when they were losing the thing it described.",
+      "In 1783 George Washington won a war, resigned his commission and went home to farm. The officers who had served under him formed a society and named it after Cincinnatus. Some of them later founded a city in Ohio and gave it the same name. George III is supposed to have said that if Washington gave up power he would be the greatest man in the world."
     ]
   }
 };
@@ -510,7 +510,7 @@ const TALES = {
 const CARDS = [
   {
     date: "2026-09-03",
-    title: "The Plough He Went Back To",
+    title: "Cincinnatus, Dictator of Rome for Sixteen Days",
     brief: "cincinnatus",
     tale: "farmer-who-was-king-for-sixteen-days",
     question: "If you were in charge of everything for one day, what would you do first, and when would you stop?",
@@ -519,7 +519,7 @@ const CARDS = [
   },
   {
     date: "2026-09-07",
-    title: "The King in the Marsh",
+    title: "Alfred the Great and the Winter of 878",
     brief: "athelney",
     tale: "king-who-burnt-the-bread",
     question: "Somebody told the king off and he said sorry. When is it hardest for you to say sorry?",
@@ -528,7 +528,7 @@ const CARDS = [
   },
   {
     date: "2026-09-10",
-    title: "The Hammer",
+    title: "Charles Martel at Tours, 732",
     brief: "tours",
     tale: "wall-that-would-not-move",
     question: "Odo wanted to run. What is something you did even though you were scared?",
@@ -537,7 +537,7 @@ const CARDS = [
   },
   {
     date: "2026-09-14",
-    title: "The Man Who Would Not Say How",
+    title: "Brunelleschi and the Dome of Florence, 1420",
     brief: "dome",
     tale: "egg-and-the-dome",
     question: "What is something that looks easy once somebody has shown you how?",
@@ -546,7 +546,7 @@ const CARDS = [
   },
   {
     date: "2026-09-17",
-    title: "The Morning the Hill Moved",
+    title: "The Siege of Vienna, 1683",
     brief: "vienna",
     tale: "riders-with-wings",
     question: "Mila's job was to watch. What is a small job you can do that nobody else is doing?",
@@ -555,7 +555,7 @@ const CARDS = [
   },
   {
     date: "2026-09-21",
-    title: "The Day the Sea Went Quiet",
+    title: "The Battle of Lepanto, 1571",
     brief: "lepanto",
     tale: "boy-who-counted-oars",
     question: "The rowers could have stopped and nobody would have known. What do you do well when nobody is watching?",
