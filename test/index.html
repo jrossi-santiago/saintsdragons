@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tonight's Receipt — Saints &amp; Dragons</title>
+<meta name="description" content="Today in history, a piece of history for you, and tonight's tale — printed like a receipt.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐉</text></svg>">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --stage:#0b0b0c;
+    --paper:#f6f1e3;
+    --paper-shadow:#e7dfc9;
+    --ink:#221c15;
+    --ink-dim:#6b6153;
+    --ink-faint:#948a78;
+    --rule:#cfc3a4;
+    --accent:#a8451f;
+    --scale:1;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *,*::before,*::after{box-sizing:inherit}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(1200px 700px at 50% -10%, #17171a, var(--stage));
+    color:var(--ink);
+    font-family:"Space Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+    display:flex;
+    justify-content:center;
+    padding:clamp(1.2rem,5vw,3.5rem) 1rem 4rem;
+  }
+
+  .top-links{
+    position:fixed;top:0;left:0;right:0;z-index:20;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:.9rem 1rem;
+    padding-top:calc(.9rem + env(safe-area-inset-top,0px));
+    font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .top-links a, .top-links button{
+    font-family:inherit;font-size:inherit;letter-spacing:inherit;text-transform:inherit;
+    color:#c9c3b6;text-decoration:none;background:none;border:1px solid #3a3a3a;
+    padding:.4rem .7rem;border-radius:999px;cursor:pointer;
+    transition:color .2s,border-color .2s;
+  }
+  .top-links a:hover, .top-links button:hover{color:#fff;border-color:#666}
+  .top-controls{display:flex;gap:.4rem}
+
+  .wrap{
+    width:100%;
+    max-width:26rem;
+    margin-top:clamp(2.4rem,6vw,3.2rem);
+  }
+
+  /* torn paper edges */
+  .tear{
+    height:14px;
+    background:
+      linear-gradient(135deg, var(--paper) 8px, transparent 0) 0 -4px,
+      linear-gradient(-135deg, var(--paper) 8px, transparent 0) 0 -4px;
+    background-size:16px 16px;
+    background-repeat:repeat-x;
+    filter:drop-shadow(0 2px 1px rgba(0,0,0,.25));
+  }
+  .tear.bottom{transform:scaleY(-1)}
+
+  .receipt{
+    background:var(--paper);
+    box-shadow:0 30px 60px -25px rgba(0,0,0,.6), 0 2px 0 var(--paper-shadow) inset;
+    padding:1.9rem 1.6rem 1.6rem;
+    font-size:calc(.92rem * var(--scale));
+    line-height:1.55;
+  }
+
+  /* faint printer streaks for texture */
+  .receipt{
+    background-image:
+      repeating-linear-gradient(0deg, rgba(34,28,21,.025) 0px, rgba(34,28,21,.025) 1px, transparent 1px, transparent 3px);
+  }
+
+  .brand{
+    text-align:center;
+    margin-bottom:1.1rem;
+  }
+  .brand .wordmark{
+    font-family:"Young Serif",Georgia,serif;
+    font-size:1.7rem;
+    letter-spacing:.02em;
+    line-height:1.1;
+  }
+  .brand .wordmark .amp{color:var(--accent)}
+  .brand .tagline{
+    margin-top:.25rem;
+    font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim);
+  }
+  .brand .dateline{
+    margin-top:.9rem;
+    font-weight:700;
+    font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+    border-top:1px dashed var(--rule);
+    border-bottom:1px dashed var(--rule);
+    padding:.5rem 0;
+  }
+
+  .dots{
+    text-align:center;
+    color:var(--ink-faint);
+    font-size:.7rem;
+    letter-spacing:.4em;
+    margin:1rem 0 1.2rem;
+    user-select:none;
+  }
+
+  .slot{margin:0 0 1.5rem}
+  .slot-label{
+    display:flex;align-items:baseline;gap:.5rem;
+    font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink);
+    margin-bottom:.7rem;
+  }
+  .slot-label .no{color:var(--accent)}
+
+  .hist-item{margin:0 0 .8rem}
+  .hist-item:last-child{margin-bottom:0}
+  .hist-item .yr{
+    display:inline-block;font-weight:700;color:var(--accent);
+    margin-right:.35em;
+  }
+  .hist-item p{margin:.25rem 0 0}
+
+  .story-title{
+    font-family:"Young Serif",Georgia,serif;
+    font-size:1.12rem;font-weight:400;
+    margin:0 0 .5rem;
+    color:var(--ink);
+  }
+  .slot p{margin:0 0 .7rem;color:var(--ink)}
+  .slot p.excerpt{font-style:italic;color:var(--ink-dim)}
+  .slot p.dek{font-size:.82rem;color:var(--ink-dim);margin-bottom:.8rem}
+
+  .more{
+    display:inline-block;
+    font-weight:700;font-size:.76rem;letter-spacing:.03em;
+    color:var(--accent);text-decoration:none;
+    border-bottom:1px solid currentColor;
+    padding-bottom:1px;
+  }
+  .more:hover{opacity:.75}
+
+  .tally{
+    border-top:1px dashed var(--rule);
+    padding-top:.9rem;
+    font-size:.76rem;
+  }
+  .tally .row{
+    display:flex;justify-content:space-between;gap:1rem;
+    padding:.18rem 0;color:var(--ink-dim);
+  }
+  .tally .row.grand{
+    margin-top:.4rem;
+    padding-top:.55rem;
+    border-top:1px dashed var(--rule);
+    font-weight:700;color:var(--ink);
+    font-size:.82rem;letter-spacing:.04em;
+  }
+
+  .barcode{
+    margin:1.5rem 0 1rem;
+    height:36px;
+    background-image:repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 3px, var(--ink) 3px 5px, transparent 5px 8px, var(--ink) 8px 9px, transparent 9px 12px);
+    opacity:.85;
+  }
+
+  .foot{
+    text-align:center;
+    font-size:.68rem;letter-spacing:.06em;
+    color:var(--ink-dim);
+  }
+  .foot .goodnight{
+    font-family:"Young Serif",Georgia,serif;
+    font-size:1.15rem;color:var(--ink);
+    margin:0 0 .35rem;
+    letter-spacing:0;text-transform:none;
+  }
+  .foot a{color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor}
+
+  @media (max-width:420px){
+    .wrap{max-width:100%}
+  }
+</style>
+</head>
+<body>
+
+<div class="top-links">
+  <a href="/">&larr; Saints &amp; Dragons</a>
+  <div class="top-controls">
+    <button id="smaller" aria-label="Smaller text" title="Smaller text">A-</button>
+    <button id="bigger" aria-label="Bigger text" title="Bigger text">A+</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tear"></div>
+  <div class="receipt">
+
+    <div class="brand">
+      <div class="wordmark">SAINTS <span class="amp">&amp;</span> DRAGONS</div>
+      <div class="tagline">History for dads &middot; Tales for bedtime</div>
+      <div class="dateline">Monday &middot; September 21, 2026</div>
+    </div>
+
+    <div class="dots">· · · · · · · · · ·</div>
+
+    <section class="slot">
+      <div class="slot-label"><span class="no">01</span> Today in History</div>
+      <div class="hist-item">
+        <p><span class="yr">19 BCE</span>The Roman poet Virgil died at Brundisium coming home from Greece with a fever &mdash; leaving the <em>Aeneid</em> unfinished, and asking, on his deathbed, that it be burned.</p>
+      </div>
+      <div class="hist-item">
+        <p><span class="yr">1937</span>English writer J.R.R. Tolkien&rsquo;s <em>The Hobbit</em> &mdash; the book that first opened the door to Middle-earth &mdash; was published.</p>
+      </div>
+      <a class="more" href="/#today/09-21">Go deeper on today &rarr;</a>
+    </section>
+
+    <div class="dots">· · · · · · · · · ·</div>
+
+    <section class="slot">
+      <div class="slot-label"><span class="no">02</span> History for You</div>
+      <h2 class="story-title">The Battle of Hastings, 1066</h2>
+      <p>On 14 October, William of Normandy beat King Harold Godwinson in a single day&rsquo;s fighting near a small Sussex town, ending nearly six centuries of Anglo-Saxon rule. Harold had just force-marched his army the length of England after crushing a Viking invasion up north &mdash; then turned around and met William&rsquo;s fleet with no rest at all.</p>
+      <p>Still with us: nearly every English word for meat at the table &mdash; beef, pork, mutton &mdash; comes from Norman French, while the animals in the field kept their old Anglo-Saxon names &mdash; cow, pig, sheep. A class line drawn that afternoon, still sitting in the language a thousand years later.</p>
+      <a class="more" href="https://en.wikipedia.org/wiki/Battle_of_Hastings" target="_blank" rel="noopener">Read the full article &rarr;</a>
+    </section>
+
+    <div class="dots">· · · · · · · · · ·</div>
+
+    <section class="slot">
+      <div class="slot-label"><span class="no">03</span> Tonight&rsquo;s Tale</div>
+      <h2 class="story-title">The Lion &amp; the Mouse</h2>
+      <p class="dek">About 2 minutes &middot; Ages 4&ndash;6</p>
+      <p class="excerpt">&ldquo;A Lion lay asleep in the forest, his great head resting on his paws. A timid little Mouse came upon him unexpectedly, and in her fright and haste to get away, ran across the Lion&rsquo;s nose&hellip;&rdquo;</p>
+      <a class="more" href="/stories/the-lion-and-the-mouse.html">Read the rest &rarr;</a>
+    </section>
+
+    <div class="tally">
+      <div class="row"><span>Today in history</span><span>1 min</span></div>
+      <div class="row"><span>History for you</span><span>4 min</span></div>
+      <div class="row"><span>Tonight&rsquo;s tale</span><span>2 min</span></div>
+      <div class="row grand"><span>TOTAL TONIGHT</span><span>~7 MIN</span></div>
+    </div>
+
+    <div class="barcode" aria-hidden="true"></div>
+
+    <div class="foot">
+      <p class="goodnight">Goodnight.</p>
+      <p>One true story. One tale.<br><a href="/">saintsdragons</a></p>
+    </div>
+
+  </div>
+  <div class="tear bottom"></div>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var scale=1;
+  try{
+    var saved=parseFloat(localStorage.getItem('receipt-scale'));
+    if(saved>=0.8&&saved<=1.4){scale=saved;root.style.setProperty('--scale',scale);}
+  }catch(e){}
+  function setScale(v){
+    scale=Math.min(1.4,Math.max(0.8,Math.round(v*100)/100));
+    root.style.setProperty('--scale',scale);
+    try{localStorage.setItem('receipt-scale',String(scale));}catch(e){}
+  }
+  document.getElementById('bigger').addEventListener('click',function(){setScale(scale+0.1);});
+  document.getElementById('smaller').addEventListener('click',function(){setScale(scale-0.1);});
+})();
+</script>
+</body>
+</html>
