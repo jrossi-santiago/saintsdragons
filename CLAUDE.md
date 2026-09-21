@@ -26,10 +26,17 @@ git checkout main
 git reset --hard origin/main
 git merge --no-ff claude/<branch-name> -m "Merge branch 'claude/<branch-name>': <summary>"
 
-# 5. push main, then get off main immediately (see the trap below)
+# 5. push main, then get off main immediately (see the trap below) and
+#    fast-forward the branch ref so it is not left behind its remote
 git push origin main
 git checkout -B claude/<branch-name> origin/main
+git push origin claude/<branch-name>
 ```
+
+Step 5 ends with the branch, `main`, and both remotes all on the same
+commit, so nothing is left unpushed. Skipping the last push leaves the
+branch ref pointing at a merge commit its remote has not seen, which reads
+as an unpushed commit even though the work is safely on `main`.
 
 `--no-ff` is the point: each task becomes one merge bubble on `main`'s first
 parent, so `git log --first-parent` reads as a list of shipped changes, and
@@ -66,7 +73,9 @@ git checkout main && git reset --hard origin/main
 
 Don't stack new commits on merged history. Re-point the branch at the
 current `main` and start fresh from there — that is what step 5 does, and
-it is what produces the flat `|/` shape in this repo's graph.
+it is what produces the flat `|/` shape in this repo's graph. Because
+re-pointing moves the branch forward to a commit its remote does not have,
+push the branch straight after, as step 5 does.
 
 ## Before you merge
 
