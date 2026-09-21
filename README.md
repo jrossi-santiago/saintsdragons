@@ -33,7 +33,9 @@ Static site: plain HTML, CSS, and vanilla JavaScript. No build step, no dependen
   - `index.html` — self-contained: same sidebar shell, email gate, download panel, with its CSS and JS inlined. Inlined on purpose — the page is reachable both as `/7stories` and `/7stories/`, and at the bare path a relative `<script src="stories.js">` would resolve against the site root and 404, leaving a blank page. Its nav links to the app use the absolute `/account#...` form for the same reason.
   - `7-bedtime-stories.pdf` — placeholder PDF. Overwrite this file with the real one; no code change needed.
 
-See `LESSONS-LEARNED.md` before changing how pages or assets are linked.
+See `CLAUDE.md` for how changes get to `main` and what to check before
+merging, and `LESSONS-LEARNED.md` before changing how pages or assets are
+linked.
 
 ## Running locally
 
@@ -68,7 +70,7 @@ so nothing here depends on a relative path to its own assets.
 
 | Route | Page |
 | --- | --- |
-| `#home` | **Tonight's receipt** — the actual product: today in history, a brief for you, and a tale, pulled live from `CARDS`/`BRIEFS`/`TALES`/`TODAY` and printed in the receipt format. Below it, "Earlier nights" (the archive strip) and quick links out to the three shelves. `#tonight` is kept as a redirect for old links, but is not a real page. |
+| `#home` | **Tonight's receipt** — the actual product: today in history, a brief for you, and a tale, pulled live from `CARDS`/`BRIEFS`/`TALES`/`TODAY` and printed in the receipt format. Below it, "Earlier nights": the five previous cards as miniature torn-off receipts, cut off with a fade, scrolling horizontally, with a link to the full archive. `#tonight` is kept as a redirect for old links, but is not a real page. |
 | `#history` | History for dads — the brief shelf, filtered by era and kind |
 | `#today` | Today in history — opens on today's date. `#today/MM-DD` opens a specific one |
 | `#bedtime` | Bedtime stories — the tale shelf, filtered by age and theme |
