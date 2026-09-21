@@ -170,9 +170,9 @@ function renderHome(query = "") {
 
   const askedKey = todayKey();
   const shownKey = TODAY[askedKey] ? askedKey : nearestKey(askedKey);
-  const today = shownKey ? TODAY[shownKey] : null;
+  const todayList = shownKey ? TODAY[shownKey] : null;
 
-  const totalMin = 1 + (brief ? Number(brief.minutes) || 0 : 0) + (Number(tale.minutes) || 0);
+  const totalMin = (todayList && todayList.length ? 1 : 0) + (brief ? Number(brief.minutes) || 0 : 0) + (Number(tale.minutes) || 0);
 
   main.innerHTML = `
     <div class="content">
@@ -193,10 +193,11 @@ function renderHome(query = "") {
 
           <section class="rcpt-slot">
             <div class="rcpt-slot-label"><span class="no">01</span> Today in History</div>
-            ${today ? `
+            ${todayList && todayList.length ? `
+            ${todayList.map(e => `
             <div class="rcpt-hist-item">
-              <p><span class="yr">${esc(today.year)}</span>${esc(today.text)}</p>
-            </div>
+              <p><span class="yr">${esc(e.year)}</span>${esc(e.text)}</p>
+            </div>`).join("")}
             <a class="rcpt-more" href="#today/${shownKey}">Go deeper on today &rarr;</a>` :
             `<p>Still being written for this date.</p>
             <a class="rcpt-more" href="#today">Browse today in history &rarr;</a>`}
@@ -224,7 +225,7 @@ function renderHome(query = "") {
           </section>
 
           <div class="rcpt-tally">
-            ${today ? `<div class="row"><span>Today in history</span><span>1 min</span></div>` : ""}
+            ${todayList && todayList.length ? `<div class="row"><span>Today in history</span><span>1 min</span></div>` : ""}
             ${brief ? `<div class="row"><span>History for you</span><span>${brief.minutes} min</span></div>` : ""}
             <div class="row"><span>Tonight&rsquo;s tale</span><span>${esc(tale.minutes)} min</span></div>
             <div class="row grand"><span>Total tonight</span><span>~${totalMin} min</span></div>
@@ -341,7 +342,7 @@ function renderToday(md) {
   const asked = md || todayKey();
   const entry = TODAY[asked];
   const shown = entry ? asked : nearestKey(asked);
-  const e = TODAY[shown];
+  const list = shown ? TODAY[shown] : null;
   const prev = shiftKey(asked, -1);
   const next = shiftKey(asked, 1);
   const marked = Object.keys(TODAY).sort();
@@ -357,7 +358,7 @@ function renderToday(md) {
 
       ${entry ? "" : `<p class="empty-note">This date is still being written. Here's the closest one we have: ${esc(dayLabel(shown))}.</p>`}
 
-      ${e ? `
+      ${list && list.length ? list.map(e => `
       <article class="entry">
         <p class="entry-year">${esc(e.year)}</p>
         <p class="entry-text">${esc(e.text)}</p>
@@ -365,7 +366,7 @@ function renderToday(md) {
           ${e.brief ? `<a href="#brief/${e.brief}">Go deeper: read the full brief</a>` : ""}
           ${e.tale ? `<a href="#tale/${e.tale}">Read the tale that goes with it</a>` : ""}
         </p>` : ""}
-      </article>` : `<p class="empty">Nothing here yet.</p>`}
+      </article>`).join("") : `<p class="empty">Nothing here yet.</p>`}
 
       <nav class="date-nav">
         <a href="#today/${prev}">Yesterday</a>

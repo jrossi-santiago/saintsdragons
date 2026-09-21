@@ -613,58 +613,66 @@ const CARDS = [
 /* -------------------------------------------------------- today in history */
 /* Keyed "MM-DD". 100 to 150 words each. */
 
+/* Keyed "MM-DD", each a list of one or more entries — most dates have one,
+   a few (like Sept 21) have more than one true thing worth noting. */
 const TODAY = {
-  "09-12": {
+  "09-12": [{
     year: "1683",
     text: "The largest cavalry charge in history came down the Vienna Woods in the late afternoon. Vienna had been under siege for two months, and the siege was not being fought at the walls but underneath them, with tunnels packed with gunpowder creeping closer every day. The relief army dragged its guns over forested ridges nobody thought an army could cross. John III Sobieski of Poland put twenty thousand horsemen on the high ground and waited until the infantry had ground its way down the vineyards. Three thousand of them were winged hussars, carrying lances nineteen feet long and wearing frames of eagle feathers on their backs. The Ottoman line did not break so much as come apart. Within three hours Sobieski was standing in the Grand Vizier's tent.",
     brief: "vienna",
     tale: "riders-with-wings"
-  },
-  "09-20": {
+  }],
+  "09-20": [{
     year: "1519",
     text: "Five ships left Sanlúcar de Barrameda in Spain with about 270 men, intending to reach the Spice Islands by sailing west. Ferdinand Magellan was Portuguese, working for the Spanish crown, which made him distrusted by both. The voyage went about as well as that suggests. One ship wrecked, one deserted and sailed home, and Magellan himself was killed in the Philippines in 1521. Three years and one month later, a single ship called the Victoria came back into the same river with eighteen men aboard, so thin the harbour crew did not recognise them. They had gone all the way round. They were also, they discovered on landing, one day out on their calendar, which is how Europe learned the world owes you a day if you chase the sun far enough."
-  },
-  "09-21": {
-    year: "19 BC",
-    text: "Virgil died at Brundisium, coming home from Greece with a fever. He had spent eleven years on the Aeneid and considered it unfinished. About sixty lines in it are still incomplete, breaking off mid-sentence, and you can find them in any edition today. His instruction, given on his deathbed, was that the manuscript should be burned. His friends refused, and the emperor Augustus personally overruled him and ordered it published. So the most influential poem in Latin exists because two people ignored a dying man's last request. Dante made him the guide through hell and purgatory thirteen centuries later, and for most of the Middle Ages people opened him at random to tell fortunes, which he would have hated.",
-    tale: null
-  },
-  "09-22": {
+  }],
+  "09-21": [
+    {
+      year: "19 BC",
+      text: "Virgil died at Brundisium, coming home from Greece with a fever. He had spent eleven years on the Aeneid and considered it unfinished. About sixty lines in it are still incomplete, breaking off mid-sentence, and you can find them in any edition today. His instruction, given on his deathbed, was that the manuscript should be burned. His friends refused, and the emperor Augustus personally overruled him and ordered it published. So the most influential poem in Latin exists because two people ignored a dying man's last request. Dante made him the guide through hell and purgatory thirteen centuries later, and for most of the Middle Ages people opened him at random to tell fortunes, which he would have hated.",
+      tale: null
+    },
+    {
+      year: "1937",
+      text: "J.R.R. Tolkien's The Hobbit was published in London, in an edition of about 1,500 copies, with a jacket illustration and a map drawn by Tolkien himself. He had been writing it for years to read to his own children and never intended it for anyone else, until a publisher's ten-year-old son was handed the manuscript to review and came back with a one-page report that ended: children of any age from six to twelve will want to hear it read to them again and again. It sold out by Christmas. The sequel he then spent seventeen years on became The Lord of the Rings."
+    }
+  ],
+  "09-22": [{
     year: "1776",
     text: "Nathan Hale was hanged in Manhattan as a spy. He was twenty-one, a schoolteacher from Connecticut, and he had volunteered for a job every other officer had declined because he was the only one who did not consider it beneath him. He was extremely bad at it. He went behind British lines in civilian clothes with no training, no contacts, no cover story worth the name, and his own Yale diploma in his pocket. He was caught within a week. The famous line about regretting that he had but one life to lose was reported by a British officer who was there, and is probably a paraphrase of a play by Joseph Addison that every educated man of that generation had read. He said something like it, standing on the ladder, and then they hanged him."
-  },
-  "10-07": {
+  }],
+  "10-07": [{
     year: "1571",
     text: "Two fleets of oared galleys met in the Gulf of Patras and fought for four hours at close quarters, ships grappled together so that men crossed from deck to deck as if the sea had been paved. Around 140,000 men were there, and most of them had not chosen to be: the engines of these ships were rowers, three or four to an oar, usually chained at the ankle. Before the fighting, Don John of Austria had the chains struck off his own rowers and promised them their freedom. When it ended, some twelve thousand Christian galley slaves came off the benches alive and free. A wounded Spanish soldier named Cervantes lost the use of his left hand there and spent the rest of his life proud of it.",
     brief: "lepanto",
     tale: "boy-who-counted-oars"
-  },
-  "10-10": {
+  }],
+  "10-10": [{
     year: "732",
     text: "Charles, mayor of the palace of the Franks, spent seven days on a wooded hill near Poitiers refusing to come down, and won the battle largely because of it. His opponents were cavalry, and cavalry needs an enemy line that breaks. Charles had built something nobody else in the West had, a standing army of professional infantry, paid for by confiscating church land, which made him permanently unpopular with the men who wrote the histories. He formed them into a square on high ground among the trees and made them stand. A chronicler wrote that they stood like a wall, like a belt of ice frozen together. The cavalry came up the hill eight days running and could not break it. Charles was called Martel afterwards: the Hammer.",
     brief: "tours",
     tale: "wall-that-would-not-move"
-  },
-  "05-12": {
+  }],
+  "05-12": [{
     year: "878",
     text: "Alfred of Wessex came out of the Somerset marshes. In January he had lost his kingdom to a surprise attack during the twelve days of Christmas and escaped into a flooded swamp with a handful of men. He spent three months on an island at Athelney, raiding for food, while the rest of England assumed he was dead. In May he sent word through the shire levies to meet him at Egbert's Stone, and men came from Somerset, Wiltshire and Hampshire and, one chronicler says, rejoiced to see him. Two days later he broke the Danish army at Edington. Then he did the strange thing that made him Great: he stood godfather at his enemy's baptism, gave him gifts, and sent him home to rule under a treaty.",
     brief: "athelney",
     tale: "king-who-burnt-the-bread"
-  },
-  "08-07": {
+  }],
+  "08-07": [{
     year: "1420",
     text: "Work began on the dome of Florence cathedral, fifty-three years after the city approved a design nobody knew how to build. The church had stood with an octagonal hole in its roof, a hundred and forty feet up and open to the weather, for so long that people had stopped noticing. Every known method needed a wooden skeleton to hold the masonry until it set, and there was not enough timber in Tuscany. Filippo Brunelleschi said he could do it without one and refused to explain how, on the grounds that he would be thanked and then dismissed. He was right about that. It took sixteen years and four million bricks, laid in a herringbone pattern that locked each course so the dome held itself up as it rose.",
     brief: "dome",
     tale: "egg-and-the-dome"
-  },
-  "07-04": {
+  }],
+  "07-04": [{
     year: "458 BC",
     text: "The traditional date for the Senate delegation that crossed the Tiber to a four-acre farm and found a former consul at the plough. A Roman army was trapped in a valley. The Republic had a trapdoor for emergencies: one man, total authority, expiring automatically after six months. Cincinnatus asked whether everything was all right, sent his wife for his toga so he could hear the news decently dressed, and took the job. He called up every man of military age, ordered each to bring five days of food and twelve stakes, marched through the night, and had his men dig a ring around the enemy while they slept. They surrendered by the next afternoon. He resigned on the sixteenth day, with five months of absolute power unused, and went home.",
     brief: "cincinnatus",
     tale: "farmer-who-was-king-for-sixteen-days"
-  },
-  "12-25": {
+  }],
+  "12-25": [{
     year: "800",
     text: "Charlemagne was crowned emperor in Rome, which he claimed afterwards had been a complete surprise and that he would not have gone into the church that day if he had known. Nobody has ever quite believed him. His biographer Einhard, who knew him well, reports the line with a straight face and lets the reader decide. He was the grandson of Charles Martel, the man who had stood on the hill at Poitiers, and the family had gone in three generations from palace officials running the government on behalf of do-nothing kings to emperors in their own right. He was about fifty-eight, he could read but reportedly never mastered writing, and he kept wax tablets under his pillow to practise letters when he could not sleep."
-  }
+  }]
 };
