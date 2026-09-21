@@ -9,11 +9,11 @@
   --text-faint: #7d7973;
   --line: #262625;
   --line-soft: #1f1f1e;
-  --accent: #e9e5dd;
+  --accent: #e5825a;
   --chip: #1c1c1b;
   --radius: 12px;
   --sidebar-w: 330px;
-  --serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --serif: "Young Serif", Georgia, "Times New Roman", serif;
   --sans: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
@@ -28,6 +28,7 @@
   --line: #e2ded6;
   --line-soft: #ebe7e0;
   --chip: #eeebe5;
+  --accent: #a8451f;
 }
 
 * { box-sizing: border-box; }
@@ -102,7 +103,15 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: -0.01em;
   line-height: 1.15;
 }
-.identity-text p { margin: 4px 0 0; font-size: .875rem; color: var(--text-dim); }
+.identity-text h1 .amp { color: var(--accent); font-weight: 500; }
+.identity-text p {
+  margin: 6px 0 0;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
 
 .sidebar-block { padding: 22px 22px 24px; border-bottom: 1px solid var(--line); }
 
@@ -175,7 +184,7 @@ a { color: inherit; text-decoration: none; }
 .nav-item:hover { background: var(--chip); color: var(--text); }
 .nav-item.is-active {
   background: var(--chip);
-  color: var(--text);
+  color: var(--accent);
   border-color: var(--line);
   font-weight: 500;
 }
@@ -401,7 +410,7 @@ a { color: inherit; text-decoration: none; }
 .shelf-link strong { font-family: var(--serif); font-size: 1.1rem; font-weight: 600; color: var(--text); }
 .shelf-link span { color: var(--text-dim); font-size: .93rem; }
 .shelf-link .ic { margin-left: auto; color: var(--text-faint); flex: none; }
-.shelf-link:hover .ic { color: var(--text); }
+.shelf-link:hover .ic { color: var(--accent); }
 
 /* filters */
 .filter-row { margin-bottom: 22px; }
