@@ -257,10 +257,7 @@ function renderHome(query = "") {
             <div class="row grand"><span>Total tonight</span><span>~${totalMin} min</span></div>
           </div>
 
-          <div class="rcpt-barcode" aria-hidden="true"></div>
-
           <div class="rcpt-foot">
-            <p class="rcpt-goodnight">Goodnight.</p>
             <p>One true story. One tale.<br><a href="/">saintsdragons</a></p>
           </div>
         </div>
