@@ -139,6 +139,27 @@ const BRIEFS = {
       "Whether the details are true is a fair question. Livy wrote four hundred years later, at the exact moment the Republic was being replaced by an emperor, and the story is very neat. The Romans were telling it hardest when they were losing the thing it described.",
       "In 1783 George Washington won a war, resigned his commission and went home to farm. The officers who had served under him formed a society and named it after Cincinnatus. Some of them later founded a city in Ohio and gave it the same name. George III is supposed to have said that if Washington gave up power he would be the greatest man in the world."
     ]
+  },
+
+  "hastings": {
+    title: "The Battle of Hastings, 1066",
+    era: "Knights and lords",
+    kind: "A battle",
+    minutes: 4,
+    hook: "A Norman duke crossed the Channel, killed a king in an afternoon, and changed the language everyone in this sentence is speaking.",
+    stillWithUs: "Nearly every English word for meat at the table — beef, pork, mutton — comes from the French the Normans brought. The animals in the field kept their old English names: cow, pig, sheep.",
+    tale: "lion-and-the-mouse",
+    body: [
+      "In January 1066, Edward the Confessor died without a son, and three men decided the throne of England belonged to them.",
+      "Harold Godwinson, the most powerful noble in the country, was crowned the next day, before the funeral guests had gone home. Harald Hardrada, King of Norway, thought the crown was his by an old treaty and brought a fleet. William, Duke of Normandy, said Edward had promised it to him years before, and that Harold had sworn to honour that promise on a chest of holy relics.",
+      "Harold beat the Norwegians first. Hardrada landed in the north in September, and Harold marched his army the length of England in four days to meet him at Stamford Bridge. It worked. Hardrada was killed, his army all but wiped out, and England's northern threat was gone in an afternoon.",
+      "Then a rider reached Harold with the second piece of news: William had landed in the south three days later, while the king was three hundred miles away celebrating the first invasion.",
+      "Harold marched south immediately, giving his exhausted army no real rest, and met William's force near Hastings on 14 October. His men had been marching or fighting for three weeks straight.",
+      "The English formed a shield wall on a ridge and held it for most of the day. Norman cavalry charged uphill again and again and could not break the line. Twice the Norman force pulled back, and twice English soldiers broke ranks to chase them downhill, into open ground where cavalry could finally reach them.",
+      "Late in the afternoon, Harold was killed near the top of the ridge. The Bayeux Tapestry shows a man taking an arrow near the eye at roughly that point in the battle, and for nine hundred years people have argued over whether that is really how he died.",
+      "By nightfall the shield wall had broken. William marched on London and was crowned king that Christmas Day in Westminster Abbey.",
+      "He replaced almost the entire English aristocracy with his own men within a few years and brought a new language into the halls of power. English survived, but it came out the other side full of French, and the line between the people who spoke it and the people who ruled them is still sitting in the vocabulary a thousand years later."
+    ]
   }
 };
 
@@ -501,6 +522,31 @@ const TALES = {
       "She ducked.",
       "Goodnight."
     ]
+  },
+
+  "lion-and-the-mouse": {
+    title: "The Lion and the Mouse",
+    age: 1,
+    minutes: "5",
+    theme: "Mercy",
+    origin: "Retold",
+    brief: "hastings",
+    body: [
+      "A lion was asleep in the long grass, with his head down on his paws.",
+      "A little mouse came along, not looking where she was going, and ran right over his nose.",
+      "The lion woke up fast. He put one huge paw on the mouse before she could take a single step.",
+      "\"Please,\" said the mouse. \"I didn't mean it. If you let me go, I promise I will help you one day.\"",
+      "The lion almost laughed. A mouse, helping a lion? But he was not a cruel lion, and he lifted his paw and let her run home.",
+      "Some days later, the lion was walking through that same grass when a hunter's net dropped over him from above.",
+      "He pulled. He twisted. He roared until the birds scattered, but the ropes only pulled tighter.",
+      "The mouse heard him from far off, and she knew that roar.",
+      "She ran all the way back, found the thickest rope, and began to gnaw.",
+      "She chewed through one strand, then another, then another, until the net fell open and the lion stepped out of it.",
+      "\"You laughed at me once,\" said the mouse.",
+      "\"I did,\" said the lion. \"I did not think you could help me. I was wrong.\"",
+      "\"Even a small friend,\" said the mouse, \"is worth having.\"",
+      "And after that, the lion never again decided who was worth his kindness by their size."
+    ]
   }
 };
 
@@ -555,12 +601,12 @@ const CARDS = [
   },
   {
     date: "2026-09-21",
-    title: "The Battle of Lepanto, 1571",
-    brief: "lepanto",
-    tale: "boy-who-counted-oars",
-    question: "The rowers could have stopped and nobody would have known. What do you do well when nobody is watching?",
-    whyOurs: "A man went down among the chained and knelt in the filth to strike the irons off, and we have been trying to copy him ever since.",
-    prayer: "For everyone still on a bench tonight, and for the hands that will come with the hammer."
+    title: "The Battle of Hastings, 1066",
+    brief: "hastings",
+    tale: "lion-and-the-mouse",
+    question: "The mouse promised to help a lion, and the lion almost laughed at her. Has anyone ever been surprised that you could help them?",
+    whyOurs: "Harold marched the length of England twice in three weeks and still stood in the shield wall himself. We don't get to sit out the fight because we're tired — we show up anyway, and that is most of what courage actually is.",
+    prayer: "For steady hands when the ground gives way beneath us, and for the small kindnesses that come back around exactly when we need them."
   }
 ];
 
