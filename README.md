@@ -11,9 +11,7 @@ Static site: plain HTML, CSS, and vanilla JavaScript. No build step, no dependen
 - `app.js` — post data, page content, hash routing, search filtering, theme persistence, mobile sidebar.
 - `assets/` — post images (free photos from Unsplash).
 - `7stories/` — the email-gated campaign page served at `/7stories`:
-  - `index.html` — same sidebar shell; email gate on the right, download panel after submit.
-  - `stories.css` — gate, multi-select, download panel, print rules.
-  - `stories.js` — form validation, the Formspree POST, and the reveal.
+  - `index.html` — self-contained: same sidebar shell, email gate, download panel, with its CSS and JS inlined. Inlined on purpose — the page is reachable both as `/7stories` and `/7stories/`, and at the bare path a relative `<script src="stories.js">` would resolve against the site root and 404, leaving a blank page.
   - `7-bedtime-stories.pdf` — placeholder PDF. Overwrite this file with the real one; no code change needed.
 
 ## Running locally

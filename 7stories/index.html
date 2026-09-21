@@ -9,7 +9,114 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="../styles.css" />
-<link rel="stylesheet" href="stories.css" />
+<style>
+/* Saints & Dragons — /7stories: email gate + PDF download */
+
+/* wider shell so the gate can run two columns */
+.content { max-width: 1000px; }
+.delivery { max-width: 860px; }
+
+/* ---------- gate ---------- */
+.gate-grid {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1020px) {
+  .gate-grid { grid-template-columns: 1fr 390px; align-items: start; gap: 44px; }
+}
+
+.lede { font-size: 1.08rem; color: var(--text-dim); margin: 0 0 22px; }
+
+.tick-list { list-style: none; margin: 0; padding: 0; }
+.tick-list li {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 12px;
+  font-size: .97rem; color: var(--text-dim);
+}
+.tick-list .ic { margin-top: 3px; color: var(--text); stroke-width: 2; }
+
+.gate-form { padding: 24px; position: sticky; top: 24px; }
+.gate-form h3 { margin: 0 0 6px; font-family: var(--serif); font-size: 1.3rem; font-weight: 600; }
+.form-note { margin: 0 0 20px; font-size: .9rem; color: var(--text-dim); }
+.field span em { color: var(--text-faint); font-style: normal; }
+
+.err { display: none; margin-top: 6px; font-size: .82rem; color: #e4756b; }
+.field.is-invalid .err { display: block; }
+.field.is-invalid input,
+.field.is-invalid .multi-trigger { border-color: #e4756b; }
+
+.btn-wide { width: 100%; justify-content: center; margin-top: 4px; }
+.btn-quiet {
+  background: transparent; color: var(--text);
+  border-color: var(--line); font-weight: 500;
+}
+.btn-quiet:hover { border-color: var(--text-faint); background: var(--chip); }
+
+.fineprint { margin: 14px 0 0; font-size: .8rem; color: var(--text-faint); text-align: center; }
+
+/* ---------- multi-select ---------- */
+.multi { position: relative; }
+.multi-trigger {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: transparent; color: var(--text);
+  font: inherit; font-size: .95rem; text-align: left;
+  cursor: pointer; transition: border-color .18s;
+}
+.multi-trigger:hover, .multi.is-open .multi-trigger { border-color: var(--text-faint); }
+.multi-trigger .ic { color: var(--text-faint); transition: transform .18s; }
+.multi.is-open .multi-trigger .ic { transform: rotate(180deg); }
+.multi-trigger.is-placeholder { color: var(--text-faint); }
+
+.multi-menu {
+  position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 6px);
+  padding: 6px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--sidebar);
+  box-shadow: 0 14px 34px rgba(0,0,0,.35);
+}
+.multi-opt {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 8px;
+  font-size: .95rem; color: var(--text-dim); cursor: pointer;
+}
+.multi-opt:hover { background: var(--chip); color: var(--text); }
+.multi-opt input { accent-color: var(--text); width: 16px; height: 16px; }
+
+/* ---------- download panel ---------- */
+.download {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+  padding: 26px;
+}
+.download-text h3 { margin: 0 0 6px; font-family: var(--serif); font-size: 1.25rem; font-weight: 600; }
+.download-text p { margin: 0; font-size: .93rem; color: var(--text-dim); }
+.download-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.download-actions .btn { text-decoration: none; }
+.download-actions .ic { stroke-width: 2; }
+
+.fineprint-left { text-align: left; margin-top: 16px; }
+
+@media (max-width: 900px) {
+  .gate-form { position: static; }
+  .download { flex-direction: column; align-items: flex-start; }
+  .download-actions .btn { justify-content: center; }
+}
+
+/* ---------- print ---------- */
+@media print {
+  .sidebar, .scrim, .mobile-toggle, .download-actions, .gate { display: none !important; }
+  html, body { background: #fff !important; color: #111 !important; }
+  .layout { display: block; }
+  .main { display: block; padding: 0; }
+  .content { max-width: none; }
+  .page-head { border-bottom: 1px solid #ccc; margin-bottom: 24px; }
+  .page-head p, .download-text p { color: #333 !important; }
+}
+</style>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐉</text></svg>" />
 </head>
 <body>
@@ -92,7 +199,7 @@
     <div class="content">
 
       <!-- ============ GATE ============ -->
-      <section class="gate" id="gate" hidden>
+      <section class="gate" id="gate">
         <header class="page-head">
           <h2>7 Bedtime Stories</h2>
           <p>Seven short, original stories written to be read out loud — one for each night of the week.</p>
@@ -161,8 +268,8 @@
             <p>Sample description — 7 stories, 24 pages. Print it, or keep it on your phone for bedtime.</p>
           </div>
           <div class="download-actions">
-            <a class="btn" href="7-bedtime-stories.pdf" download><svg class="ic"><use href="#i-download"/></svg> Download the PDF</a>
-            <a class="btn btn-quiet" href="7-bedtime-stories.pdf" target="_blank" rel="noopener"><svg class="ic"><use href="#i-print"/></svg> Open to read or print</a>
+            <a class="btn" id="pdfDownload" href="7-bedtime-stories.pdf" download><svg class="ic"><use href="#i-download"/></svg> Download the PDF</a>
+            <a class="btn btn-quiet" id="pdfOpen" href="7-bedtime-stories.pdf" target="_blank" rel="noopener"><svg class="ic"><use href="#i-print"/></svg> Open to read or print</a>
           </div>
         </div>
 
@@ -173,6 +280,162 @@
   </main>
 </div>
 
-<script src="stories.js"></script>
+<script>
+/* Saints & Dragons — /7stories: email gate + PDF delivery */
+
+const gate = document.getElementById("gate");
+const delivery = document.getElementById("delivery");
+const form = document.getElementById("gateForm");
+const submitBtn = document.getElementById("submitBtn");
+
+/* Formspree endpoint — collects the signups; it does not email the reader. */
+const FORM_ENDPOINT = form.action;
+
+/* ---------- multi-select (ages) ---------- */
+const multi = document.getElementById("ageSelect");
+const trigger = document.getElementById("ageTrigger");
+const menu = document.getElementById("ageMenu");
+const ageLabel = document.getElementById("ageLabel");
+const ageBoxes = () => Array.from(menu.querySelectorAll("input[name='ages']"));
+const LABELS = { "0-2": "0–2", "3-5": "3–5", "6-9": "6–9", "10+": "10+" };
+
+function selectedAges() {
+  return ageBoxes().filter(b => b.checked).map(b => b.value);
+}
+
+function setMenu(open) {
+  multi.classList.toggle("is-open", open);
+  menu.hidden = !open;
+  trigger.setAttribute("aria-expanded", String(open));
+}
+
+function syncAgeLabel() {
+  const picked = selectedAges();
+  ageLabel.textContent = picked.length
+    ? picked.map(v => LABELS[v]).join(", ") + " years"
+    : "Select all that apply";
+  trigger.classList.toggle("is-placeholder", picked.length === 0);
+}
+
+trigger.addEventListener("click", () => setMenu(menu.hidden));
+menu.addEventListener("change", () => {
+  syncAgeLabel();
+  if (selectedAges().length) clearError("ages");
+});
+document.addEventListener("click", e => { if (!multi.contains(e.target)) setMenu(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
+
+/* ---------- validation ---------- */
+function fieldOf(name) {
+  const err = form.querySelector(`[data-err="${name}"]`);
+  return err ? err.closest(".field") : null;
+}
+function setError(name, message) {
+  const field = fieldOf(name);
+  if (!field) return;
+  field.classList.add("is-invalid");
+  field.querySelector(`[data-err="${name}"]`).textContent = message;
+}
+function clearError(name) {
+  const field = fieldOf(name);
+  if (field) field.classList.remove("is-invalid");
+}
+
+form.addEventListener("input", e => { if (e.target.name) clearError(e.target.name); });
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const firstName = form.firstName.value.trim();
+  const email = form.email.value.trim();
+  const ages = selectedAges();
+  let ok = true;
+
+  if (!firstName) { setError("firstName", "Please enter your first name."); ok = false; }
+  if (!ages.length) { setError("ages", "Please choose at least one age range."); ok = false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    setError("email", email ? "Please enter a valid email address." : "Please enter your email address.");
+    ok = false;
+  }
+
+  if (!ok) {
+    form.querySelector(".field.is-invalid input, .field.is-invalid .multi-trigger")?.focus();
+    return;
+  }
+
+  submitBtn.disabled = true;
+  const label = submitBtn.innerHTML;
+  submitBtn.textContent = "Sending…";
+
+  try {
+    await fetch(FORM_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        firstName,
+        email,
+        childAges: ages.join(", "),
+        source: "/7stories"
+      })
+    });
+  } catch (err) {
+    /* Never hold the download hostage to a failed network call. */
+    console.warn("7stories signup did not reach Formspree", err);
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = label;
+
+  document.getElementById("welcome").textContent =
+    `Thanks, ${firstName} — sample subheading goes here. One story for each night of the week, ready to read or print.`;
+  gate.hidden = true;
+  delivery.hidden = false;
+  window.scrollTo(0, 0);
+});
+
+/* ---------- theme + mobile sidebar (shared behaviour) ---------- */
+const root = document.documentElement;
+const storedTheme = localStorage.getItem("sd-theme");
+if (storedTheme) root.setAttribute("data-theme", storedTheme);
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  root.setAttribute("data-theme", next);
+  localStorage.setItem("sd-theme", next);
+});
+
+const sidebar = document.getElementById("sidebar");
+const scrim = document.getElementById("scrim");
+const mobileToggle = document.getElementById("mobileToggle");
+function closeSidebar() {
+  sidebar.classList.remove("is-open");
+  scrim.classList.remove("is-open");
+  mobileToggle.setAttribute("aria-expanded", "false");
+}
+mobileToggle.addEventListener("click", () => {
+  const open = sidebar.classList.toggle("is-open");
+  scrim.classList.toggle("is-open", open);
+  mobileToggle.setAttribute("aria-expanded", String(open));
+});
+scrim.addEventListener("click", closeSidebar);
+
+/* sidebar search belongs to the blog — send it home */
+const searchInput = document.getElementById("search");
+searchInput.addEventListener("keydown", e => {
+  if (e.key === "Enter" && searchInput.value.trim()) {
+    location.href = "../index.html#home";
+  }
+});
+
+/* ---------- boot ---------- */
+document.getElementById("year").textContent = new Date().getFullYear();
+syncAgeLabel();
+
+/* This page is reachable as /7stories and as /7stories/. In the first case
+   relative URLs resolve against the site root, so point the PDF explicitly. */
+const PDF = "7-bedtime-stories.pdf";
+const pdfHref = location.pathname.endsWith("/") ? PDF : "7stories/" + PDF;
+document.getElementById("pdfDownload").href = pdfHref;
+document.getElementById("pdfOpen").href = pdfHref;
+</script>
 </body>
 </html>
