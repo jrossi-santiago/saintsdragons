@@ -124,10 +124,9 @@
   <defs>
     <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
     <symbol id="i-about" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 19a5.8 5.8 0 0 1 11 0"/></symbol>
-    <symbol id="i-now" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></symbol>
-    <symbol id="i-books" viewBox="0 0 24 24"><path d="M12 6.5S10 4.5 6 4.5H3v14h3c4 0 6 2 6 2s2-2 6-2h3v-14h-3c-4 0-6 2-6 2z"/><path d="M12 6.5v14"/></symbol>
-    <symbol id="i-services" viewBox="0 0 24 24"><rect x="2.5" y="7" width="19" height="13" rx="2"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M2.5 12h19"/></symbol>
-    <symbol id="i-resources" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2.1 2.1M16.9 16.9 19 19M19 5l-2.1 2.1M7.1 16.9 5 19"/></symbol>
+    <symbol id="i-scroll" viewBox="0 0 24 24"><path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6"/><path d="M6 4a2 2 0 0 0-2 2v1.5h3"/><path d="M6 20a2 2 0 0 0 2-2V6"/><path d="M11 9h5M11 13h5"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><circle cx="12" cy="14.5" r="1.4" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-dragon" viewBox="0 0 24 24"><path d="M3 15c2.5-5.5 7-8 11-8 2.2 0 3.7.8 4.6 1.8L21 7l-.7 3.2c.5 1.4.4 3-1 4.3"/><path d="M14 7.2V4l2.4 1.8"/><circle cx="16.4" cy="10.2" r=".9" fill="currentColor" stroke="none"/><path d="M3 15c1 3 4 5 8 5h7"/></symbol>
     <symbol id="i-contact" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
     <symbol id="i-stories" viewBox="0 0 24 24"><path d="M12 21s-1.2-1.6-4-3c-2.4-1.2-5-1-5-1V5s2.6-.2 5 1c2.8 1.4 4 3 4 3s1.2-1.6 4-3c2.4-1.2 5-1 5-1v12s-2.6-.2-5 1c-2.8 1.4-4 3-4 3z"/><path d="M12 9v12"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
@@ -151,13 +150,13 @@
     <header class="identity">
       <div class="avatar" aria-hidden="true"></div>
       <div class="identity-text">
-        <h1>Saints &amp; Dragons</h1>
-        <p>Author &amp; Life Coach</p>
+        <h1>Saints <span class="amp">&amp;</span> Dragons</h1>
+        <p>History for dads. Tales for bedtime.</p>
       </div>
     </header>
 
     <div class="sidebar-block">
-      <p class="bio">I write about clarity, discipline, and intentional living. This space is a quiet log of growth, one entry at a time.</p>
+      <p class="bio">One true story from history for you, one tale to read aloud to them. Twice a week, written to go together.</p>
 
       <div class="follow-row">
         <span class="follow-label">Follow me on:</span>
@@ -180,14 +179,13 @@
 
     <nav class="nav" aria-label="Pages">
       <p class="nav-title">Pages</p>
-      <a class="nav-item" href="../index.html#home"><svg class="ic"><use href="#i-home"/></svg><span>Home</span></a>
-      <a class="nav-item" href="../index.html#about"><svg class="ic"><use href="#i-about"/></svg><span>About</span></a>
-      <a class="nav-item" href="../index.html#now"><svg class="ic"><use href="#i-now"/></svg><span>Now</span></a>
-      <a class="nav-item" href="../index.html#books"><svg class="ic"><use href="#i-books"/></svg><span>Books</span></a>
-      <a class="nav-item" href="../index.html#services"><svg class="ic"><use href="#i-services"/></svg><span>Services</span></a>
-      <a class="nav-item" href="../index.html#resources"><svg class="ic"><use href="#i-resources"/></svg><span>Resources</span></a>
+      <a class="nav-item" href="/account#home"><svg class="ic"><use href="#i-home"/></svg><span>Home</span></a>
+      <a class="nav-item" href="/account#history"><svg class="ic"><use href="#i-scroll"/></svg><span>History for dads</span></a>
+      <a class="nav-item" href="/account#today"><svg class="ic"><use href="#i-calendar"/></svg><span>Today in history</span></a>
+      <a class="nav-item" href="/account#bedtime"><svg class="ic"><use href="#i-dragon"/></svg><span>Bedtime stories</span></a>
       <a class="nav-item is-active" href="./"><svg class="ic"><use href="#i-stories"/></svg><span>7 Bedtime Stories</span></a>
-      <a class="nav-item" href="../index.html#contact"><svg class="ic"><use href="#i-contact"/></svg><span>Contact</span></a>
+      <a class="nav-item" href="/account#about"><svg class="ic"><use href="#i-about"/></svg><span>About</span></a>
+      <a class="nav-item" href="/account#contact"><svg class="ic"><use href="#i-contact"/></svg><span>Contact</span></a>
     </nav>
 
     <footer class="sidebar-foot">
