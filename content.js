@@ -527,7 +527,10 @@ const TALES = {
   "lion-and-the-mouse": {
     title: "The Lion and the Mouse",
     age: 1,
-    minutes: "5",
+    /* Display-only copy for the receipt card. The numeric `age` above stays the
+       filter bucket (1 or 3); this is the editorial line the card prints. */
+    ageLabel: "Ages 4\u20136",
+    minutes: "2",
     theme: "Mercy",
     origin: "Retold",
     brief: "hastings",
