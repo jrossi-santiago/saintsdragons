@@ -84,6 +84,14 @@ function firstSentence(text) {
   return s;
 }
 
+/* "2026-09-17" -> "Thu \u00b7 September 17" (the mini receipts' dateline) */
+function miniDate(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  const day = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][dt.getDay()];
+  return `${day} \u00b7 ${MONTHS[m - 1]} ${d}`;
+}
+
 /* "2026-09-21" -> "21 Sep" */
 function shortDate(iso) {
   const [, m, d] = iso.split("-").map(Number);
@@ -264,38 +272,37 @@ function renderHome(query = "") {
         <div class="rcpt-tear is-bottom"></div>
       </div>
 
-      <section class="earlier">
-        <h3>Miss a night? Nothing breaks.</h3>
-        <p class="earlier-note">Start wherever you are. Every card stays here.</p>
-        <div class="earlier-strip">
+      <section class="rcpt-archive">
+        <h3>Earlier nights</h3>
+        <p class="rcpt-archive-note">Miss a night? Nothing breaks. Every card stays here.</p>
+
+        <div class="mini-strip">
           ${earlier.map(c => {
             const b = c.brief ? BRIEFS[c.brief] : null;
             const t = TALES[c.tale];
-            return `<a class="earlier-card" href="#${c.brief ? "brief/" + c.brief : "tale/" + c.tale}">
-              <span class="earlier-date">${esc(shortDate(c.date))}</span>
-              <span class="earlier-title">${esc(c.title)}</span>
-              <span class="earlier-times">${b ? b.minutes + " min · " : ""}${esc(t.minutes)} min</span>
+            const md = c.date.slice(5);
+            const day = TODAY[md];
+            return `<a class="mini" href="#${c.brief ? "brief/" + c.brief : "tale/" + c.tale}">
+              <span class="mini-tear"></span>
+              <span class="mini-paper">
+                <span class="mini-wordmark">SAINTS <i class="amp">&amp;</i> DRAGONS</span>
+                <span class="mini-date">${esc(miniDate(c.date))}</span>
+                <span class="mini-dots">&middot; &middot; &middot; &middot; &middot; &middot;</span>
+                ${day && day.length ? `<span class="mini-slot"><i class="no">01</i> Today in history</span>
+                <span class="mini-title">${esc(day[0].year)} &mdash; ${esc(firstSentence(day[0].text))}</span>` : ""}
+                <span class="mini-slot"><i class="no">02</i> History for you</span>
+                <span class="mini-title">${esc(b ? b.title : "\u2014")}</span>
+                ${b ? `<span class="mini-text">${esc(b.hook)}</span>` : ""}
+                <span class="mini-slot"><i class="no">03</i> Tonight&rsquo;s tale</span>
+                <span class="mini-title">${esc(t.title)}</span>
+                <span class="mini-text is-excerpt">&ldquo;${esc(t.body[0])}&rdquo;</span>
+              </span>
+              <span class="mini-fade"></span>
             </a>`;
           }).join("")}
         </div>
-      </section>
 
-      <section class="shelves">
-        <h3>More to read</h3>
-        <div class="shelf-list">
-          <a class="shelf-link" href="#history">
-            <span class="shelf-link-text"><strong>History for dads</strong><span>Every brief, by era or kind.</span></span>
-            <svg class="ic"><use href="#i-arrow"/></svg>
-          </a>
-          <a class="shelf-link" href="#today">
-            <span class="shelf-link-text"><strong>Today in history</strong><span>One short true thing, for any date.</span></span>
-            <svg class="ic"><use href="#i-arrow"/></svg>
-          </a>
-          <a class="shelf-link" href="#bedtime">
-            <span class="shelf-link-text"><strong>Bedtime stories</strong><span>Every tale, by age and theme.</span></span>
-            <svg class="ic"><use href="#i-arrow"/></svg>
-          </a>
-        </div>
+        <a class="rcpt-archive-link" href="#history">See the full archive &rarr;</a>
       </section>
     </div>`;
 
