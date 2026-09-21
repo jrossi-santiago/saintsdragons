@@ -588,4 +588,7 @@ a { color: inherit; text-decoration: none; }
 @media (min-width: 560px){
   .receipt{ padding: 2.4rem 2.6rem 2rem; font-size: calc(1rem * var(--rcpt-scale)); }
 }
+
+@media (min-width: 960px){
+  .receipt-wrap{ max-width: 32rem; }
 }
