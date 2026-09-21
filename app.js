@@ -32,7 +32,6 @@ const PAGES = {
 
 const main = document.getElementById("main");
 const searchInput = document.getElementById("search");
-const SIGNUP_ENDPOINT = "https://formspree.io/f/xqpaqzne";
 
 function renderPage(key) {
   const page = PAGES[key];
@@ -169,46 +168,70 @@ function renderHome(query = "") {
   const tale = TALES[card.tale];
   const earlier = CARDS.filter(c => c.date < card.date).slice(-5).reverse();
 
+  const askedKey = todayKey();
+  const shownKey = TODAY[askedKey] ? askedKey : nearestKey(askedKey);
+  const today = shownKey ? TODAY[shownKey] : null;
+
+  const totalMin = 1 + (brief ? Number(brief.minutes) || 0 : 0) + (Number(tale.minutes) || 0);
+
   main.innerHTML = `
     <div class="content">
-      <header class="page-head">
-        <h2>History for you at lunch. A tale for them at bedtime.</h2>
-        <p>One true story from history for you, one tale to read aloud to them, written to go together. Twenty minutes. No homework.</p>
-      </header>
-
-      <section class="tonight">
-        <p class="tonight-date">${esc(longDate(card.date))}</p>
-        <h3 class="tonight-title">${esc(card.title)}</h3>
-
-        ${brief ? `
-        <div class="slot">
-          <p class="slot-head">For you <span>· ${brief.minutes} minutes</span></p>
-          <p class="slot-note">Something true from history. Read it at lunch, in the car, or on the couch.</p>
-          <a class="slot-link" href="#brief/${card.brief}">${esc(brief.title)} <svg class="ic"><use href="#i-arrow"/></svg></a>
-        </div>` : ""}
-
-        <div class="slot">
-          <p class="slot-head">For them <span>· ${esc(tale.minutes)} minutes</span></p>
-          <p class="slot-note">A tale to read aloud. Do the voices.</p>
-          <a class="slot-link" href="#tale/${card.tale}">${esc(tale.title)}${tale.night ? ` · night ${tale.night.n} of ${tale.night.of}` : ""} <svg class="ic"><use href="#i-arrow"/></svg></a>
+      <div class="receipt-wrap">
+        <div class="rcpt-controls">
+          <button id="rcptSmaller" aria-label="Smaller text" title="Smaller text">A-</button>
+          <button id="rcptBigger" aria-label="Bigger text" title="Bigger text">A+</button>
         </div>
+        <div class="rcpt-tear"></div>
+        <div class="receipt">
+          <div class="rcpt-brand">
+            <div class="rcpt-wordmark">SAINTS <span class="amp">&amp;</span> DRAGONS</div>
+            <div class="rcpt-tagline">History for dads &middot; Tales for bedtime</div>
+            <div class="rcpt-dateline">${esc(longDate(card.date))}</div>
+          </div>
 
-        <div class="slot">
-          <p class="slot-head">Ask them</p>
-          <p class="slot-note">One question, after the last page.</p>
-          <p class="slot-body">${esc(card.question)}</p>
-        </div>
+          <div class="rcpt-dots">&middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot;</div>
 
-        <div class="slot">
-          <p class="slot-head">Why this is ours</p>
-          <p class="slot-body">${esc(card.whyOurs)}</p>
-        </div>
+          <section class="rcpt-slot">
+            <div class="rcpt-slot-label"><span class="no">01</span> Today in History</div>
+            ${today ? `
+            <div class="rcpt-hist-item">
+              <p><span class="yr">${esc(today.year)}</span>${esc(today.text)}</p>
+            </div>
+            <a class="rcpt-more" href="#today/${shownKey}">Go deeper on today &rarr;</a>` :
+            `<p>Still being written for this date.</p>
+            <a class="rcpt-more" href="#today">Browse today in history &rarr;</a>`}
+          </section>
 
-        <div class="slot slot-last">
-          <p class="slot-head">Before lights out</p>
-          <p class="slot-body slot-prayer">${esc(card.prayer)}</p>
+          <div class="rcpt-dots">&middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot;</div>
+
+          <section class="rcpt-slot">
+            <div class="rcpt-slot-label"><span class="no">02</span> History for You</div>
+            ${brief ? `
+            <h3 class="rcpt-story-title">${esc(brief.title)}</h3>
+            <p>${esc(brief.hook)}</p>
+            <a class="rcpt-more" href="#brief/${card.brief}">Read the full brief &rarr;</a>` :
+            `<p>No brief attached to tonight's card.</p>`}
+          </section>
+
+          <div class="rcpt-dots">&middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot;</div>
+
+          <section class="rcpt-slot">
+            <div class="rcpt-slot-label"><span class="no">03</span> Tonight&rsquo;s Tale</div>
+            <h3 class="rcpt-story-title">${esc(tale.title)}</h3>
+            <p class="rcpt-dek">Age ${esc(tale.age)} &middot; ${esc(tale.minutes)} min read-aloud${tale.night ? ` &middot; night ${tale.night.n} of ${tale.night.of}` : ""}</p>
+            <p class="rcpt-excerpt">&ldquo;${esc(tale.body[0])}&rdquo;</p>
+            <a class="rcpt-more" href="#tale/${card.tale}">Read it aloud &rarr;</a>
+          </section>
+
+          <div class="rcpt-tally">
+            ${today ? `<div class="row"><span>Today in history</span><span>1 min</span></div>` : ""}
+            ${brief ? `<div class="row"><span>History for you</span><span>${brief.minutes} min</span></div>` : ""}
+            <div class="row"><span>Tonight&rsquo;s tale</span><span>${esc(tale.minutes)} min</span></div>
+            <div class="row grand"><span>Total tonight</span><span>~${totalMin} min</span></div>
+          </div>
         </div>
-      </section>
+        <div class="rcpt-tear is-bottom"></div>
+      </div>
 
       <section class="earlier">
         <h3>Miss a night? Nothing breaks.</h3>
@@ -224,21 +247,6 @@ function renderHome(query = "") {
             </a>`;
           }).join("")}
         </div>
-      </section>
-
-      <section class="thesis">
-        <h3>You can't hand on what you don't have.</h3>
-        <p>Most of us were educated but never formed. We know about things. We don't know the stories. That is why every tale comes with a brief. Read it at lunch, and at bedtime you are not performing — you know the thing you are telling.</p>
-      </section>
-
-      <section class="signup">
-        <h3>New cards twice a week.</h3>
-        <p>Put your email in and they come to you.</p>
-        <form class="signup-form" novalidate>
-          <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required aria-label="Email address" />
-          <button class="btn" type="submit">Send them to me</button>
-        </form>
-        <p class="signup-said" hidden>That's in. The next card comes to you.</p>
       </section>
 
       <section class="shelves">
@@ -258,9 +266,22 @@ function renderHome(query = "") {
           </a>
         </div>
       </section>
-
-      <p class="night-foot">Our tradition is not a worship of ashes but a preservation of fire. New cards twice a week.</p>
     </div>`;
+
+  let scale = 1;
+  try {
+    const saved = parseFloat(localStorage.getItem("receipt-scale"));
+    if (saved >= 0.8 && saved <= 1.4) scale = saved;
+  } catch (e) {}
+  const wrap = document.querySelector(".receipt-wrap");
+  wrap.style.setProperty("--rcpt-scale", scale);
+  function setScale(v) {
+    scale = Math.min(1.4, Math.max(0.8, Math.round(v * 100) / 100));
+    wrap.style.setProperty("--rcpt-scale", scale);
+    try { localStorage.setItem("receipt-scale", String(scale)); } catch (e) {}
+  }
+  document.getElementById("rcptBigger").addEventListener("click", () => setScale(scale + 0.1));
+  document.getElementById("rcptSmaller").addEventListener("click", () => setScale(scale - 0.1));
 }
 
 function renderSearch(query) {
@@ -511,31 +532,6 @@ main.addEventListener("click", ev => {
   if (field === "age") value = Number(value);
   filters[group][field] = filters[group][field] === value ? null : value;
   route();
-});
-
-/* Home's email signup, delegated since the form is rebuilt on every render */
-main.addEventListener("submit", ev => {
-  const form = ev.target.closest(".signup-form");
-  if (!form) return;
-  ev.preventDefault();
-
-  const email = form.email.value.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { form.email.focus(); return; }
-
-  const btn = form.querySelector("button");
-  btn.disabled = true;
-
-  fetch(SIGNUP_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ email, source: "home" })
-  }).catch(err => {
-    /* Never hold the confirmation hostage to a failed network call. */
-    console.warn("home signup did not reach Formspree", err);
-  }).finally(() => {
-    form.hidden = true;
-    form.nextElementSibling.hidden = false;
-  });
 });
 
 /* search */
