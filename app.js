@@ -354,10 +354,10 @@ function renderHistory() {
     <div class="content">
       <header class="page-head">
         <h2>The history you were never given.</h2>
-        <p>One person. One battle. One council. Four minutes, and you'll finish it.</p>
+        <p>One person, one battle, one council at a time. Four minutes each.</p>
       </header>
 
-      <p class="lede">Written like a story, not a textbook. When you're done, you know something worth telling.</p>
+      <p class="lede">Written like a story, not a textbook: how the thing actually worked, what the sources argue about, and where it surfaces in the ordinary day.</p>
 
       <div class="filter-row">
         <p class="filter-label">Browse by era</p>
