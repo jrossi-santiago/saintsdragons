@@ -14,6 +14,8 @@ Static site: plain HTML, CSS, and vanilla JavaScript. No build step, no dependen
   - `index.html` — self-contained: same sidebar shell, email gate, download panel, with its CSS and JS inlined. Inlined on purpose — the page is reachable both as `/7stories` and `/7stories/`, and at the bare path a relative `<script src="stories.js">` would resolve against the site root and 404, leaving a blank page.
   - `7-bedtime-stories.pdf` — placeholder PDF. Overwrite this file with the real one; no code change needed.
 
+See `LESSONS-LEARNED.md` before changing how pages or assets are linked.
+
 ## Running locally
 
 Open `index.html` directly, or serve it:
@@ -21,6 +23,11 @@ Open `index.html` directly, or serve it:
 ```sh
 python3 -m http.server 8000
 ```
+
+Note: `http.server` redirects `/7stories` to `/7stories/`, which most production
+hosts do not do. To test a page the way it will actually be served, request the
+bare path against a server that serves the directory index without redirecting —
+see `LESSONS-LEARNED.md`.
 
 ## Customizing
 
