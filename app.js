@@ -59,6 +59,31 @@ function longDate(iso) {
   return `${day}, ${d} ${MONTHS[m - 1]}`;
 }
 
+/* "2026-09-21" -> "Monday \u00b7 September 21, 2026" (the receipt dateline) */
+function receiptDate(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  const day = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][dt.getDay()];
+  return `${day} \u00b7 ${MONTHS[m - 1]} ${d}, ${y}`;
+}
+
+/* Today-in-History entries are written long for their own page. The receipt
+   only prints the opening sentence and sends you to the full one. A full stop
+   only ends a sentence if a new one starts after it, and not when it belongs
+   to an initial or an abbreviation ("J.R.R. Tolkien", "St. Albans"). */
+const ABBREV = /(?:^|[\s(.“"'])(?:[A-Za-z]|Mr|Mrs|Ms|Dr|St|Jr|Sr|vs|etc|No|Rev|Gen|Col|Capt)$/;
+
+function firstSentence(text) {
+  const s = String(text).trim();
+  const stops = /[.!?](?=\s+[“"'(]?[A-Z0-9])/g;
+  let m;
+  while ((m = stops.exec(s)) !== null) {
+    if (ABBREV.test(s.slice(0, m.index))) continue;
+    return s.slice(0, m.index + 1);
+  }
+  return s;
+}
+
 /* "2026-09-21" -> "21 Sep" */
 function shortDate(iso) {
   const [, m, d] = iso.split("-").map(Number);
@@ -170,9 +195,9 @@ function renderHome(query = "") {
 
   const askedKey = todayKey();
   const shownKey = TODAY[askedKey] ? askedKey : nearestKey(askedKey);
-  const today = shownKey ? TODAY[shownKey] : null;
+  const todayList = shownKey ? TODAY[shownKey] : null;
 
-  const totalMin = 1 + (brief ? Number(brief.minutes) || 0 : 0) + (Number(tale.minutes) || 0);
+  const totalMin = (todayList && todayList.length ? 1 : 0) + (brief ? Number(brief.minutes) || 0 : 0) + (Number(tale.minutes) || 0);
 
   main.innerHTML = `
     <div class="content">
@@ -186,17 +211,18 @@ function renderHome(query = "") {
           <div class="rcpt-brand">
             <div class="rcpt-wordmark">SAINTS <span class="amp">&amp;</span> DRAGONS</div>
             <div class="rcpt-tagline">History for dads &middot; Tales for bedtime</div>
-            <div class="rcpt-dateline">${esc(longDate(card.date))}</div>
+            <div class="rcpt-dateline">${esc(receiptDate(card.date))}</div>
           </div>
 
           <div class="rcpt-dots">&middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot;</div>
 
           <section class="rcpt-slot">
             <div class="rcpt-slot-label"><span class="no">01</span> Today in History</div>
-            ${today ? `
+            ${todayList && todayList.length ? `
+            ${todayList.map(e => `
             <div class="rcpt-hist-item">
-              <p><span class="yr">${esc(today.year)}</span>${esc(today.text)}</p>
-            </div>
+              <p><span class="yr">${esc(e.year)}</span>${esc(firstSentence(e.text))}</p>
+            </div>`).join("")}
             <a class="rcpt-more" href="#today/${shownKey}">Go deeper on today &rarr;</a>` :
             `<p>Still being written for this date.</p>
             <a class="rcpt-more" href="#today">Browse today in history &rarr;</a>`}
@@ -209,7 +235,8 @@ function renderHome(query = "") {
             ${brief ? `
             <h3 class="rcpt-story-title">${esc(brief.title)}</h3>
             <p>${esc(brief.hook)}</p>
-            <a class="rcpt-more" href="#brief/${card.brief}">Read the full brief &rarr;</a>` :
+            ${brief.stillWithUs ? `<p>${esc(brief.stillWithUs)}</p>` : ""}
+            <a class="rcpt-more" href="#brief/${card.brief}">Read the full article &rarr;</a>` :
             `<p>No brief attached to tonight's card.</p>`}
           </section>
 
@@ -218,16 +245,23 @@ function renderHome(query = "") {
           <section class="rcpt-slot">
             <div class="rcpt-slot-label"><span class="no">03</span> Tonight&rsquo;s Tale</div>
             <h3 class="rcpt-story-title">${esc(tale.title)}</h3>
-            <p class="rcpt-dek">Age ${esc(tale.age)} &middot; ${esc(tale.minutes)} min read-aloud${tale.night ? ` &middot; night ${tale.night.n} of ${tale.night.of}` : ""}</p>
+            <p class="rcpt-dek">About ${esc(tale.minutes)} minutes &middot; ${esc(tale.ageLabel || `Ages ${tale.age}`)}${tale.night ? ` &middot; night ${tale.night.n} of ${tale.night.of}` : ""}</p>
             <p class="rcpt-excerpt">&ldquo;${esc(tale.body[0])}&rdquo;</p>
-            <a class="rcpt-more" href="#tale/${card.tale}">Read it aloud &rarr;</a>
+            <a class="rcpt-more" href="#tale/${card.tale}">Read the rest &rarr;</a>
           </section>
 
           <div class="rcpt-tally">
-            ${today ? `<div class="row"><span>Today in history</span><span>1 min</span></div>` : ""}
+            ${todayList && todayList.length ? `<div class="row"><span>Today in history</span><span>1 min</span></div>` : ""}
             ${brief ? `<div class="row"><span>History for you</span><span>${brief.minutes} min</span></div>` : ""}
             <div class="row"><span>Tonight&rsquo;s tale</span><span>${esc(tale.minutes)} min</span></div>
             <div class="row grand"><span>Total tonight</span><span>~${totalMin} min</span></div>
+          </div>
+
+          <div class="rcpt-barcode" aria-hidden="true"></div>
+
+          <div class="rcpt-foot">
+            <p class="rcpt-goodnight">Goodnight.</p>
+            <p>One true story. One tale.<br><a href="/">saintsdragons</a></p>
           </div>
         </div>
         <div class="rcpt-tear is-bottom"></div>
@@ -341,7 +375,7 @@ function renderToday(md) {
   const asked = md || todayKey();
   const entry = TODAY[asked];
   const shown = entry ? asked : nearestKey(asked);
-  const e = TODAY[shown];
+  const list = shown ? TODAY[shown] : null;
   const prev = shiftKey(asked, -1);
   const next = shiftKey(asked, 1);
   const marked = Object.keys(TODAY).sort();
@@ -357,7 +391,7 @@ function renderToday(md) {
 
       ${entry ? "" : `<p class="empty-note">This date is still being written. Here's the closest one we have: ${esc(dayLabel(shown))}.</p>`}
 
-      ${e ? `
+      ${list && list.length ? list.map(e => `
       <article class="entry">
         <p class="entry-year">${esc(e.year)}</p>
         <p class="entry-text">${esc(e.text)}</p>
@@ -365,7 +399,7 @@ function renderToday(md) {
           ${e.brief ? `<a href="#brief/${e.brief}">Go deeper: read the full brief</a>` : ""}
           ${e.tale ? `<a href="#tale/${e.tale}">Read the tale that goes with it</a>` : ""}
         </p>` : ""}
-      </article>` : `<p class="empty">Nothing here yet.</p>`}
+      </article>`).join("") : `<p class="empty">Nothing here yet.</p>`}
 
       <nav class="date-nav">
         <a href="#today/${prev}">Yesterday</a>
