@@ -188,6 +188,8 @@ a { color: inherit; text-decoration: none; }
   margin: 0 0 10px; padding: 0 8px;
   font-size: .8rem; font-weight: 600; color: var(--text-dim);
 }
+/* a second group under the page list, set off by a rule */
+.nav-title.is-sub { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
 .nav-item {
   display: flex; align-items: center; gap: 12px;
   padding: 11px 14px;
