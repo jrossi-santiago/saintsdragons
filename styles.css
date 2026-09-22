@@ -378,7 +378,11 @@ a { color: inherit; text-decoration: none; }
 .shelf-line a { border-bottom: 1px solid var(--line); }
 .shelf-line a:hover { border-color: var(--text); }
 .shelf-tag {
-  display: inline-block;
+  /* block + fit-content, not inline-block: a tale with no brief and no night
+     number has no .shelf-line after the tag, and an inline-block tag let the
+     "Read it aloud" button flow up beside it on the same line. */
+  display: block;
+  width: fit-content;
   margin: 0 0 12px;
   padding: 3px 10px;
   border-radius: 999px;
@@ -457,6 +461,18 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.75;
 }
 .tale-body p:last-child { margin-bottom: 0; }
+
+/* Where a tale comes from — sits above the story, quiet, as a rule rather than
+   a box, so it does not compete with the callouts at the foot of the page. */
+.tale-source {
+  margin: 0 0 30px;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--line);
+  font-size: .95rem;
+  line-height: 1.65;
+  color: var(--text-dim);
+}
+.tale-source strong { color: var(--text); font-weight: 600; }
 
 .callout {
   margin: 26px 0 0;
@@ -611,6 +627,13 @@ a { color: inherit; text-decoration: none; }
 .rcpt-slot p{ margin: 0 0 .7rem; color: var(--rcpt-ink); }
 .rcpt-slot p.rcpt-excerpt{ font-style: italic; color: var(--rcpt-ink-dim); }
 .rcpt-slot p.rcpt-dek{ font-size: .82rem; color: var(--rcpt-ink-dim); margin-bottom: .8rem; }
+/* Provenance, stamped under the dek. The negative top margin pulls it up
+   against the dek so the two read as one meta block rather than two lines. */
+.rcpt-slot p.rcpt-origin{
+  margin: -.55rem 0 .8rem;
+  font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--rcpt-ink-faint);
+}
 .rcpt-slot p:last-child{ margin-bottom: 0; }
 
 .rcpt-more{

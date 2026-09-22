@@ -226,13 +226,23 @@ const BRIEFS = {
 
 /* ----------------------------------------------------------------- tales */
 
+/* `origin` is the tale's provenance in four or five words, and it is printed on
+   every surface a reader meets a tale on: the receipt, the bedtime shelf, the
+   detail page. Where a tale is traditional it names the source and the date
+   ("Aesop, roughly 600 BC"); where it was written for this, it says so and
+   names the history it was written from ("New tale, from Vienna, 1683").
+   `source` is the optional long form — one sentence, detail page only — which
+   says plainly what is inherited and what is invented. Neither field drives a
+   filter; both are searched. Keep them true. A provenance line that overstates
+   is worse than no provenance line at all. */
 const TALES = {
   "boy-who-counted-oars": {
     title: "The Boy Who Counted Oars",
     age: 3,
     minutes: "10",
     theme: "Courage",
-    origin: "New tale",
+    origin: "New tale, from Lepanto, 1571",
+    source: "Tomas is invented. The galley, the drum, the men chained to the benches and the morning somebody struck the pins out are not.",
     brief: "lepanto",
     body: [
       "There was once a boy named Tomas who was small for his age and good at counting.",
@@ -271,7 +281,8 @@ const TALES = {
     age: 3,
     minutes: "11",
     theme: "Knights",
-    origin: "New tale",
+    origin: "New tale, from Vienna, 1683",
+    source: "Mila is invented. The tunnels creeping under the wall, the march over a mountain nobody thought an army could cross, and the winged hussars at the top of it are not.",
     brief: "vienna",
     body: [
       "In a city with a wall around it there lived a girl called Mila, and above her house there was a bell.",
@@ -308,7 +319,8 @@ const TALES = {
     age: 3,
     minutes: "9",
     theme: "Obedience",
-    origin: "New tale",
+    origin: "New tale, from Tours, 732",
+    source: "Odo is invented. The Frankish line that stood on a wooded hill for seven days and would not break is not.",
     brief: "tours",
     body: [
       "There was a boy called Odo who wanted, more than anything in the world, to do something.",
@@ -349,7 +361,8 @@ const TALES = {
     age: 3,
     minutes: "9",
     theme: "Courage",
-    origin: "Retold",
+    origin: "Vasari, 1550",
+    source: "Giorgio Vasari put the egg in his Lives of the Artists, a hundred and thirty years after the dome was begun. A near-identical story is told about Columbus, which usually means the story travelled.",
     brief: "dome",
     body: [
       "Once there was a city with a hole in it.",
@@ -387,7 +400,8 @@ const TALES = {
     age: 1,
     minutes: "8",
     theme: "Mercy",
-    origin: "Retold",
+    origin: "English legend, about 1000 AD",
+    source: "No account written in Alfred's lifetime mentions the cakes. The story first appears in an anonymous Life of St Neot roughly a century after he died, and English children have been told it ever since.",
     brief: "athelney",
     body: [
       "Once there was a king with nothing.",
@@ -420,7 +434,8 @@ const TALES = {
     age: 1,
     minutes: "8",
     theme: "Obedience",
-    origin: "Retold",
+    origin: "Livy, about 25 BC",
+    source: "Livy tells it in book three of his history of Rome, four centuries after it was supposed to have happened. Washington's officers named a society after Cincinnatus, and the society named a city in Ohio.",
     brief: "cincinnatus",
     body: [
       "Once there was a farmer with a small field and an old plough.",
@@ -456,7 +471,8 @@ const TALES = {
     age: 3,
     minutes: "8",
     theme: "Dragons",
-    origin: "New tale",
+    origin: "New tale, from the old dragon stories",
+    source: "Invented, and standing in a long queue: Fáfnir on his gold, the barrow-dragon in Beowulf, the Lambton Worm, and every hill in England somebody was told not to dig.",
     night: { n: 1, of: 3 },
     series: "dragon-under-the-hill",
     body: [
@@ -486,7 +502,8 @@ const TALES = {
     age: 3,
     minutes: "8",
     theme: "Dragons",
-    origin: "New tale",
+    origin: "New tale, from the old dragon stories",
+    source: "Invented, and standing in a long queue: Fáfnir on his gold, the barrow-dragon in Beowulf, the Lambton Worm, and every hill in England somebody was told not to dig.",
     night: { n: 2, of: 3 },
     series: "dragon-under-the-hill",
     body: [
@@ -521,7 +538,8 @@ const TALES = {
     age: 3,
     minutes: "9",
     theme: "Dragons",
-    origin: "New tale",
+    origin: "New tale, from the old dragon stories",
+    source: "Invented, and standing in a long queue: Fáfnir on his gold, the barrow-dragon in Beowulf, the Lambton Worm, and every hill in England somebody was told not to dig.",
     night: { n: 3, of: 3 },
     series: "dragon-under-the-hill",
     body: [
@@ -561,7 +579,8 @@ const TALES = {
     age: 1,
     minutes: "8",
     theme: "Forests",
-    origin: "New tale",
+    origin: "New tale, from the old forest stories",
+    source: "Invented. A forest that watches and keeps accounts is as old as the Grimms, but this one is not theirs.",
     body: [
       "There was a forest that remembered everything.",
       "It remembered the deer that walked through it on Tuesday. It remembered the fox. It remembered a boy who had come in with a red hat forty years ago and gone out again without it.",
@@ -593,7 +612,8 @@ const TALES = {
     ageLabel: "Ages 4\u20136",
     minutes: "2",
     theme: "Mercy",
-    origin: "Retold",
+    origin: "Aesop, roughly 600 BC",
+    source: "One of the Aesop fables, told in Greek for centuries before anyone wrote the collection down. Caxton printed it in English in 1484, which makes it one of the first stories ever printed in this language.",
     brief: "hastings",
     body: [
       "A lion was asleep in the long grass, with his head down on his paws.",
@@ -619,7 +639,8 @@ const TALES = {
     ageLabel: "Ages 4–6",
     minutes: "3",
     theme: "Mercy",
-    origin: "Retold",
+    origin: "Patrick's Confession, 5th century",
+    source: "Patrick wrote his own account of the raid, the six years and the walk back. It is one of the very few documents from fifth-century Britain by somebody who was there.",
     brief: "patrick",
     body: [
       "There was once a boy who lived in a warm house with a red door, and one morning men came up from the sea in boats and took him away.",

@@ -109,6 +109,29 @@ Tales without a brief are fine — they show on the bedtime shelf and simply hav
 no "Goes with" line. Cards, however, should always carry both halves. A
 multi-night tale sets `night: { n, of }` and a shared `series` key.
 
+### Provenance on a tale
+
+Every tale carries `origin`, and it is printed on all three surfaces a reader
+meets a tale on — the receipt (under the dek), the bedtime shelf (the pill), and
+the tale's own page (the meta line). It is four or five words and it must be
+true:
+
+- **Traditional** — name the source and the date: `"Aesop, roughly 600 BC"`,
+  `"Livy, about 25 BC"`, `"Vasari, 1550"`, `"English legend, about 1000 AD"`.
+- **Written for this, out of real history** — say so and name the history:
+  `"New tale, from Vienna, 1683"`.
+- **Written for this, out of nothing** — name the tradition it stands in:
+  `"New tale, from the old dragon stories"`.
+
+`source` is optional and longer: one sentence, shown only on the tale's own
+page under "Where it comes from", saying plainly what is inherited and what is
+invented ("Mila is invented. The winged hussars are not."). Both fields are
+searched; neither drives a filter.
+
+Provenance is the cheapest proof the site has that a tale is not content, so an
+`origin` that overstates costs more than it earns. If you cannot name a source,
+say it is new.
+
 Per-page SEO titles and meta descriptions live in the `META` object in `app.js`
 and are swapped on each route change; `account/index.html`'s own `<title>` and
 `<meta name="description">` are the fallback for any page without an entry
