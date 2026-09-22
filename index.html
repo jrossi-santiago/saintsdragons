@@ -65,6 +65,66 @@
   }
   .lp-cta.is-ghost:hover{ border-color: var(--text-faint); box-shadow: none; }
 
+  /* At 390px the bar overflowed: "Log in" wrapped to two lines and the orange
+     button ran 69px past the right edge, so the primary CTA was part
+     off-screen on the device most people arrive on. Three things give the
+     width back, in order of what is least missed:
+       - "Log in" goes. It points at /account, which is exactly where the
+         orange button used to go, so it costs width and offers nothing.
+       - The CTA loses its tail word. "Start free" whole beats "Start free
+         tonight" cut in half.
+       - Padding and the wordmark tighten. */
+  @media (max-width: 560px){
+    .lp-topbar{ padding: 14px 16px; gap: 10px; }
+    .lp-topbar .lp-link-btn{ display: none; }
+    .lp-cta-tail{ display: none; }
+    .lp-nav-actions{ gap: 8px; }
+    .lp-topbar .lp-cta{ padding: 10px 15px; }
+    .lp-logo{ font-size: 1.02rem; gap: 8px; }
+  }
+  /* 320px (the smallest phone still in the wild) needs another 12px. */
+  @media (max-width: 380px){
+    .lp-topbar{ padding: 14px 12px; }
+    .lp-topbar .lp-cta{ padding: 10px 13px; font-size: .88rem; }
+    .lp-logo{ font-size: .94rem; }
+    .lp-logo-mark{ width: 26px; height: 26px; }
+  }
+
+  /* ---------- signup ---------- */
+  /* The topbar is sticky, so an anchor jump would tuck the heading under it. */
+  #start{ scroll-margin-top: 90px; }
+  .lp-start{ max-width: 620px; text-align: center; }
+  .lp-start .lp-h2{ max-width: none; margin-left: auto; margin-right: auto; }
+  .lp-start .lp-lede{ margin-left: auto; margin-right: auto; }
+  .lp-signup{ display: grid; gap: 14px; margin: 32px auto 0; max-width: 460px; text-align: left; }
+  @media (min-width: 620px){
+    .lp-signup{ grid-template-columns: 1fr 1fr; }
+    .lp-signup button{ grid-column: 1 / -1; }
+  }
+  .lp-field{ display: grid; gap: 6px; }
+  .lp-field label{
+    font-family: "Space Mono", monospace; font-size: .66rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim);
+  }
+  .lp-field input{
+    font: inherit; font-size: 1rem; width: 100%;
+    padding: 13px 14px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--text);
+  }
+  .lp-field input::placeholder{ color: var(--text-faint); }
+  .lp-field input:focus{ outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+  .lp-field.is-invalid input{ border-color: var(--accent); }
+  .lp-signup button{ width: 100%; justify-content: center; padding: 15px; }
+  .lp-signup-status{
+    margin: 16px auto 0; max-width: 460px; min-height: 1.4em;
+    font-size: .95rem; line-height: 1.55; color: var(--text-dim);
+  }
+  .lp-signup-status.is-bad{ color: var(--accent); }
+  .lp-signup-note{
+    margin: 10px auto 0; max-width: 460px;
+    font-size: .86rem; line-height: 1.6; color: var(--text-faint);
+  }
+
   /* ---------- hero ---------- */
   .lp-hero{
     position: relative;
@@ -312,7 +372,7 @@
       <svg class="ic-moon" width="16" height="16"><use href="#i-moon"/></svg>
     </button>
     <a class="lp-link-btn" href="/account">Log in</a>
-    <a class="lp-cta" href="/account">Start free tonight</a>
+    <a class="lp-cta" href="#start">Start free<span class="lp-cta-tail"> tonight</span></a>
   </div>
 </header>
 
@@ -322,7 +382,7 @@
     <h1 class="lp-h1">Every night, two minutes. One true story for <em>you</em>. One for <em>them</em>.</h1>
     <p class="lp-sub">Printed like a receipt, because it's over before you can talk yourself out of it. Today in history, a piece of history worth knowing, and tonight's bedtime tale — delivered once a night, read in the time it takes to brush your teeth.</p>
     <div class="lp-hero-actions">
-      <a class="lp-cta" href="/account">Get tonight's receipt — free</a>
+      <a class="lp-cta" href="#start">Get tonight's receipt — free</a>
       <button class="lp-cta is-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See what's on it</button>
     </div>
     <p class="lp-fineprint">No credit card. Cancel any time. First night's on us.</p>
@@ -517,8 +577,33 @@
         <li><svg><use href="#i-check"/></svg> Every full article and full story, unlocked</li>
         <li><svg><use href="#i-check"/></svg> Cancel any time, in two clicks</li>
       </ul>
-      <a class="lp-cta" href="/account">Start free tonight</a>
+      <a class="lp-cta" href="#start">Start free tonight</a>
     </div>
+  </div>
+</section>
+
+<section class="lp-section" id="start">
+  <div class="lp-section-inner lp-start">
+    <p class="lp-kicker">No card, no app</p>
+    <h2 class="lp-h2">Leave a name and an email. That is the whole signup.</h2>
+    <p class="lp-lede">There is nothing to install and nothing to pay. You get the next receipt &mdash; a piece of history for you, a tale for them, a question for the table and a line for lights out &mdash; and you decide from there whether it is worth keeping.</p>
+
+    <!-- Ships as a real form with a real action, so it still posts if the
+         script below never runs. The script only upgrades it. -->
+    <form class="lp-signup" id="signupForm" method="POST" action="https://formspree.io/f/xqpaqzne" novalidate>
+      <div class="lp-field">
+        <label for="suName">First name</label>
+        <input id="suName" name="firstName" type="text" autocomplete="given-name" placeholder="Tom" required>
+      </div>
+      <div class="lp-field">
+        <label for="suEmail">Email</label>
+        <input id="suEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+      </div>
+      <button class="lp-cta" type="submit">Send me the next one</button>
+    </form>
+
+    <p class="lp-signup-status" id="signupStatus" role="status" aria-live="polite"></p>
+    <p class="lp-signup-note">Your name is used to write to you like a person. Nothing else is collected, and one reply takes you off the list.</p>
   </div>
 </section>
 
@@ -543,6 +628,64 @@
   requestAnimationFrame(function(){
     document.querySelectorAll('.lp-reveal').forEach(function(el){ el.classList.add('is-in'); });
   });
+
+  /* Signup. Same Formspree pattern as /7stories and the Contact form, with its
+     own `source` so the three surfaces stay apart in one inbox. The endpoint is
+     read off the form's action, as on /7stories, so there is one place to
+     change it. Failure is reported rather than swallowed: unlike /7stories
+     there is no download to fall back on, so thanking somebody for a signup
+     that went nowhere would be a lie. */
+  (function(){
+    var form = document.getElementById('signupForm');
+    var status = document.getElementById('signupStatus');
+    var btn = form.querySelector('button[type=submit]');
+    var endpoint = form.action;
+
+    function field(input){ return input.closest('.lp-field'); }
+
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+
+      var firstName = form.firstName.value.trim();
+      var email = form.email.value.trim();
+      var ok = true;
+
+      [form.firstName, form.email].forEach(function(i){ field(i).classList.remove('is-invalid'); });
+      status.classList.remove('is-bad');
+
+      if (!firstName) { field(form.firstName).classList.add('is-invalid'); ok = false; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { field(form.email).classList.add('is-invalid'); ok = false; }
+
+      if (!ok) {
+        status.textContent = 'Please put in a first name and an email that will reach you.';
+        status.classList.add('is-bad');
+        form.querySelector('.lp-field.is-invalid input').focus();
+        return;
+      }
+
+      btn.disabled = true;
+      var label = btn.innerHTML;
+      btn.textContent = 'Sending\u2026';
+      status.textContent = '';
+
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ firstName: firstName, email: email, source: '/#start' })
+      }).then(function(res){
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        form.reset();
+        status.textContent = 'Thanks, ' + firstName + ' \u2014 you are on the list. The next receipt comes to ' + email + '.';
+      }).catch(function(err){
+        console.warn('landing signup did not reach Formspree', err);
+        status.textContent = 'That did not send. Your details are still in the boxes \u2014 please try again in a moment.';
+        status.classList.add('is-bad');
+      }).then(function(){
+        btn.disabled = false;
+        btn.innerHTML = label;
+      });
+    });
+  })();
 </script>
 </body>
 </html>
