@@ -9,8 +9,14 @@
  *   TALES   the read-aloud. Keyed by slug.
  *   TODAY   one entry per calendar date, keyed "MM-DD".
  *
- * No saints, no explicit religious language anywhere except the "Before lights
- * out" prayer or verse and the one-line "Why this is ours".
+ * Religion is subject matter, not register. Saints, councils, heresies and
+ * feasts are history, and they get written like any other history: as
+ * mechanism, in the explainer voice below. What stays out is the devotional
+ * register — no preaching, no piety, and no miracle asserted as fact when the
+ * evidence for it is a hagiographer writing three centuries later. Name the
+ * source, say when it was written, and let the reader weigh it. The only two
+ * places the site speaks in a religious voice are the "Before lights out"
+ * prayer or verse and the one-line "Why this is ours".
  *
  * ---------------------------------------------------------------- voice
  *
@@ -50,7 +56,7 @@
  */
 
 const ERAS = ["Greece and Rome", "Knights and lords", "The 1700s", "The 1800s", "1900 to 1950", "And everything else"];
-const KINDS = ["A person", "A battle", "A council", "A builder", "A mother", "A heresy", "A feast"];
+const KINDS = ["A person", "A battle", "A saint", "A council", "A builder", "A mother", "A heresy", "A feast"];
 const THEMES = ["Knights", "Dragons", "Forests", "Courage", "Obedience", "Mercy"];
 
 /* ---------------------------------------------------------------- briefs */
@@ -193,6 +199,27 @@ const BRIEFS = {
       "Harold died late in the day and nobody can establish how. The Bayeux Tapestry shows a figure taking an arrow in the eye beneath the words Harold rex interfectus est; the Carmen de Hastingae Proelio has four knights ride him down and mutilate the body. The arrow may not even be original, since a nineteenth-century restorer reworked that stitching. None of the witnesses is neutral either: William of Poitiers wrote for the winner, and William\u2019s half-brother Odo of Bayeux commissioned the Tapestry.",
       "Winning the battle did not give William the country, and he took it by the same kind of arithmetic. Ten thousand men cannot hold two million people, so he built castles \u2014 cheap motte-and-bailey works of earth and timber that a garrison could throw up in a fortnight and that gave a few dozen horsemen somewhere to retreat to. Several hundred went up in twenty years. When the north rose again in 1069 he starved it instead, burning the country between York and Durham so thoroughly that Domesday Book still recorded those villages as waste seventeen years later.",
       "Then he gave England to his own men. At the Domesday survey of 1086, roughly 190 major tenants held land directly from the king and only a handful were English; no comparable transfer has happened here before or since. Their language went with the land. Norman French ran the government, the law and the great households, and it stayed the language of the royal courts until 1362. The Bayeux Tapestry shows the arrangement in miniature \u2014 seventy metres of wool embroidery worked, almost certainly, by English hands in Canterbury, for a Norman who wanted the story told his way."
+    ]
+  },
+
+  "patrick": {
+    title: "Patrick in Ireland, the 430s",
+    era: "And everything else",
+    kind: "A saint",
+    minutes: 4,
+    hook: "Fifth-century Ireland had no cities, no roads and no court a stranger could appeal to. A man standing outside his own kin-group had no legal standing at all, which made a foreign missionary less hated than simply unprotected.",
+    stillWithUs: "The snakes are a later invention. Ireland has had no snakes since the last ice age, and people repeat the story every March anyway.",
+    tale: "boy-who-went-back",
+    body: [
+      "Two documents survive that Patrick wrote himself: a short account of his life he called the Confessio, and an angry open letter to a British warlord named Coroticus. Almost everything else attached to his name — the snakes, the shamrock, the fire on the hill at Slane — comes from monks writing two or three centuries after he died, in houses that had an interest in claiming him.",
+      "The Confessio gives the outline. Patrick grew up British and Roman, the son of a town councillor, in the last decades when Britain still counted as a Roman province. Irish raiders took him off his father's estate at about sixteen and sold him inland. He spent six years herding animals on a hillside, learned the language from the people who owned him, and then walked something like two hundred miles to the coast, talked his way onto a ship, and got home.",
+      "Then he went back. He was a free man in his forties, in a country that had taken six years of his life, and he crossed the water again on purpose. The Confessio spends more time defending that decision to his critics in Britain than explaining it.",
+      "What he was walking into had no shape a Roman would recognise. Ireland had never been invaded by Rome, so it had no cities, no roads, no coinage and no central authority. Perhaps a hundred and fifty small kingdoms, each one a kin-group under its own king, covered the island. Law was administered by professional jurists and it ran on compensation rather than punishment: kill a man, and his kin collect his honour-price from yours.",
+      "That system decides everything about how an outsider survives in it. A man's safety was a direct function of how many relatives would come collecting if somebody killed him. Patrick had none on that island. He was not protected by a bad law; he was outside the law, and anyone who killed him owed nothing to anybody.",
+      "So his method followed from the problem. He bought protection, and he is candid about it — he gave gifts to kings, paid the jurists, and hired the sons of kings to travel with him as an escort. He reckons the total at about the price of fifteen men. He was not buying converts. He was buying the right to stand in a place and not be killed for free.",
+      "He also aimed at the top of each kingdom rather than the bottom. A kin-group followed its king, so baptising a king's household brought a territory with it, and the daughters of noble families who took vows gave him permanent households in places he could not otherwise stay. It was the only method the political structure allowed. There were no towns to preach in.",
+      "Christianity everywhere else in the west travelled on Roman administration. A bishop sat in a city, dioceses were drawn over Roman provinces, and the church inherited a filing system that already worked. Ireland had no cities to put a bishop in, so within two generations the church there reorganised itself around monasteries and their abbots, mapped onto the kin-groups that actually held the country together.",
+      "That shape turned out to travel. Irish monasteries sent men back out for the next three centuries — Columba to Iona, Columbanus into Gaul and northern Italy — founding houses and copying manuscripts through the decades when the Roman schools on the continent had stopped. The church built without Roman infrastructure outlasted the one built on it."
     ]
   }
 };
@@ -584,6 +611,38 @@ const TALES = {
       "\"Even a small friend,\" said the mouse, \"is worth having.\"",
       "And after that, the lion never again decided who was worth his kindness by their size."
     ]
+  },
+
+  "boy-who-went-back": {
+    title: "The Boy Who Went Back",
+    age: 1,
+    ageLabel: "Ages 4–6",
+    minutes: "3",
+    theme: "Mercy",
+    origin: "Retold",
+    brief: "patrick",
+    body: [
+      "There was once a boy who lived in a warm house with a red door, and one morning men came up from the sea in boats and took him away.",
+      "They took him a long way over the water, to a green country he had never heard of, and they put him on a hill with a flock of sheep and told him to mind them.",
+      "So he minded them.",
+      "He minded them in the rain, which there was a great deal of, and in the cold, which was worse. He slept in a hollow out of the wind. He had nobody to talk to at all, except the sheep, who were poor company.",
+      "At first he only thought about the red door.",
+      "But a year is a long time, and six years is six of them, and somewhere in the middle of all that the boy stopped being a boy. He learned the words the people on that hill used for rain and for sheep and for supper. He learned which of them was kind and which was not. He learned the names of their children.",
+      "And then one morning he simply walked away.",
+      "He walked for days and days, all the way to the far coast, and he talked his way onto a ship, and the ship took him home — home to the warm house and the red door and everybody shouting and crying at once.",
+      "He was safe. That is usually where a story like this one stops.",
+      "But this one does not stop there, because years later, when he was grown and free and perfectly comfortable, he started hearing that hill again.",
+      "Not the men who took him. The hill.",
+      "\"You are not going back,\" said everybody who loved him.",
+      "\"I think I am,\" he said.",
+      "\"Why? They stole you. They sold you. You were cold for six years.\"",
+      "And he said: \"Because there is a boy on that hill right now.\"",
+      "Nobody had an answer for that.",
+      "So he packed up what he had and he got into a boat and he went back across the water, to the green country, on purpose, carrying something to give away.",
+      "He stayed the rest of his life.",
+      "And the strangest part is this: he did not go back to get even, and he did not go back because he had forgotten. He remembered every single cold night.",
+      "He went back because he knew the way."
+    ]
   }
 };
 
@@ -644,6 +703,15 @@ const CARDS = [
     question: "The mouse promised to help a lion, and the lion almost laughed at her. Has anyone ever been surprised that you could help them?",
     whyOurs: "Harold marched the length of England twice in three weeks and still stood in the shield wall himself. We don't get to sit out the fight because we're tired — we show up anyway, and that is most of what courage actually is.",
     prayer: "For steady hands when the ground gives way beneath us, and for the small kindnesses that come back around exactly when we need them."
+  },
+  {
+    date: "2026-09-24",
+    title: "Patrick in Ireland, the 430s",
+    brief: "patrick",
+    tale: "boy-who-went-back",
+    question: "He went back to the people who took him. Who is someone hard for you to be kind to?",
+    whyOurs: "The man walked back into the country that had taken six years off his life, and he walked in with his hands full. That direction — back toward the people who hurt you, carrying something to give — is the whole of what we believe, and it is the hardest thing on the list.",
+    prayer: "For a heart that can go back, and for hands that carry something when it does."
   }
 ];
 
