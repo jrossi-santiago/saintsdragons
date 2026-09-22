@@ -1,0 +1,14 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<defs><radialGradient id="ge" cx="34%" cy="26%" r="78%"><stop offset="0" stop-color="#e5825a"/><stop offset="1" stop-color="#b85830"/></radialGradient></defs>
+<path d="M88 50 C80 34 66 18 48 8 C56 28 68 44 78 58 Z" fill="#221c15"/>
+<path d="M112 50 C120 34 134 18 152 8 C144 28 132 44 122 58 Z" fill="#221c15"/>
+<path d="M44 108 C30 106 20 110 12 118 C26 118 36 122 46 126 Z" fill="#c9502a"/>
+<path d="M156 108 C170 106 180 110 188 118 C174 118 164 122 154 126 Z" fill="#c9502a"/>
+<path d="M100 44 C140 44 162 68 162 104 C162 136 142 158 100 158
+         C58 158 38 136 38 104 C38 68 60 44 100 44 Z" fill="url(#ge)"/>
+<path d="M56 132 C70 150 84 158 100 158 C116 158 130 150 144 132
+         C140 152 124 164 100 164 C76 164 60 152 56 132 Z" fill="#c9502a" opacity=".9"/>
+<path d="M44 86 C64 74 136 74 156 86 L156 98 C136 88 64 88 44 98 Z" fill="#c9502a" opacity=".55"/>
+<rect x="60.0" y="83.5" width="32.0" height="9.0" rx="4.5" fill="#221c15" transform="rotate(-11 76 88)"/><rect x="108.0" y="83.5" width="32.0" height="9.0" rx="4.5" fill="#221c15" transform="rotate(11 124 88)"/>
+<path d="M 63.65 111 L 88.35 111" stroke="#221c15" stroke-width="6.6" stroke-linecap="round" transform="rotate(11 76 111)"/><path d="M 111.65 111 L 136.35 111" stroke="#221c15" stroke-width="6.6" stroke-linecap="round" transform="rotate(-11 124 111)"/>
+</svg>

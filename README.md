@@ -376,6 +376,52 @@ These are rendered from standalone HTML templates that are **not** in the repo,
 so re-rendering at a new ratio currently means rebuilding them. Ask if you want
 the generator committed too.
 
+### Profile logos
+
+`assets/social/logo-*.png` are square exports of the dragon on its own, for
+places that want an avatar rather than a banner — Substack, X, anywhere with a
+profile picture.
+
+| file | use |
+| --- | --- |
+| `logo-light-*` | transparent, dark ink outline &mdash; for pale UI |
+| `logo-dark-*` | transparent, bone outline &mdash; for dark UI |
+| `logo-on-white-*` | the light one flattened onto `#ffffff` |
+| `logo-on-paper-*` | the light one flattened onto `#f6f1e3` |
+
+**Upload `logo-on-white-512` or `logo-light-512` to Substack.** The dark one
+has a bone outline that vanishes on white; it is for this site and dark decks.
+
+The dragon sits at 70% of the canvas rather than filling it, because these
+services crop avatars to a circle and the wingtips and tail are the first
+things a square-to-circle crop eats. Checked at 120 / 64 / 40 / 28px.
+
+### Mascots
+
+`assets/mascots/` holds three characters &mdash; **Ember** (dragon), **Tin**
+(knight) and **Slip** (the receipt) &mdash; each in seven expressions. Nothing
+uses them yet; they are candidates, not a shipped decision.
+
+The whole system is that **the body never changes and the eyes carry the
+mood**. Adding a mood is a branch in `eyes()`, not a redraw. Regenerate the
+set with `python3 tools/make-mascots.py`; the script is the source, since an
+SVG cannot be edited back into a design.
+
+Three things were learned the hard way and are commented in the script, so
+they do not get undone:
+
+- **Eyes only.** Give a round dragon a pale snout with nostrils and it reads
+  as a pig. The reference these came from has no mouth and no nose.
+- **Horns root at the crown.** Wide triangles on the sides of a dome are how
+  you draw an *ear*; low side-wings are how you draw a *crab claw*.
+- **Sleepy tilts the outer ends down.** Inner-ends-down is the universal anger
+  cue. That one shipped wrong once and "lights out" read as furious.
+
+`assets/mascots/explorations/` holds two earlier characters (a serpent and a
+lion) that were not carried forward. They are kept because they cost something
+to make and the lion in particular is a better fit if the brand ever leans
+harder on the *Saints* half &mdash; its mane is nearly a halo.
+
 ### The knight
 
 `knight-light.svg` / `knight-dark.svg` (plus the self-switching `knight.svg`
