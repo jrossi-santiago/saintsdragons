@@ -9,38 +9,36 @@ const FORM_ENDPOINT = "https://formspree.io/f/xqpaqzne";
 const PAGES = {
   about: {
     title: "About",
-    sub: "What this is, and who it is for.",
+    sub: "What this is, and who it's for.",
     html: `
       <div class="prose">
-        <p>You stopped learning things for fun at about the same time you stopped being graded on it. Not on purpose. School ended, work started, and everything you have read since then has been read for a reason — a decision at work, a thing that needed fixing, the news. Nobody has handed you anything in years that was simply worth knowing.</p>
+        <p>You stopped learning things for fun at about the same time you stopped being graded on it. Not on purpose. School ended, work started, and everything you have read since has been read for a reason — a decision at work, a thing that needed fixing, the news. Nobody has handed you anything in years that was simply worth knowing.</p>
         <p>Then you had kids, and the reading became somebody else's twelve-page book about a truck, for the fourth night running.</p>
-        <p>Saints &amp; Dragons puts both back. One true piece of history for you, written for a grown adult, about four minutes. One tale to read out loud to them, about two, carrying the same thing the history carried. Twice a week, together, in the order they are printed.</p>
+        <p>Saints &amp; Dragons puts both back. Every day, one true piece of history for you, written for a grown adult, to read whenever you get a few minutes. And one bedtime story to read out loud to them that night, on the same idea.</p>
 
-        <h3>The circle</h3>
-        <p>The two halves are not two products. That is the entire idea.</p>
-        <p>You read how Patrick, a man with no kin on the island and therefore no legal protection at all, had to buy the right to stand somewhere and not be killed for free — and went back anyway to the country that had enslaved him. Then you sit on the edge of a bed and read them a story about a boy on a cold hill who walks all the way home, and then turns around. They get what you got, shaped for a five-year-old.</p>
-        <p>At the bottom of the card there is a question to ask at the table tomorrow, and a line for before lights out. That is the circle: you learn something real, they get a story worth hearing, and the two of you have something to talk about that is not school and not a screen. It takes about six minutes, and you did not have to plan any of it.</p>
+        <h3>How it works</h3>
+        <p>You read how Patrick, a man with no family on the island and so no legal protection at all, had to pay for the right not to be killed — and went back anyway to the country that had enslaved him. That night you sit on the edge of a bed and read them a story about a boy on a cold hill who walks all the way home, and then turns around. They get what you got, shaped for a five-year-old.</p>
+        <p>Each day also gives you a question to ask them in the morning, and a line to say before lights out. You learn something real, they hear a story worth hearing, and the two of you have something to talk about that isn't school or a screen. Under 10 minutes of reading for you, and none of it to plan.</p>
 
         <h3>What this is not</h3>
         <ul>
-          <li><strong>Not fun facts.</strong> Something you repeat once and lose is not worth your evening. Every night is tied to how a thing actually worked, why it came out the way it did, and what it cost somebody.</li>
-          <li><strong>Not a curriculum.</strong> Nobody is testing you. You are allowed to learn things now purely because they are good, and that is most of the point.</li>
-          <li><strong>Not moralising.</strong> The history is history: named sources, dates, and an honest line about what the evidence will actually carry. Where a story has a virtue in it, the story carries it. We do not stop to explain the lesson, and neither should you.</li>
-          <li><strong>Not a feed.</strong> Nothing to scroll, nothing to catch up on. Twice a week, and it is over before you can talk yourself out of it.</li>
+          <li><strong>Not fun facts.</strong> Every piece is about how a thing actually worked, why it came out the way it did, and what it cost somebody.</li>
+          <li><strong>Not a course.</strong> Nobody is testing you. You get to learn things because they are good.</li>
+          <li><strong>Not a sermon.</strong> The history is history: named sources, dates, and an honest line about what the evidence can carry. Where a story has a virtue in it, the story carries it. We don't stop to explain the lesson, and neither should you.</li>
+          <li><strong>Not a feed.</strong> Nothing to scroll. Read today's and you're done.</li>
         </ul>
 
         <h3>Why the name</h3>
-        <p>Dragons are the furniture of a child's imagination, and it is good furniture — knights, castles, forests, princes and princesses, something to be brave about. Children have always been given this and they should go on being given it.</p>
-        <p>Saints are the other half: real people, in real centuries, who are interesting long before they are edifying. They get written here the way a battle or a builder gets written — how it worked, and what it cost. Tradition is not the decoration on this. It is the material.</p>
+        <p>Dragons are the furniture of a child's imagination, and it is good furniture — knights, castles, forests, something to be brave about. Children have always been given this and they should go on being given it.</p>
+        <p>Saints are the other half: real people, in real centuries, who are interesting long before they are edifying. We write them the way we write a battle or a builder — how it worked, and what it cost.</p>
 
         <h3>Where this goes</h3>
-        <p>The nightly card is the start of it and not the whole of it. The same work runs on toward books a child can sit with on his own, and toward more of what they watch. The standard is easy to say and hard to hit: things a dad is glad to hand his children, rather than things he tolerates.</p>
-        <p>All of it is built to be easy to get, easy to read, and easy to pass on. That is not a compromise. Anything worth handing down has to be something you can actually pick up.</p>
+        <p>The daily history and bedtime story are the start. Next come books a child can read on his own, and shows a dad is glad to put on rather than ones he puts up with. None of that exists yet; we're telling you so you know what you're joining.</p>
       </div>`
   },
   contact: {
     title: "Contact",
-    sub: "Say hello — I read everything.",
+    sub: "Say hello — we read everything.",
     html: `
       <form class="prose" id="contactForm" method="POST" action="${FORM_ENDPOINT}">
         <label class="field"><span>Name</span><input type="text" name="name" required /></label>
@@ -77,7 +75,7 @@ const PAGES = {
           });
           if (!res.ok) throw new Error("HTTP " + res.status);
           form.reset();
-          status.textContent = "Thanks — that came through. I read everything, and I will reply.";
+          status.textContent = "Thanks — that came through. We read everything, and we'll reply.";
         } catch (err) {
           console.warn("contact message did not reach Formspree", err);
           status.textContent = "That did not send. Your message is still in the box — please try again in a moment.";
@@ -250,9 +248,9 @@ function briefCardHTML(slug, b) {
     <h3>${esc(b.title)}</h3>
     <p class="shelf-meta">${esc(b.era)} · ${esc(b.kind)} · ${b.minutes} min</p>
     <p class="shelf-hook">${esc(b.hook)}</p>
-    ${b.stillWithUs ? `<p class="shelf-line"><strong>Still with us:</strong> ${esc(b.stillWithUs)}</p>` : ""}
-    ${tale ? `<p class="shelf-line"><strong>Read it to them:</strong> <a href="#tale/${b.tale}">${esc(tale.title)}</a></p>` : ""}
-    <a class="btn btn-quiet" href="#brief/${slug}">Read the brief</a>
+    ${b.stillWithUs ? `<p class="shelf-line"><strong>Still around today:</strong> ${esc(b.stillWithUs)}</p>` : ""}
+    ${tale ? `<p class="shelf-line"><strong>Bedtime story:</strong> <a href="#tale/${b.tale}">${esc(tale.title)}</a></p>` : ""}
+    <a class="btn btn-quiet" href="#brief/${slug}">Read it (${b.minutes} min)</a>
   </article>`;
 }
 
@@ -262,7 +260,7 @@ function taleCardHTML(slug, t) {
     <h3>${esc(t.title)}</h3>
     <p class="shelf-meta">${esc(ageText(t))} · ${esc(t.minutes)} min read-aloud${t.theme ? ` · ${esc(t.theme)}` : ""} · ${esc(t.virtue)}</p>
     <p class="shelf-tag">${esc(t.origin)}</p>
-    ${t.night ? `<p class="shelf-line"><strong>Night ${t.night.n} of ${t.night.of}.</strong></p>` : ""}
+    ${t.night ? `<p class="shelf-line"><strong>${t.night.n === 1 ? `A ${t.night.of}-part story.` : `Part ${t.night.n} of ${t.night.of}.`}</strong></p>` : ""}
     ${brief ? `<p class="shelf-line"><strong>Goes with:</strong> <a href="#brief/${t.brief}">${esc(brief.title)}</a></p>` : ""}
     <a class="btn btn-quiet" href="#tale/${slug}">Read it aloud</a>
   </article>`;
@@ -280,7 +278,9 @@ function renderHome(query = "") {
   const tale = TALES[card.tale];
   const earlier = CARDS.filter(c => c.date < card.date).slice(-5).reverse();
 
-  const askedKey = todayKey();
+  /* Today in history follows the receipt's own date, not the clock, so the
+     dateline and the entry under it can never be two different days. */
+  const askedKey = card.date.slice(5);
   const shownKey = TODAY[askedKey] ? askedKey : nearestKey(askedKey);
   const todayList = shownKey ? TODAY[shownKey] : null;
 
@@ -310,7 +310,7 @@ function renderHome(query = "") {
             <div class="rcpt-hist-item">
               <p><span class="yr">${esc(e.year)}</span>${esc(firstSentence(e.text))}</p>
             </div>`).join("")}
-            <a class="rcpt-more" href="#today/${shownKey}">Go deeper on today &rarr;</a>` :
+            <a class="rcpt-more" href="#today/${shownKey}">Read the full entry &rarr;</a>` :
             `<p>Still being written for this date.</p>
             <a class="rcpt-more" href="#today">Browse today in history &rarr;</a>`}
           </section>
@@ -324,15 +324,15 @@ function renderHome(query = "") {
             <p>${esc(brief.hook)}</p>
             ${brief.stillWithUs ? `<p>${esc(brief.stillWithUs)}</p>` : ""}
             <a class="rcpt-more" href="#brief/${card.brief}">Read the full article &rarr;</a>` :
-            `<p>No brief attached to tonight's card.</p>`}
+            `<p>No history today.</p>`}
           </section>
 
           <div class="rcpt-dots">&middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot;</div>
 
           <section class="rcpt-slot">
-            <div class="rcpt-slot-label"><span class="no">03</span> Tonight&rsquo;s Tale</div>
+            <div class="rcpt-slot-label"><span class="no">03</span> Bedtime Story</div>
             <h3 class="rcpt-story-title">${esc(tale.title)}</h3>
-            <p class="rcpt-dek">About ${esc(tale.minutes)} minutes &middot; ${esc(ageText(tale))}${tale.night ? ` &middot; night ${tale.night.n} of ${tale.night.of}` : ""}</p>
+            <p class="rcpt-dek">About ${esc(tale.minutes)} minutes &middot; ${esc(ageText(tale))}${tale.night ? ` &middot; part ${tale.night.n} of ${tale.night.of}` : ""}</p>
             ${tale.origin ? `<p class="rcpt-origin">${esc(tale.origin)}</p>` : ""}
             <p class="rcpt-excerpt">&ldquo;${esc(tale.body[0])}&rdquo;</p>
             <a class="rcpt-more" href="#tale/${card.tale}">Read the rest &rarr;</a>
@@ -341,20 +341,20 @@ function renderHome(query = "") {
           <div class="rcpt-tally">
             ${todayList && todayList.length ? `<div class="row"><span>Today in history</span><span>1 min</span></div>` : ""}
             ${brief ? `<div class="row"><span>History for you</span><span>${brief.minutes} min</span></div>` : ""}
-            <div class="row"><span>Tonight&rsquo;s tale</span><span>${esc(tale.minutes)} min</span></div>
-            <div class="row grand"><span>Total tonight</span><span>~${totalMin} min</span></div>
+            <div class="row"><span>Bedtime story</span><span>${esc(tale.minutes)} min</span></div>
+            <div class="row grand"><span>Total</span><span>~${totalMin} min</span></div>
           </div>
 
           <div class="rcpt-foot">
-            <p>One true story. One tale.<br><a href="/">saintsdragons</a></p>
+            <p>One for you. One for them.</p>
           </div>
         </div>
         <div class="rcpt-tear is-bottom"></div>
       </div>
 
       <section class="rcpt-archive">
-        <h3>Earlier nights</h3>
-        <p class="rcpt-archive-note">Miss a night? Nothing breaks. Every card stays here.</p>
+        <h3>Past days</h3>
+        <p class="rcpt-archive-note">Missed one? It&rsquo;s all still here.</p>
 
         <div class="mini-strip">
           ${earlier.map(c => {
@@ -373,7 +373,7 @@ function renderHome(query = "") {
                 <span class="mini-slot"><i class="no">02</i> History for you</span>
                 <span class="mini-title">${esc(b ? b.title : "\u2014")}</span>
                 ${b ? `<span class="mini-text">${esc(b.hook)}</span>` : ""}
-                <span class="mini-slot"><i class="no">03</i> Tonight&rsquo;s tale</span>
+                <span class="mini-slot"><i class="no">03</i> Bedtime story</span>
                 <span class="mini-title">${esc(t.title)}</span>
                 <span class="mini-text is-excerpt">&ldquo;${esc(t.body[0])}&rdquo;</span>
               </span>
@@ -382,7 +382,7 @@ function renderHome(query = "") {
           }).join("")}
         </div>
 
-        <a class="rcpt-archive-link" href="#history">See the full archive &rarr;</a>
+        <a class="rcpt-archive-link" href="#history">Browse all the history &rarr;</a>
       </section>
     </div>`;
 
@@ -434,22 +434,20 @@ function renderHistory() {
     <div class="content">
       <header class="page-head">
         <h2>The history you were never given.</h2>
-        <p>One person, one battle, one council at a time. Three to five minutes each.</p>
+        <p>How it actually happened, and why. One person, battle or builder at a time.</p>
       </header>
 
-      <p class="lede">Not a story and not a textbook: how the thing actually worked, what the sources argue about, and why it came out the way it did.</p>
-
       <div class="filter-row">
-        <p class="filter-label">Browse by era</p>
+        <p class="filter-label">By era</p>
         <div class="chips">${withContent(ERAS, BRIEFS, "era").map(e => chip("history", "era", e, e)).join("")}</div>
       </div>
       <div class="filter-row">
-        <p class="filter-label">Browse by kind</p>
+        <p class="filter-label">By subject</p>
         <div class="chips">${withContent(KINDS, BRIEFS, "kind").map(k => chip("history", "kind", k, k)).join("")}</div>
       </div>
 
       ${list.length ? `<div class="shelf">${list.map(([slug, b]) => briefCardHTML(slug, b)).join("")}</div>`
-        : `<p class="empty">Nothing on this shelf yet. Clear a filter, or come back — new briefs go up twice a week.</p>`}
+        : `<p class="empty">Nothing here yet. Clear a filter, or check back — new history goes up every day.</p>`}
     </div>`;
 }
 
@@ -468,20 +466,20 @@ function renderToday(md) {
     <div class="content">
       <header class="page-head">
         <h2>Today in history</h2>
-        <p>One true thing that happened on this date. Under a minute.</p>
+        <p>One true thing that happened on this date.</p>
       </header>
 
       <p class="date-line">${esc(dayLabel(asked))}</p>
 
-      ${entry ? "" : `<p class="empty-note">This date is still being written. Here's the closest one we have: ${esc(dayLabel(shown))}.</p>`}
+      ${entry ? "" : `<p class="empty-note">Nothing for this date yet. Here&rsquo;s the closest one: ${esc(dayLabel(shown))}.</p>`}
 
       ${list && list.length ? list.map(e => `
       <article class="entry">
         <p class="entry-year">${esc(e.year)}</p>
         <p class="entry-text">${esc(e.text)}</p>
         ${e.brief || e.tale ? `<p class="entry-links">
-          ${e.brief ? `<a href="#brief/${e.brief}">Go deeper: read the full brief</a>` : ""}
-          ${e.tale ? `<a href="#tale/${e.tale}">Read the tale that goes with it</a>` : ""}
+          ${e.brief ? `<a href="#brief/${e.brief}">Read the full history</a>` : ""}
+          ${e.tale ? `<a href="#tale/${e.tale}">Read the bedtime story that goes with it</a>` : ""}
         </p>` : ""}
       </article>`).join("") : `<p class="empty">Nothing here yet.</p>`}
 
@@ -491,7 +489,7 @@ function renderToday(md) {
         <label class="date-pick"><span>Pick a date</span><input type="date" id="datePick" /></label>
       </nav>
 
-      <p class="filter-label">Marked dates have an entry.</p>
+      <p class="filter-label">Dates with an entry</p>
       <div class="chips">${marked.map(k =>
         `<a class="chip${k === shown ? " is-on" : ""}" href="#today/${k}">${esc(dayLabel(k))}</a>`).join("")}</div>
     </div>`;
@@ -506,7 +504,10 @@ function renderToday(md) {
 
 function renderBedtime() {
   const f = filters.bedtime;
+  /* a multi-part story is one card on the shelf, opened at part 1; the tale
+     page links the other parts */
   const list = Object.entries(TALES).filter(([, t]) =>
+    (!t.night || t.night.n === 1) &&
     (!f.age || t.age === f.age) &&
     (!f.theme || t.theme === f.theme) &&
     (!f.virtue || t.virtue === f.virtue));
@@ -514,8 +515,8 @@ function renderBedtime() {
   main.innerHTML = `
     <div class="content">
       <header class="page-head">
-        <h2>Knights, dragons, forests. Lights out in ten minutes.</h2>
-        <p>Fairy tales, legends, and real stories retold for reading aloud. Written in two bands, ${esc(AGE_BANDS[1])} and ${esc(AGE_BANDS[3])}.</p>
+        <h2>Bedtime stories to read aloud.</h2>
+        <p>Fairy tales, legends and true stories, retold for ages 4&ndash;9.</p>
       </header>
 
       <div class="filter-row">
@@ -524,7 +525,6 @@ function renderBedtime() {
           ${Object.entries(AGE_BANDS).map(([id, label]) =>
             chip("bedtime", "age", Number(id), label)).join("")}
         </div>
-        <p class="filter-note">Older ages are coming. Each story will be adapted to reading level and attention span, so you never read the wrong one.</p>
       </div>
 
       <div class="filter-row">
@@ -535,11 +535,11 @@ function renderBedtime() {
       <div class="filter-row">
         <p class="filter-label">What&rsquo;s it about?</p>
         <div class="chips">${withContent(VIRTUES, TALES, "virtue").map(v => chip("bedtime", "virtue", v, v)).join("")}</div>
-        <p class="filter-note">The one to reach for when something happened today. A tale does not have to have a castle in it, but it is always about something.</p>
+        <p class="filter-note">Pick one for something that happened today.</p>
       </div>
 
       ${list.length ? `<div class="shelf">${list.map(([slug, t]) => taleCardHTML(slug, t)).join("")}</div>`
-        : `<p class="empty">Nothing on this shelf yet. Clear a filter, or come back — new tales go up twice a week.</p>`}
+        : `<p class="empty">Nothing here yet. Clear a filter, or check back — new stories go up every day.</p>`}
     </div>`;
 }
 
@@ -547,7 +547,7 @@ function renderBedtime() {
 
 function renderBrief(slug) {
   const b = BRIEFS[slug];
-  if (!b) return renderMissing("That brief isn't here.", "history", "History for dads");
+  if (!b) return renderMissing("That page isn't here.", "history", "History for dads");
   const tale = TALES[b.tale];
 
   main.innerHTML = `
@@ -559,14 +559,14 @@ function renderBrief(slug) {
       </header>
       <p class="lede">${esc(b.hook)}</p>
       <div class="post-body">${b.body.map(p => `<p>${esc(p)}</p>`).join("")}</div>
-      ${b.stillWithUs ? `<p class="callout"><strong>Still with us.</strong> ${esc(b.stillWithUs)}</p>` : ""}
-      ${tale ? `<p class="callout"><strong>Read it to them.</strong> <a href="#tale/${b.tale}">${esc(tale.title)}</a> · ${esc(tale.minutes)} min read-aloud</p>` : ""}
+      ${b.stillWithUs ? `<p class="callout"><strong>Still around today.</strong> ${esc(b.stillWithUs)}</p>` : ""}
+      ${tale ? `<p class="callout"><strong>Bedtime story.</strong> <a href="#tale/${b.tale}">${esc(tale.title)}</a> · ${esc(tale.minutes)} min read-aloud</p>` : ""}
     </div>`;
 }
 
 function renderTale(slug) {
   const t = TALES[slug];
-  if (!t) return renderMissing("That tale isn't here.", "bedtime", "Bedtime stories");
+  if (!t) return renderMissing("That story isn't here.", "bedtime", "Bedtime stories");
   const brief = t.brief ? BRIEFS[t.brief] : null;
   const siblings = t.series
     ? Object.entries(TALES).filter(([, x]) => x.series === t.series)
@@ -578,13 +578,13 @@ function renderTale(slug) {
       ${backLink("bedtime", "Bedtime stories")}
       <header class="page-head">
         <h2>${esc(t.title)}</h2>
-        <p>${esc(ageText(t))} · ${esc(t.minutes)} min read-aloud${t.theme ? ` · ${esc(t.theme)}` : ""} · ${esc(t.virtue)} · ${esc(t.origin)}${t.night ? ` · night ${t.night.n} of ${t.night.of}` : ""}</p>
+        <p>${esc(ageText(t))} · ${esc(t.minutes)} min read-aloud${t.theme ? ` · ${esc(t.theme)}` : ""} · ${esc(t.virtue)} · ${esc(t.origin)}${t.night ? ` · part ${t.night.n} of ${t.night.of}` : ""}</p>
       </header>
       ${t.source ? `<p class="tale-source"><strong>Where it comes from.</strong> ${esc(t.source)}</p>` : ""}
       <div class="tale-body">${t.body.map(p => `<p>${esc(p)}</p>`).join("")}</div>
-      ${siblings.length ? `<p class="callout"><strong>The rest of it.</strong> ${siblings.map(([s, x]) =>
-        s === slug ? `<span class="is-here">Night ${x.night.n}</span>` : `<a href="#tale/${s}">Night ${x.night.n}</a>`).join(" · ")}</p>` : ""}
-      ${brief ? `<p class="callout"><strong>Goes with.</strong> <a href="#brief/${t.brief}">${esc(brief.title)}</a> · ${brief.minutes} min for you</p>` : ""}
+      ${siblings.length ? `<p class="callout"><strong>All parts.</strong> ${siblings.map(([s, x]) =>
+        s === slug ? `<span class="is-here">Part ${x.night.n}</span>` : `<a href="#tale/${s}">Part ${x.night.n}</a>`).join(" · ")}</p>` : ""}
+      ${brief ? `<p class="callout"><strong>Goes with.</strong> <a href="#brief/${t.brief}">${esc(brief.title)}</a> · ${brief.minutes} min read for you</p>` : ""}
     </div>`;
 }
 
@@ -599,11 +599,11 @@ const META = {
   home:    ["Saints & Dragons | History for dads, tales for bedtime",
             "Dads learning things worth knowing & passing them on to their kids. History, faith and virtue, handed down rather than explained."],
   history: ["History for Dads | Saints & Dragons",
-            "Short history notes on how things actually worked \u2014 battles, builders, saints and Romans, each paired with a tale that carries the same thing."],
+            "Short history on how things actually worked \u2014 battles, builders, saints and Romans, each with a bedtime story on the same idea."],
   today:   ["Today in History | Saints & Dragons",
-            "One short, true story for each date, filled in week by week. Under a minute to read."],
+            "One short, true story for each date on the calendar."],
   bedtime: ["Bedtime Stories for Ages 4 to 9 | Saints & Dragons",
-            "Fairy tales, legends, and real stories retold for reading aloud. Knights, dragons, castles and the sea, 2 to 11 minutes each."]
+            "Fairy tales, legends and true stories retold for reading aloud, for ages 4 to 9. Knights, dragons, castles and the sea."]
 };
 
 const DEFAULT_META = [document.title,
@@ -616,7 +616,7 @@ function setMeta(key, param) {
     desc = BRIEFS[param].hook;
   } else if (key === "tale" && TALES[param]) {
     title = `${TALES[param].title} | Saints & Dragons`;
-    desc = `A tale to read aloud, written for ages ${TALES[param].age}. About ${TALES[param].minutes} minutes.`;
+    desc = `A bedtime story to read aloud. ${ageText(TALES[param])}, about ${TALES[param].minutes} minutes.`;
   }
   document.title = title;
   document.querySelector('meta[name="description"]').setAttribute("content", desc);

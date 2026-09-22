@@ -11,16 +11,29 @@ once** — it is the one sentence that has to match everywhere.
 Two things it commits us to, both easy to break by accident:
 
 - **The subject is the dad, not the product.** It opens with what he does,
-  not with what arrives. Copy that starts "The Nightly Receipt is…" has
-  quietly changed the subject.
+  not with what arrives. Copy that starts "The receipt is…" has quietly
+  changed the subject.
 - **"Handed down rather than explained" is a refusal.** No moralising, no
   lesson spelled out after the story, no fun facts. The About page says the
   same thing at length under *What this is not*; that section and this line
   have to keep agreeing.
 
-**The Nightly Receipt** is the product: today in history, a piece of history
-for you, and a tale to read aloud, printed like a till receipt. `/` sells it;
-`/account` is it.
+**The product** is a daily pair: a piece of history the dad reads on his own
+time (morning, lunch, before he leaves work) and a bedtime story on the same
+idea he reads to them that night, plus today in history. The receipt is how
+`/account` *draws* it, not what it is called. `/` sells it; `/account` is it.
+
+**Cadence and plans.** Paid: a new history and bedtime story every day, 7 of
+each a week. Free: one of each a week. Separately, `/7stories` is a free
+7-story PDF lead magnet. The only time claim anywhere in outward copy is
+"under 10 minutes" of reading for the dad; there is no "nightly" and no
+"twice a week". (The "Nightly Receipt" name and the twice-a-week claim were
+both dropped on purpose — don't bring them back.)
+
+**Outward words.** Readers see *history* and *bedtime story*. "Brief",
+"card", "shelf", "pairing", "band" and "night" (for a day's edition) are
+code names only — fine in `content.js`, comments and URL slugs (`#brief/…`
+stays, so old links keep working), never in visible text.
 
 `History for dads · Tales for bedtime` stays as the short lockup — the
 sidebar, the receipt header, the banners. It is a subset of the line above,
