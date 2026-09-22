@@ -14,31 +14,36 @@
  *
  * ---------------------------------------------------------------- voice
  *
- * The BRIEFS are written for a competent adult reader. The target is a
- * better version of an encyclopedia entry, not an adult version of a
- * children's story. Calibrate against the lead section of a good Wikipedia
- * article: roughly 20-22 words per sentence, Flesch-Kincaid grade 11-ish.
- * "Better" means the brief has a through-line an encyclopedia cannot have
- * -- it opens with a claim about what actually mattered and orders the
- * facts to support it, which is also the rule for what to cut.
+ * The BRIEFS are written for a competent adult reader, in one voice: the
+ * military explainer. Every brief is organised around how the thing
+ * physically worked and why that produced the result it did. The reader
+ * should finish knowing a mechanism, not having been told a story.
  *
- * Do:
- *   - Third person throughout. Complete sentences.
- *   - Causal connectives that do real work: because, which meant,
- *     therefore, although.
- *   - State uncertainty as a property of the evidence, not as suspense:
- *     "Estimates of their size vary widely and are not reliable."
- *   - Name the sources when they are doing work, and say whose side each
- *     was on.
- *   - Include the mechanism: how the thing physically worked, and why that
- *     made the outcome what it was.
+ * Grammar first, because this is where two earlier rewrites failed:
  *
- * Don't:
- *   - Address the reader. No "you", no "we", no "nobody can tell you".
- *   - Use fragments or one-line paragraphs as dramatic beats.
- *   - Build to a reveal or end on a kicker. The last paragraph carries the
- *     heaviest consequence, not the neatest line.
- *   - Dramatize what a participant felt or knew unless a source says so.
+ *   - Put a person or a concrete thing in the subject slot. Harold,
+ *     William, his fleet, the shields, a horse. Never an abstract noun:
+ *     not "the lasting consequence was the replacement of a ruling class"
+ *     but "then he gave England to his own men".
+ *   - Active verbs doing real work. If a sentence's main verb is is, was
+ *     or were, look for the verb hiding inside one of its nouns.
+ *   - No agentless passives. William burned the north; devastation did not
+ *     happen to it.
+ *
+ * Then:
+ *
+ *   - Explain the mechanism before the outcome, so the outcome reads as a
+ *     consequence rather than an event.
+ *   - State uncertainty as a property of the evidence, and say whose side
+ *     each source was on.
+ *   - Third person. Complete sentences. No "you", no fragments used as
+ *     dramatic beats, no building to a reveal, no closing kicker. The last
+ *     paragraph carries the heaviest consequence, not the neatest line.
+ *   - Don't dramatize what a participant felt or knew unless a source says
+ *     so.
+ *
+ * Roughly 20-22 words per sentence. The Battle of Hastings brief is the
+ * reference implementation; read it before writing a new one.
  *
  * The TALES are read-aloud stories for children and are governed by none
  * of the above.
@@ -177,19 +182,19 @@ const BRIEFS = {
     era: "Knights and lords",
     kind: "A battle",
     minutes: 4,
-    hook: "The decisive engagement of the Norman conquest, fought in a single day on 14 October 1066. It ended with the English king dead on the field, and within twenty years with almost the whole English landholding class replaced.",
+    hook: "Two armies built to fight in incompatible ways met on a ridge north of Hastings on 14 October 1066. The fighting lasted from nine in the morning until dusk, which was extraordinarily long for the period, because neither system could quickly undo the other.",
     stillWithUs: "Nearly every English word for meat at the table \u2014 beef, pork, mutton \u2014 comes from the French the Normans brought. The animals in the field kept their old English names: cow, pig, sheep.",
     tale: "lion-and-the-mouse",
     body: [
-      "The battle is usually explained by what happened on the ridge above Hastings. It is better explained by what had happened at Stamford Bridge nineteen days earlier. Harold Godwinson won that engagement outright, and the campaign that produced it cost him his fleet, his coastal levy and much of the professional core of his army. An older view puts the weight instead on his decision to force a battle at once, rather than on the state of the men he brought to it. Both explanations turn on the same three weeks.",
-      "The succession behind them had no legal remedy. Edward the Confessor died childless on 5 January 1066, and the English kingship was not strictly hereditary: a claim rested on some mixture of designation, kinship and the assent of the magnates. Three men had one. Harold, the most powerful noble in England, was crowned on 6 January on the strength of a deathbed nomination that only English sources record. Harald Hardrada of Norway claimed the throne under an agreement made a generation earlier between Magnus the Good and Harthacnut. William, Duke of Normandy, claimed a promise from Edward in 1051 and an oath sworn by Harold over relics in about 1064, both attested only by Norman writers.",
-      "William could not sail for most of the summer. His fleet waited on a wind at the mouth of the Dives, and later at Saint-Val\u00e9ry, while the army around it ate through its supplies. Harold spent those months holding the south coast with his fleet and the fyrd, the shire levy, which served a fixed term. On 8 September the term expired and the provisions ran out together, and the levy went home to the harvest. That is why William came ashore at Pevensey on 28 September against no opposition.",
-      "By then Harold was committed in the other direction. Hardrada, joined by Harold\u2019s exiled brother Tostig, had landed in Yorkshire and destroyed the northern levies under Earls Edwin and Morcar at Fulford on 20 September. Harold moved north from London at a rate that has never been properly explained, covering some 185 miles in four or five days, and caught the Norwegians unprepared at Stamford Bridge on 25 September. Hardrada and Tostig were killed and the invasion was annihilated: of roughly three hundred ships that had come, the survivors needed twenty-four to go home. The victory was expensive all the same. Edwin and Morcar\u2019s forces had been wrecked at Fulford and would not appear at Hastings, and Harold\u2019s household troops had fought twice in five days before marching the length of England again.",
-      "The two armies were differently constituted, and that difference is the tactical problem of the battle. Estimates of their size vary widely and are not reliable. Their composition is better attested: the English force was almost entirely infantry with very few archers, while about half of William\u2019s was infantry and the rest was split between cavalry and archers. Harold took a ridge across the road to London and formed a shield wall, ranks closed up with shields overlapping, the household troops in mail at the front with the two-handed Danish axe. Infantry in close order on rising ground was effectively proof against cavalry for as long as the formation held. Archery told against it poorly, partly because shields could be raised, and partly because archers shooting uphill at an enemy with few bows of his own had no spent arrows to gather and shoot back.",
-      "William\u2019s answer was to combine the three arms so as to make the line move: archery to force the shields up, infantry to fix the front, cavalry into whatever gap the first two opened. It did not work for most of the day. The battle ran from about nine in the morning until dusk, unusually long for the period, and the early assaults achieved little. The turn came when the Breton contingent on the Norman left gave way and a report spread that William was dead; he is said to have pushed back his helmet and ridden down the line to be recognised. English troops pursued the Bretons off the ridge and were cut down on level ground. Norman writers state that the manoeuvre was afterwards repeated on purpose, which is disputed: a feigned retreat is difficult for eleventh-century cavalry to execute under contact, and it is also a stock motif in medieval accounts of victory.",
-      "Harold was killed late in the day, and how is not established. The Bayeux Tapestry shows a figure struck in the eye by an arrow, beneath the inscription Harold rex interfectus est. The Carmen de Hastingae Proelio instead describes four knights riding him down and mutilating the body. The arrow may not be original, since that stitching was restored in the nineteenth century and earlier drawings of it are ambiguous. None of the principal sources is disinterested: William of Poitiers wrote for the victor, the Tapestry was made for William\u2019s half-brother Odo of Bayeux, and the date and authorship of the Carmen are themselves contested. One of the best-documented deaths of the English Middle Ages is therefore also an unresolved one.",
-      "The defeat did not end English resistance, which continued in the north and the fens until about 1071. It was answered in the winter of 1069 by the systematic devastation of the country between York and Durham, and Domesday Book still recorded those vills as waste seventeen years later. William founded an abbey on the battlefield in penance, and the high altar of its church is said to stand where Harold fell.",
-      "The lasting consequence was the replacement of a ruling class. Of roughly 190 major tenants holding land directly from the king at the Domesday survey of 1086, only a handful were English, and no comparable transfer has happened in England before or since. Norman French became the language of government, law and the higher aristocracy, and it remained the language of the royal courts until the Statute of Pleading in 1362. The Bayeux Tapestry illustrates the arrangement in miniature: seventy metres of wool embroidery on linen, made for a Norman patron within a generation of the battle, and almost certainly worked in Canterbury by English hands."
+      "Harold Godwinson\u2019s men fought on foot, in line, with spears and two-handed axes, and they carried almost no bows. Half of William of Normandy\u2019s force also fought on foot; the other half rode horses or shot arrows. Those two systems cancel each other almost perfectly, which is why a battle that both sides expected to settle in an hour or two ran all day.",
+      "England had no machinery for settling a disputed succession. A claim to the throne rested on some mixture of a dying king\u2019s nomination, blood, and the agreement of the great magnates, and when those pointed in different directions no court existed to choose between them. Edward the Confessor died childless on 5 January 1066. Harold, the richest noble in England, had himself crowned the next morning, citing a deathbed nomination only English writers report. Harald Hardrada of Norway invoked a treaty two Scandinavian kings had signed a generation earlier. William claimed a promise from Edward and an oath Harold had sworn him over relics, both attested only by Normans. Three claims, no arbiter, so armies decided it.",
+      "William could not cross until the wind let him, and that one constraint shaped everything after it. His fleet waited at the mouth of the Dives and then at Saint-Val\u00e9ry through August and most of September while the army he had assembled ate its way through the supplies. Harold had to hold the coast against him using the fyrd, the shire levy, which owed a fixed term of service and nothing beyond it. On 8 September the term expired, the provisions ran out with it, and the men went home to bring in the harvest; the fleet sailed back to London. A defence built on part-time soldiers cannot stay mobilised indefinitely, and William\u2019s delay simply outlasted it. When the wind finally turned he came ashore at Pevensey on 28 September and met nobody at all.",
+      "Harold was three hundred miles away by then. Hardrada, with Harold\u2019s exiled brother Tostig, had landed in Yorkshire and destroyed the northern levies under Earls Edwin and Morcar at Fulford on 20 September. Harold drove his household troops north from London faster than anyone has satisfactorily explained, roughly 185 miles in four or five days, and caught the Norwegians strung out and half-armed at Stamford Bridge on 25 September. He killed Hardrada and Tostig and wrecked the invasion so completely that the survivors sailed home in twenty-four ships out of the three hundred that had come. Speed on that scale costs something, though. His professionals fought two actions in five days and then marched the length of England a second time, and the northern levies that should have thickened his line in Sussex had already been destroyed at Fulford.",
+      "What Harold built on the ridge was a machine for cancelling cavalry. Shields overlapped, ranks pressed close, and the whole formation rested on one condition: no man steps out of it. A horse will not run into a solid line. So long as the line held, William\u2019s knights could only ride up, fail to make contact, and ride away, and Harold\u2019s housecarls could work their axes into anything that came close enough \u2014 the Danish axe was heavy enough to bring down a horse, and the man swinging it needed both hands and a step of room. William\u2019s archers faced the mirror image of the same problem. Shooting uphill they either struck raised shields or sailed clean over the formation, and because the English had brought almost no bows, no spent arrows lay on the ground for the Normans to gather and send back. He was attacking a problem that force could not solve.",
+      "So he attacked in sequence instead, sending archers to make the shields come up, then infantry to close and hold the front, then cavalry into whatever gap the first two opened. It failed all morning. Nobody breaks a shield wall from outside while it holds. The wall has to be persuaded to stop being a wall. That is what eventually happened. The Bretons on William\u2019s left gave way and ran, a report went round that William was dead, and he shoved his helmet back off his face and rode down his own line to be recognised. English troops chased the fleeing Bretons down off the ridge, and on level ground, out of formation, cavalry killed them easily. Norman writers claim William then had the retreat performed deliberately, twice more. Historians argue about it, because a feigned flight is a difficult thing for eleventh-century cavalry to bring off under contact, and because chroniclers liked the story. Whatever produced them, each pursuit cost Harold men he could not replace, and a wall with fewer men in it covers less ground.",
+      "Harold died late in the day and nobody can establish how. The Bayeux Tapestry shows a figure taking an arrow in the eye beneath the words Harold rex interfectus est. The Carmen de Hastingae Proelio has four knights ride him down and mutilate the body. The arrow may not even be original, since a nineteenth-century restorer reworked that stitching and earlier drawings of it are ambiguous. None of the witnesses is neutral: William of Poitiers wrote for the winner, Odo of Bayeux commissioned the Tapestry and was William\u2019s half-brother, and scholars still dispute when the Carmen was written and by whom.",
+      "Winning the battle did not give William the country, and the way he took it was again mechanical. He had perhaps ten thousand men to hold two million people, so he built castles \u2014 fast, cheap motte-and-bailey works of earth and timber that a garrison could throw up in a fortnight and that gave a few dozen horsemen somewhere to retreat to. Several hundred went up in twenty years. When the north rose a second time in 1069 he starved it instead: he burned the country between York and Durham so thoroughly that Domesday Book still recorded those villages as waste seventeen years later.",
+      "Then he gave England to his own men. At the Domesday survey of 1086, roughly 190 major tenants held their land directly from the king and only a handful of them were English. No comparable transfer has happened in this country before or since. Their language went with the land: Norman French ran the government, the law and the great households, and it stayed the language of the royal courts until the Statute of Pleading in 1362. The Bayeux Tapestry shows the arrangement in miniature \u2014 seventy metres of wool embroidery worked, almost certainly, by English hands in Canterbury, for a Norman who wanted the story told his way."
     ]
   }
 };
