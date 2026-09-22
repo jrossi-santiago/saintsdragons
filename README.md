@@ -33,8 +33,9 @@ Static site: plain HTML, CSS, and vanilla JavaScript. No build step, no dependen
 
 - `index.html` — the public marketing home at `/`. Self-contained (its own
   inlined `<style>`), but reads the shared design tokens from `styles.css` so
-  it stays on-brand. No login exists, so every CTA on it just links to
-  `/account` — there's nothing to gate yet.
+  it stays on-brand. No login exists. Every CTA on it points at the `#start`
+  signup form near the foot of the page; only the footer's "Already a member?"
+  link goes to `/account`.
 - `account/` — the actual app, for people who've "signed up":
   - `index.html` — page shell: sidebar (profile, bio, socials, theme toggle,
     search, page nav) and main content area. Loads `/content.js` and
@@ -89,6 +90,16 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
   underneath says out loud. When something ships, move it across and change its
   icon — never tick an item in the right-hand column in place.
 - **Campaign page** — all visible copy in `7stories/index.html` is sample text. The form fields are first name, children's age ranges (multi-select: 0–2, 3–5, 6–9, 10+) and email; all are required.
+- **Landing-page signup (`#start`)** — the only thing on `/` that collects
+  anything. First name and email, posting to the same Formspree endpoint as JSON
+  with `source: "/#start"`. The endpoint is the form's `action` attribute and the
+  inline script reads it from there, same as `/7stories`, so there is one place
+  to change it. The form ships as real markup with a real `action`, so it still
+  posts if the script never runs (see rule 2 in `LESSONS-LEARNED.md`). A failed
+  POST is reported to the reader rather than swallowed — same reasoning as the
+  Contact form: there is no download to fall back on. **Nothing sends an email.**
+  Addresses land in the Formspree inbox and the first receipt goes out by
+  whatever means you send it.
 - **Signup collection** — the form posts to Formspree (`https://formspree.io/f/xqpaqzne`, set as the form's `action`) as JSON: `firstName`, `email`, `childAges`, `source`. Submissions are collected there; no email is sent to the reader. To change endpoints, edit the `action` attribute — `stories.js` reads it from the form. If the POST fails, the download is still unlocked so a network error never blocks a reader.
 - **Contact form** — posts to the same Formspree endpoint as the campaign page,
   as JSON: `name`, `email`, `message`, `source`. The endpoint is `FORM_ENDPOINT`
