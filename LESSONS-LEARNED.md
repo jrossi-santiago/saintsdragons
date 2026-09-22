@@ -61,3 +61,40 @@ rather than being unhidden by script, and the PDF link is resolved at load from
 5. **Root-hosting assumption.** `../styles.css` only resolves at the bare path
    because the site is served from the domain root. If the site ever moves under
    a subpath, every `../` link needs revisiting.
+
+---
+
+## 2026-09-22 — the dark-theme logo outline read green
+
+**Symptom.** The recoloured dragon shipped with a `#cfc3a4` outline on the dark
+theme. In the sidebar avatar the outline looked distinctly green — close to the
+lime of the stock artwork the recolour was meant to get away from.
+
+**Cause.** `#cfc3a4` is `--rcpt-rule`, and reusing it looked like good hygiene:
+an existing token rather than a new hex. But it is **hue 43° at 31% saturation**
+— an olive. It only ever reads as warm tan because every other use of it draws
+hairlines on `#f6f1e3` cream paper, where the surround is lighter than the line
+and the chroma is swamped. Two things changed when it moved onto the logo:
+
+- **Near-black surround.** Against `#0b0b0c` the line is now the light element,
+  and 31% saturation that was invisible on paper becomes a stated colour.
+- **Simultaneous contrast with the body.** The body is hue 17°. The eye pushes
+  an adjacent desaturated yellow *away* from its vivid neighbour, exaggerating a
+  26° gap into a visible green cast.
+
+**Why review missed it.** The candidate outlines were compared on a rendered
+screenshot, but only for *value* — the question asked was "does the outline
+outshine the body", and it does not. Hue was never the axis under test, so the
+one swatch in the set that was off-hue won on the axis being judged.
+
+**Fix.** `#d2c8be` — hue 30°, saturation 18%. Same lightness, so the body still
+dominates; pulled toward the body's hue with the chroma cut, so there is no cast.
+
+### Rules
+
+6. **A token is only warm/neutral relative to the surface it was designed for.**
+   Before reusing a colour on a new surface, read its HSL. Low-saturation
+   shorthand like "bone" or "warm grey" is unreliable above roughly 15%
+   saturation once the surround inverts.
+7. **When comparing colour candidates, name the axis you are judging and check
+   the others separately.** A value comparison will happily pick a hue mistake.
