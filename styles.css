@@ -94,19 +94,21 @@ a { color: inherit; text-decoration: none; }
   border-bottom: 1px solid var(--line);
 }
 
+/* The brand mark. Two files per theme rather than one file driven by the
+   tokens above: a background-image (or an <img>) is a separate document and
+   cannot read this stylesheet's custom properties, so each variant has its
+   colours baked in. `-light` carries the dark ink outline for pale surfaces,
+   `-dark` the bone outline for the dark ones. Paths are root-absolute so
+   they survive being loaded from a subdirectory page — see LESSONS-LEARNED. */
 .avatar {
   width: 58px; height: 58px; flex: none;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 50% 38%, var(--chip) 0 34%, transparent 35%),
-    linear-gradient(160deg, #3a372f, #23211d);
+  background: var(--chip) url("/assets/dragon-dark.svg") no-repeat 50% 52% / 74%;
   border: 1px solid var(--line);
   box-shadow: inset 0 0 0 3px rgba(255,255,255,.03);
 }
 :root[data-theme="light"] .avatar {
-  background:
-    radial-gradient(circle at 50% 38%, #fff 0 34%, transparent 35%),
-    linear-gradient(160deg, #d9d3c7, #c3bcae);
+  background: var(--chip) url("/assets/dragon-light.svg") no-repeat 50% 52% / 74%;
 }
 
 .identity-text h1 {

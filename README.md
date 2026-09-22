@@ -25,6 +25,7 @@ Static site: plain HTML, CSS, and vanilla JavaScript. No build step, no dependen
   mobile sidebar. Only loaded by `account/index.html`.
 - `content.js` — the nightly content: `CARDS`, `BRIEFS`, `TALES`, `TODAY`.
   Loaded before `app.js`. This is the only file you edit to add a night.
+- `assets/` — the brand mark. See "The logo" below.
 - `stories/` — standalone full-story pages the receipt's "Read the rest"
   links point to (e.g. `stories/the-lion-and-the-mouse.html`). Each one is a
   single self-contained file, not a subdirectory `index.html`, so there's no
@@ -55,7 +56,7 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
 
 ## Customizing
 
-- **Profile photo** — currently a blank placeholder (`.avatar` in `styles.css`). Replace with an `<img>` inside `.avatar` in `account/index.html`.
+- **Profile photo** — `.avatar` in `styles.css` currently shows the dragon mark. Replace the `background` with an `<img>` inside `.avatar` in `account/index.html` when there's a real photo.
 - **Pages** — the `About` and `Contact` pages are the only ones left in the `PAGES` object in `app.js`; nav links live in `account/index.html`. Everything else on the site is nightly content — see below.
 - **Social links** — the three `<a href="#">` entries in `.socials`.
 - **The marketing home (`index.html`)** — headline, pricing, and the "product shot" receipt preview in the hero are all hand-written copy, not pulled from `content.js`. Update them by hand when the pitch or price changes.
@@ -100,3 +101,48 @@ Per-page SEO titles and meta descriptions live in the `META` object in `app.js`
 and are swapped on each route change; `account/index.html`'s own `<title>` and
 `<meta name="description">` are the fallback for any page without an entry
 (currently About and Contact), and match the Home copy.
+
+## The logo
+
+`assets/source/dragon-original.png` is the artwork everything else is traced
+from — lime body, black outline, coral flame. **Keep it.** The SVGs cannot be
+edited back into it, and it is the reference if the mark ever needs redrawing.
+
+Two shapes, two themes, four files:
+
+| | pale surfaces (`-light`) | dark surfaces (`-dark`) |
+| --- | --- | --- |
+| **line art** — 48px and up | `dragon-light.svg` | `dragon-dark.svg` |
+| **solid silhouette** — below 48px | `dragon-mark-light.svg` | `dragon-mark-dark.svg` |
+
+The silhouette is not a nicety: below about 48px the outlined version closes up
+into an orange smudge. The landing topbar mark is 30px and uses it; the 58px
+sidebar avatar is line art.
+
+Colours, and why:
+
+| part | pale surfaces | dark surfaces |
+| --- | --- | --- |
+| body | `#e5825a` (`--accent`, dark theme) | `#e5825a` — same in both, it *is* the brand |
+| outline | `#221c15` (`--rcpt-ink`) | `#cfc3a4` (`--rcpt-rule`) |
+| flame | `#a8451f` (`--rcpt-red`) | `#c9502a` |
+
+The outline inverts because a near-black line vanishes on `#0b0b0c`. It is
+deliberately **bone, not paper white** — at full `#f6f1e3` the outline becomes
+the brightest thing in the frame and the logo reads as a cream dragon rather
+than an orange one. Same reason the flame lifts to `#c9502a` on dark: `#a8451f`
+against a dark ground is a smudge, not a colour.
+
+`dragon.svg` and `dragon-mark.svg` are self-switching copies that follow
+`prefers-color-scheme` from an internal `<style>`. They exist for the favicon
+and for any bare `<img>`, where an external stylesheet's custom properties
+cannot reach inside the file. **In-page CSS should use the explicit `-light` /
+`-dark` files**, because the site themes on a `data-theme` attribute, which
+`prefers-color-scheme` knows nothing about — a self-switching file in the
+sidebar would ignore the theme toggle and follow the OS instead.
+
+Every path is root-absolute (`/assets/…`) so a subdirectory page loaded at its
+bare path still finds them — see `LESSONS-LEARNED.md`.
+
+PNGs (`*-512.png`, `*-1024.png`, `apple-touch-icon.png`, `favicon-32.png`) are
+rendered from the SVGs for places that can't take vector.

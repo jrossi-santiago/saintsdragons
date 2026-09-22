@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Nightly Receipt — Saints &amp; Dragons</title>
 <meta name="description" content="Every night, two minutes: today in history, a piece of history worth knowing, and a bedtime tale — delivered like a receipt.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐉</text></svg>">
+<link rel="icon" href="/assets/dragon-mark.svg" type="image/svg+xml">
+<link rel="alternate icon" href="/assets/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -25,12 +27,13 @@
   }
   .lp-logo{ display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 1.15rem; font-weight: 600; }
   .lp-logo .amp{ color: var(--accent); }
+  /* the solid silhouette, not the line art — at 30px the outlined version
+     collapses into a smudge. Same two-file reasoning as .avatar. */
   .lp-logo-mark{
-    width: 30px; height: 30px; border-radius: 50%; flex: none;
-    background: radial-gradient(circle at 50% 38%, var(--chip) 0 34%, transparent 35%), linear-gradient(160deg, #3a372f, #23211d);
-    border: 1px solid var(--line);
+    width: 30px; height: 30px; flex: none;
+    background: url("/assets/dragon-mark-dark.svg") no-repeat 50% / contain;
   }
-  :root[data-theme="light"] .lp-logo-mark{ background: radial-gradient(circle at 50% 38%, #fff 0 34%, transparent 35%), linear-gradient(160deg, #d9d3c7, #c3bcae); }
+  :root[data-theme="light"] .lp-logo-mark{ background-image: url("/assets/dragon-mark-light.svg"); }
 
   .lp-nav-actions{ display: flex; align-items: center; gap: 10px; }
   .lp-theme-btn{
