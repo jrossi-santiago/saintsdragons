@@ -167,6 +167,37 @@ bare path still finds them — see `LESSONS-LEARNED.md`.
 PNGs (`*-512.png`, `*-1024.png`, `apple-touch-icon.png`, `favicon-32.png`) are
 rendered from the SVGs for places that can't take vector.
 
+### Social banners
+
+`assets/social/` holds the X and Substack banners. Two concepts, each in a dark
+and a paper colourway:
+
+- **lockup** — dragon, wordmark, tagline, and `ONE TRUE STORY · ONE TALE ·
+  EVERY NIGHT`. Says what this is in one glance.
+- **loop** — "You learn something worth knowing" → dragon in a dotted ring with
+  circulating arrows → "They get a story worth hearing", wordmark beneath.
+  Argues the actual proposition; asks the reader for two seconds more.
+  `loop-dark-x-wordmark-above` is the same thing with the wordmark on top —
+  kept as an alternative, but it reads top-heavy.
+
+Files are at the platforms' own dimensions (1500x500 for X, 1200x600 for
+Substack), not 2x. Both services re-encode on upload, so a retina export only
+costs weight — the first pass shipped 3000x1000 files named `1500x500`, which
+is the kind of thing that wastes someone's afternoon later.
+
+**The rule that matters if you edit these:** X overlays the profile avatar on
+the bottom-left and crops the header differently across viewports, so the whole
+composition lives in a centred block no wider than **1000px** and no taller than
+**300px** of the 1500x500 frame. The lockup measures 932x224 and the loop
+874x258. Both were checked against four cuts — height -25%, height -40%, width
+cropped to 2:1, and with the avatar overlaid — and nothing is lost in any of
+them. An earlier round that spread content toward the edges did get clipped.
+If you move something, re-check that budget rather than trusting the eye.
+
+These are rendered from standalone HTML templates that are **not** in the repo,
+so re-rendering at a new ratio currently means rebuilding them. Ask if you want
+the generator committed too.
+
 ### The knight
 
 `knight-light.svg` / `knight-dark.svg` (plus the self-switching `knight.svg`
