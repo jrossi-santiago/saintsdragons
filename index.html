@@ -146,6 +146,13 @@
     margin: 0 0 22px; max-width: 15ch;
   }
   .lp-h1 em{ font-style: normal; color: var(--accent); }
+  /* the second line under the h1 — the format, now that the h1 carries the why */
+  .lp-h1-sub{
+    font-family: var(--serif); font-weight: 500;
+    font-size: clamp(1.25rem, 2vw, 1.55rem); line-height: 1.3;
+    color: var(--text); margin: 0 0 18px; max-width: 26ch;
+  }
+  .lp-h1-sub em{ font-style: normal; color: var(--accent); }
   .lp-sub{ font-size: 1.08rem; line-height: 1.6; color: var(--text-dim); max-width: 46ch; margin: 0 0 30px; }
   .lp-hero-actions{ display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
   .lp-hero-actions .lp-cta{ padding: 15px 26px; font-size: .98rem; }
@@ -200,6 +207,63 @@
     padding: 6px 12px; border-radius: 999px;
     box-shadow: 0 10px 20px -10px rgba(0,0,0,.5);
   }
+
+  #not .lp-h2{ max-width: 24ch; }
+  .lp-shot-goes{ margin-top: .35rem; padding-bottom: .9rem; font-size: .66rem; color: #6b6153; }
+  .lp-shot-goes b{ color: #221c15; }
+  .lp-shot-meta{ display: block; margin-top: .15rem; font-size: .62rem; color: #6b6153; letter-spacing: .02em; }
+
+  /* ---------- the real product: screenshots of /account ----------
+     Rendered by tools/render-landing-shots.js, one per theme; the page
+     shows whichever matches its own theme. */
+  .lp-product{ position: relative; margin: 44px auto 0; max-width: 980px; padding-bottom: 40px; }
+  .lp-browser{
+    border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
+    background: var(--surface); box-shadow: 0 40px 80px -40px rgba(0,0,0,.6);
+    width: 86%;
+  }
+  .lp-browser-bar{ display: flex; gap: 6px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line-soft); }
+  .lp-browser-bar i{ width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  .lp-browser-bar span{
+    margin-left: 12px; flex: 1; max-width: 280px; padding: 3px 12px; border-radius: 999px;
+    background: var(--chip); color: var(--text-faint); font-size: .72rem; font-family: "Space Mono", monospace;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .lp-product img{ display: block; width: 100%; height: auto; }
+  .lp-phone{
+    position: absolute; right: 0; bottom: 0; width: 30%; max-width: 280px;
+    border-radius: 28px; overflow: hidden; border: 8px solid #141414;
+    box-shadow: 0 40px 70px -30px rgba(0,0,0,.7);
+  }
+  .lp-shot-light{ display: none !important; }
+  :root[data-theme="light"] .lp-shot-light{ display: block !important; }
+  :root[data-theme="light"] .lp-shot-dark{ display: none !important; }
+  .lp-product-caps{ display: grid; gap: 18px; margin: 28px auto 0; max-width: 980px; grid-template-columns: 1fr; }
+  @media (min-width: 700px){ .lp-product-caps{ grid-template-columns: 1fr 1fr; } }
+  .lp-product-caps p{ margin: 0; color: var(--text-dim); font-size: .95rem; line-height: 1.6; }
+  .lp-product-caps strong{ color: var(--text); display: block; font-family: var(--serif); font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+  @media (max-width: 560px){
+    .lp-browser{ width: 100%; }
+    .lp-browser-bar span{ display: none; }
+    .lp-phone{ width: 42%; border-width: 5px; border-radius: 18px; right: -6px; bottom: -8px; }
+  }
+
+  /* ---------- small card grids: who it's for, what it is not ---------- */
+  .lp-grid{ display: grid; gap: 16px; margin-top: 36px; grid-template-columns: 1fr; }
+  @media (min-width: 640px){ .lp-grid{ grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1020px){ .lp-grid{ grid-template-columns: repeat(4, 1fr); } }
+  .lp-tile{
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 22px 20px;
+  }
+  .lp-tile h3{ font-family: var(--serif); font-size: 1.12rem; font-weight: 600; margin: 0 0 8px; line-height: 1.3; }
+  .lp-tile p{ margin: 0; color: var(--text-dim); font-size: .93rem; line-height: 1.6; }
+  .lp-tile .who{ color: var(--accent); }
+
+  /* reader quotes — ships hidden until there are real ones; see README */
+  .lp-quote{ margin: 0; }
+  .lp-quote blockquote{ margin: 0 0 12px; font-family: var(--serif); font-size: 1.08rem; line-height: 1.5; color: var(--text); }
+  .lp-quote figcaption{ font-size: .85rem; color: var(--text-faint); }
 
   /* ---------- section shell ---------- */
   .lp-section{ padding: clamp(48px, 8vw, 88px) clamp(20px, 5vw, 56px); }
@@ -351,13 +415,14 @@
 <section class="lp-hero">
   <div class="lp-reveal">
     <p class="lp-eyebrow">History for dads &middot; Tales for bedtime</p>
-    <h1 class="lp-h1">A true story for <em>you</em>. A bedtime story for <em>them</em>.</h1>
-    <p class="lp-sub">Every day, a piece of real history you read on your own time &mdash; over coffee, at lunch, before you leave work. Then a bedtime story on the same idea to read them tonight. Under 10 minutes of reading for you.</p>
+    <h1 class="lp-h1">Be the dad with <em>stories</em> worth passing on.</h1>
+    <p class="lp-h1-sub">A true story for <em>you</em>. A bedtime story for <em>them</em>.</p>
+    <p class="lp-sub">Every day, one piece of real history for you to read, and a bedtime story on the same idea for your kids. Under 10 minutes of reading.</p>
     <div class="lp-hero-actions">
       <a class="lp-cta" href="#start">Start free</a>
       <button class="lp-cta is-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See a sample day</button>
     </div>
-    <p class="lp-fineprint">Free: one history and one bedtime story every week. No card needed.</p>
+    <p class="lp-fineprint">Free: one history and one bedtime story every week, by email. No card needed.</p>
   </div>
 
   <div class="lp-shot-wrap lp-reveal">
@@ -369,14 +434,38 @@
           <div class="lp-shot-tag">History for dads &middot; Tales for bedtime</div>
           <div class="lp-shot-date">Monday &middot; September 21</div>
         </div>
-        <div class="lp-shot-slot-label"><span class="no">01</span> Today in History</div>
-        <div class="lp-shot-item">
-          <span class="yr">19 BCE</span>The poet Virgil died at Brundisium, leaving the <em>Aeneid</em> unfinished&hellip;
-        </div>
-        <div class="lp-shot-slot-label"><span class="no">02</span> History for You</div>
+        <div class="lp-shot-slot-label"><span class="no">01</span> History for You</div>
         <div class="lp-shot-item">The Battle of Hastings, 1066 &mdash; one afternoon that rewired the English language&hellip;</div>
+        <div class="lp-shot-slot-label"><span class="no">02</span> Bedtime Story</div>
+        <div class="lp-shot-item">The Lion and the Mouse<span class="lp-shot-meta">Ages 4&ndash;6 &middot; 2 min read-aloud</span></div>
+        <div class="lp-shot-goes"><b>Goes with:</b> The Battle of Hastings, 1066</div>
       </div>
-      <div class="lp-shot-fade"><span class="lp-shot-more">+ a bedtime story to go with it</span></div>
+      <div class="lp-shot-fade"><span class="lp-shot-more">+ today in history</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section" id="product">
+  <div class="lp-section-inner">
+    <p class="lp-kicker">What you get</p>
+    <h2 class="lp-h2">The history for you. The story for them.</h2>
+    <p class="lp-lede">This is the real thing: the pages a member opens every day, on any screen.</p>
+
+    <div class="lp-product">
+      <div class="lp-browser">
+        <div class="lp-browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>saintsanddragons &middot; today</span></div>
+        <img class="lp-shot-dark" src="/assets/landing/app-desktop-dark.jpg" width="1280" height="800" loading="lazy" alt="Today's page in Saints &amp; Dragons: today in history, then the history for you, The Battle of Hastings, 1066.">
+        <img class="lp-shot-light" src="/assets/landing/app-desktop-light.jpg" width="1280" height="800" loading="lazy" alt="Today's page in Saints &amp; Dragons: today in history, then the history for you, The Battle of Hastings, 1066.">
+      </div>
+      <div class="lp-phone">
+        <img class="lp-shot-dark" src="/assets/landing/tale-phone-dark.jpg" width="390" height="780" loading="lazy" alt="The Lion and the Mouse on a phone, ages 4 to 6, a two-minute read-aloud.">
+        <img class="lp-shot-light" src="/assets/landing/tale-phone-light.jpg" width="390" height="780" loading="lazy" alt="The Lion and the Mouse on a phone, ages 4 to 6, a two-minute read-aloud.">
+      </div>
+    </div>
+
+    <div class="lp-product-caps">
+      <p><strong>During your day</strong>Today's history, written like a friend explaining it. Read it over coffee, at lunch, or before you leave work.</p>
+      <p><strong>At bedtime</strong>The story on the same idea, in big type on your phone, ready to read aloud.</p>
     </div>
   </div>
 </section>
@@ -413,6 +502,33 @@
     <p class="lp-kicker">Why dads use it</p>
     <h2 class="lp-h2">You want to be the dad who reads to his kids. This makes it easy.</h2>
     <p class="lp-lede">By bedtime there's no time left to pick a book or plan a lesson. We do the picking. You read one piece during your day, and one out loud to them at night.</p>
+  </div>
+</section>
+
+<section class="lp-section" id="who">
+  <div class="lp-section-inner">
+    <p class="lp-kicker">Who it's for</p>
+    <h2 class="lp-h2">For the dad who&hellip;</h2>
+    <div class="lp-grid">
+      <div class="lp-tile"><h3><span class="who">&hellip;has a five-year-old</span></h3><p>Stories for ages 4&ndash;6, short enough to finish before the yawns win.</p></div>
+      <div class="lp-tile"><h3><span class="who">&hellip;has a nine-year-old who asks why</span></h3><p>Longer stories for ages 7&ndash;9, and you'll have the answer, because you read the history first.</p></div>
+      <div class="lp-tile"><h3><span class="who">&hellip;isn't a history guy</span></h3><p>No homework and no dates to memorise. You only need to have read it once.</p></div>
+      <div class="lp-tile"><h3><span class="who">&hellip;travels for work</span></h3><p>Read the history on the plane. Tell the story over the phone at bedtime.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="lp-section lp-band" id="not">
+  <div class="lp-section-inner">
+    <p class="lp-kicker">What this is not</p>
+    <h2 class="lp-h2">Not fun facts. Not a sermon. Not a feed.</h2>
+    <p class="lp-lede">Real history with named sources, and a story that carries its own lesson. Read today's and you're done.</p>
+    <div class="lp-grid">
+      <div class="lp-tile"><h3>Not fun facts</h3><p>How a thing actually worked, why it came out the way it did, and what it cost somebody.</p></div>
+      <div class="lp-tile"><h3>Not a course</h3><p>Nobody is testing you. You get to learn things because they are good.</p></div>
+      <div class="lp-tile"><h3>Not a sermon</h3><p>Where a story has a virtue in it, the story carries it. We don't stop to explain the lesson.</p></div>
+      <div class="lp-tile"><h3>Not a feed</h3><p>Nothing to scroll, nothing to catch up on. Read today's and you're done.</p></div>
+    </div>
   </div>
 </section>
 
@@ -481,6 +597,22 @@
     </div>
 
     <p class="lp-archive-caption">Nothing expires. Miss a week and it's all still there.</p>
+  </div>
+</section>
+
+<!-- Reader quotes. Ships hidden: nothing goes in here that a real reader
+     did not say. When there are two or three, paste them in as .lp-tile
+     figures and delete the `hidden` attribute. Shape:
+       <figure class="lp-tile lp-quote">
+         <blockquote>&ldquo;Their words, verbatim.&rdquo;</blockquote>
+         <figcaption>First name, dad of two (ages 5 and 8)</figcaption>
+       </figure>
+-->
+<section class="lp-section" id="voices" hidden>
+  <div class="lp-section-inner">
+    <p class="lp-kicker">From dads who use it</p>
+    <h2 class="lp-h2">What bedtime sounds like now.</h2>
+    <div class="lp-grid"></div>
   </div>
 </section>
 
