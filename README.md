@@ -154,3 +154,43 @@ bare path still finds them — see `LESSONS-LEARNED.md`.
 
 PNGs (`*-512.png`, `*-1024.png`, `apple-touch-icon.png`, `favicon-32.png`) are
 rendered from the SVGs for places that can't take vector.
+
+### The knight
+
+`knight-light.svg` / `knight-dark.svg` (plus the self-switching `knight.svg`
+and 512/1024 PNGs) are the "Saints" half, recoloured onto the same palette.
+**Nothing on the site uses them yet** — they are in the repo so the choice of
+where, if anywhere, can be made later. Deleting them is a decision, not
+cleanup.
+
+Unlike the dragon this is a *shaded* illustration: every surface is split
+left-light / right-dark, and that modelling is the whole design language. So
+the recolour does not assign a colour per region — it maps each region's
+source luminance through a brand-hue ramp, which moves the hue and leaves the
+lighting intact. The armour was hue 212° (cool blue-grey), the opposite side
+of the wheel from everything else here.
+
+| part | pale surfaces | dark surfaces |
+| --- | --- | --- |
+| armour, 4-step ramp | `#b0a89e` → `#6b6257` | `#c9c1b8` → `#8c7c69` |
+| face plate | `#c3bdb6` / `#8c8072` | `#dcd7d0` / `#a7998a` |
+| trim and shield | `#e08967` / `#c95f36` | `#e08967` / `#cb633a` |
+| slots, rivets, chevron | `#221c15` | `#241d16` |
+
+The shield is deliberately the dragon's body orange so the two read as one
+family. The trim ramp is **compressed relative to the source**: at the source's
+own spacing, doubling the saturation turned a subtle tonal split into a hard
+edge and the shield stopped reading as one surface lit from the left. Armour
+saturation is 10–14%, kept under the 15% ceiling that the outline entry in
+`LESSONS-LEARNED.md` explains.
+
+Two things to know before using it:
+
+- **It is not a favicon-size mark.** It holds down to about 46px; at 32px it
+  turns to mush. The dragon solves small sizes with a solid silhouette, but a
+  knight bust makes a far less distinctive silhouette — that needs testing
+  before anyone promises it works.
+- **It is ~204KB, about 68KB gzipped** — roughly 3× the dragon, because it is
+  nine shaded regions with intricate boundaries rather than three flat ones.
+  Coarsening the trace does not help; only merging regions would, and that
+  changes the artwork.
