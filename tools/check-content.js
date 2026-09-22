@@ -26,11 +26,6 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 
-/* Ages the bedtime shelf actually offers chips for. They are written out in
-   app.js rather than living in content.js, so they are repeated here; if a
-   third age is ever added, both places need it and this check will say so. */
-const AGES = [1, 3];
-
 const root = path.resolve(__dirname, "..");
 /* An explicit path is only for testing the checker itself against a
    deliberately broken copy. Normal runs take no arguments. */
@@ -52,7 +47,7 @@ try {
   const sandbox = {};
   vm.createContext(sandbox);
   vm.runInContext(
-    src + ";globalThis.__content = { ERAS, KINDS, THEMES, VIRTUES, BRIEFS, TALES, CARDS, TODAY };",
+    src + ";globalThis.__content = { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY };",
     sandbox,
     { filename: "content.js" }
   );
@@ -63,7 +58,11 @@ try {
   process.exit(1);
 }
 
-const { ERAS, KINDS, THEMES, VIRTUES, BRIEFS, TALES, CARDS, TODAY } = data;
+const { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY } = data;
+
+/* The bands a tale can be filed in. Read from content.js rather than repeated
+   here, so adding a band is one edit in one file. */
+const AGES = Object.keys(AGE_BANDS).map(Number);
 
 for (const [name, value] of Object.entries(data)) {
   if (value === undefined) err("content.js", `${name} is not defined`);
@@ -114,7 +113,7 @@ for (const [slug, t] of Object.entries(TALES)) {
   requireText(where, t, "origin");
   if (!isBody(t.body)) err(where, "body must be a non-empty array of strings");
   if (!minutes(t.minutes)) err(where, `minutes is not a positive number (${JSON.stringify(t.minutes)})`);
-  if (!AGES.includes(t.age)) err(where, `age ${JSON.stringify(t.age)} is not one the shelf has a chip for — ${list(AGES)}`);
+  if (!AGES.includes(t.age)) err(where, `age ${JSON.stringify(t.age)} is not a band in AGE_BANDS — ${list(AGES)}`);
 
   /* theme is optional on purpose: a couple of tales are history-shaped and
      have no fantasy furniture in them. virtue is not optional. */
@@ -268,6 +267,10 @@ for (const slug of Object.keys(TALES)) {
    entry no longer shows a reader an empty shelf. It is still worth naming on
    every run: it is the roadmap, and this is the list of what is not written
    yet. */
+const usedAges = new Set(Object.values(TALES).map(t => t.age));
+for (const a of AGES) {
+  if (!usedAges.has(a)) warn("AGE_BANDS", `band ${a} (${AGE_BANDS[a]}) has no tale — nothing is written there yet, so no chip is drawn`);
+}
 const usedThemes = new Set(Object.values(TALES).map(t => t.theme).filter(Boolean));
 for (const t of THEMES) if (!usedThemes.has(t)) warn("THEMES", `"${t}" has no tale — nothing is written there yet, so no chip is drawn`);
 const usedVirtues = new Set(Object.values(TALES).map(t => t.virtue));
