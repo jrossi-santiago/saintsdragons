@@ -77,6 +77,21 @@ const KINDS = ["A person", "A battle", "A saint", "A council", "A builder", "A m
    and filing them under a theme they do not have would be a lie told to make a
    chip row look tidy. They are still reachable by virtue, by age and by search. */
 const THEMES = ["Knights", "Dragons", "Forests", "Castles", "Princes and princesses", "The sea"];
+/* A tale's `age` is a bucket id, not a number of years — band 1 is a four to
+   six year old, band 3 is a seven to nine year old. Two tales already carried
+   an `ageLabel` saying "Ages 4–6" on an `age: 1` tale, while the shelf printed
+   "Age 1" for the same story; the number was never meant to be shown. Every
+   surface now prints the label from here and never the id, so the two cannot
+   drift apart again. `ageLabel` on a tale still overrides it — see the note on
+   it in TALES — for the story that does not sit squarely in its band.
+
+   The ids are sparse on purpose: bands for older readers slot in between and
+   above without renumbering what is already filed. */
+const AGE_BANDS = {
+  1: "Ages 4–6",
+  3: "Ages 7–9"
+};
+
 const VIRTUES = ["Courage", "Obedience", "Mercy", "Honesty", "Humility", "Perseverance", "Forgiveness", "Faithfulness"];
 
 /* ---------------------------------------------------------------- briefs */

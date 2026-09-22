@@ -120,7 +120,7 @@ so nothing here depends on a relative path to its own assets.
 | `#home` | **Tonight's receipt** — the actual product: today in history, a brief for you, and a tale, pulled live from `CARDS`/`BRIEFS`/`TALES`/`TODAY` and printed in the receipt format. Below it, "Earlier nights": the five previous cards as miniature torn-off receipts, cut off with a fade, scrolling horizontally, with a link to the full archive. `#tonight` is kept as a redirect for old links, but is not a real page. |
 | `#history` | History for dads — the brief shelf, filtered by era and kind |
 | `#today` | Today in history — opens on today's date. `#today/MM-DD` opens a specific one |
-| `#bedtime` | Bedtime stories — the tale shelf, filtered by age, by theme and by virtue |
+| `#bedtime` | Bedtime stories — the tale shelf, filtered by age band, by theme and by virtue |
 
 Two more routes are reachable but deliberately not in the nav: `#brief/<slug>`
 and `#tale/<slug>`, the detail pages.
@@ -148,7 +148,7 @@ node tools/check-content.js
 The only test this site has. It reads `content.js` and verifies the things
 that break silently: every card points at a brief and a tale that exist, every
 pairing reciprocates (the brief names the tale *and* the tale names the brief),
-every era, kind, theme and virtue is in its taxonomy, no card is missing its
+every era, kind, theme, virtue and age band is in its taxonomy, no card is missing its
 question, why-ours line or prayer, dates are real and in order, a series adds
 up to the number of nights it claims, and every slug in `TODAY` resolves.
 
@@ -168,6 +168,32 @@ Run it after editing `content.js` and before merging, alongside the
 Tales without a brief are fine — they show on the bedtime shelf and simply have
 no "Goes with" line. Cards, however, should always carry both halves. A
 multi-night tale sets `night: { n, of }` and a shared `series` key.
+
+### Age on a tale
+
+A tale's `age` is a **bucket id, not a number of years**, and it is never
+printed. `AGE_BANDS` in `content.js` turns it into the label every surface
+shows:
+
+```js
+const AGE_BANDS = { 1: "Ages 4–6", 3: "Ages 7–9" };
+```
+
+This used to be broken in a way that was easy to miss: two tales carried an
+`ageLabel` of "Ages 4–6" while their `age` was `1`, so the receipt said
+"Ages 4–6" and the shelf said "Age 1" about the same story, and the chips said
+"Ages 1" and "Ages 3" as if they were toddler ages. One helper, `ageText()` in
+`app.js`, is now the only place an age becomes words — receipt, shelf, tale
+page, filter chips, shelf copy and the SEO title all go through it, so they
+cannot drift apart again.
+
+A tale's own `ageLabel` still overrides the band, for the story that does not
+sit squarely in its bucket. That is the `ageLabel` pattern `CLAUDE.md`
+describes, working as intended.
+
+The ids are sparse on purpose — bands for older readers slot in between and
+above without renumbering anything already filed. Adding one is a single edit
+to `AGE_BANDS`: the chips, the shelf copy and the validator all read from it.
 
 ### Era and kind on a brief
 

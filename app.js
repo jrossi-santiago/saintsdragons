@@ -223,6 +223,14 @@ const filters = {
    actually filed under get drawn. A chip appears by itself the night the first
    brief or tale lands in it. Counted across all the data, never the filtered
    list, so the row does not shift under the reader as they click. */
+/* The one place a tale's age becomes words. `age` is a bucket id and is never
+   printed; AGE_BANDS turns it into a label, and a tale's own `ageLabel` wins
+   where it has one. Every surface goes through here so the receipt and the
+   shelf cannot say different things about the same story. */
+function ageText(t) {
+  return t.ageLabel || AGE_BANDS[t.age] || `Ages ${t.age}`;
+}
+
 function withContent(values, items, field) {
   const used = new Set(Object.values(items).map(x => x[field]).filter(Boolean));
   return values.filter(v => used.has(v));
@@ -252,7 +260,7 @@ function taleCardHTML(slug, t) {
   const brief = t.brief ? BRIEFS[t.brief] : null;
   return `<article class="shelf-item">
     <h3>${esc(t.title)}</h3>
-    <p class="shelf-meta">Age ${t.age} · ${esc(t.minutes)} min read-aloud${t.theme ? ` · ${esc(t.theme)}` : ""} · ${esc(t.virtue)}</p>
+    <p class="shelf-meta">${esc(ageText(t))} · ${esc(t.minutes)} min read-aloud${t.theme ? ` · ${esc(t.theme)}` : ""} · ${esc(t.virtue)}</p>
     <p class="shelf-tag">${esc(t.origin)}</p>
     ${t.night ? `<p class="shelf-line"><strong>Night ${t.night.n} of ${t.night.of}.</strong></p>` : ""}
     ${brief ? `<p class="shelf-line"><strong>Goes with:</strong> <a href="#brief/${t.brief}">${esc(brief.title)}</a></p>` : ""}
@@ -324,7 +332,7 @@ function renderHome(query = "") {
           <section class="rcpt-slot">
             <div class="rcpt-slot-label"><span class="no">03</span> Tonight&rsquo;s Tale</div>
             <h3 class="rcpt-story-title">${esc(tale.title)}</h3>
-            <p class="rcpt-dek">About ${esc(tale.minutes)} minutes &middot; ${esc(tale.ageLabel || `Ages ${tale.age}`)}${tale.night ? ` &middot; night ${tale.night.n} of ${tale.night.of}` : ""}</p>
+            <p class="rcpt-dek">About ${esc(tale.minutes)} minutes &middot; ${esc(ageText(tale))}${tale.night ? ` &middot; night ${tale.night.n} of ${tale.night.of}` : ""}</p>
             ${tale.origin ? `<p class="rcpt-origin">${esc(tale.origin)}</p>` : ""}
             <p class="rcpt-excerpt">&ldquo;${esc(tale.body[0])}&rdquo;</p>
             <a class="rcpt-more" href="#tale/${card.tale}">Read the rest &rarr;</a>
@@ -507,14 +515,14 @@ function renderBedtime() {
     <div class="content">
       <header class="page-head">
         <h2>Knights, dragons, forests. Lights out in ten minutes.</h2>
-        <p>Fairy tales, legends, and real stories retold for reading aloud. Written for ages 1 and 3.</p>
+        <p>Fairy tales, legends, and real stories retold for reading aloud. Written in two bands, ${esc(AGE_BANDS[1])} and ${esc(AGE_BANDS[3])}.</p>
       </header>
 
       <div class="filter-row">
         <p class="filter-label">Who's listening?</p>
         <div class="chips">
-          ${chip("bedtime", "age", 1, "Ages 1")}
-          ${chip("bedtime", "age", 3, "Ages 3")}
+          ${Object.entries(AGE_BANDS).map(([id, label]) =>
+            chip("bedtime", "age", Number(id), label)).join("")}
         </div>
         <p class="filter-note">Older ages are coming. Each story will be adapted to reading level and attention span, so you never read the wrong one.</p>
       </div>
@@ -570,7 +578,7 @@ function renderTale(slug) {
       ${backLink("bedtime", "Bedtime stories")}
       <header class="page-head">
         <h2>${esc(t.title)}</h2>
-        <p>Age ${t.age} · ${esc(t.minutes)} min read-aloud${t.theme ? ` · ${esc(t.theme)}` : ""} · ${esc(t.virtue)} · ${esc(t.origin)}${t.night ? ` · night ${t.night.n} of ${t.night.of}` : ""}</p>
+        <p>${esc(ageText(t))} · ${esc(t.minutes)} min read-aloud${t.theme ? ` · ${esc(t.theme)}` : ""} · ${esc(t.virtue)} · ${esc(t.origin)}${t.night ? ` · night ${t.night.n} of ${t.night.of}` : ""}</p>
       </header>
       ${t.source ? `<p class="tale-source"><strong>Where it comes from.</strong> ${esc(t.source)}</p>` : ""}
       <div class="tale-body">${t.body.map(p => `<p>${esc(p)}</p>`).join("")}</div>
@@ -594,8 +602,8 @@ const META = {
             "Short history notes on how things actually worked \u2014 battles, builders, saints and Romans, each paired with a tale that carries the same thing."],
   today:   ["Today in History | Saints & Dragons",
             "One short, true story for each date, filled in week by week. Under a minute to read."],
-  bedtime: ["Bedtime Stories for Ages 1 and 3 | Saints & Dragons",
-            "Fairy tales, legends, and real stories retold for reading aloud. Knights, dragons and forests, 8 to 12 minutes each."]
+  bedtime: ["Bedtime Stories for Ages 4 to 9 | Saints & Dragons",
+            "Fairy tales, legends, and real stories retold for reading aloud. Knights, dragons, castles and the sea, 2 to 11 minutes each."]
 };
 
 const DEFAULT_META = [document.title,
