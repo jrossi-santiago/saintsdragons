@@ -354,10 +354,10 @@ function renderHistory() {
     <div class="content">
       <header class="page-head">
         <h2>The history you were never given.</h2>
-        <p>One person, one battle, one council at a time. Four minutes each.</p>
+        <p>One person, one battle, one council at a time. Three to five minutes each.</p>
       </header>
 
-      <p class="lede">Written like a story, not a textbook: how the thing actually worked, what the sources argue about, and where it surfaces in the ordinary day.</p>
+      <p class="lede">Not a story and not a textbook: how the thing actually worked, what the sources argue about, and why it came out the way it did.</p>
 
       <div class="filter-row">
         <p class="filter-label">Browse by era</p>
@@ -509,7 +509,7 @@ const META = {
   home:    ["Saints & Dragons | History for dads, tales for bedtime",
             "One true story from history for dads, one tale to read aloud to the kids. Written to go together. About twenty minutes."],
   history: ["History for Dads | Saints & Dragons",
-            "Four-minute history notes a dad can actually finish. Battles, builders, knights and Romans, each paired with a bedtime tale."],
+            "Short history notes on how things actually worked. Battles, builders, knights and Romans, each paired with a bedtime tale."],
   today:   ["Today in History | Saints & Dragons",
             "One short, true story for each date, filled in week by week. Under a minute to read."],
   bedtime: ["Bedtime Stories for Ages 1 and 3 | Saints & Dragons",
