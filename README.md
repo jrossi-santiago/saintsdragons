@@ -124,7 +124,7 @@ Colours, and why:
 | part | pale surfaces | dark surfaces |
 | --- | --- | --- |
 | body | `#e5825a` (`--accent`, dark theme) | `#e5825a` — same in both, it *is* the brand |
-| outline | `#221c15` (`--rcpt-ink`) | `#cfc3a4` (`--rcpt-rule`) |
+| outline | `#221c15` (`--rcpt-ink`) | `#d2c8be` (logo-only) |
 | flame | `#a8451f` (`--rcpt-red`) | `#c9502a` |
 
 The outline inverts because a near-black line vanishes on `#0b0b0c`. It is
@@ -132,6 +132,14 @@ deliberately **bone, not paper white** — at full `#f6f1e3` the outline becomes
 the brightest thing in the frame and the logo reads as a cream dragon rather
 than an orange one. Same reason the flame lifts to `#c9502a` on dark: `#a8451f`
 against a dark ground is a smudge, not a colour.
+
+`#d2c8be` is the one logo colour with no token behind it, and it must stay that
+way. **Do not "tidy" it into `--rcpt-rule` (`#cfc3a4`)** — that was the first
+attempt and it read visibly green. `--rcpt-rule` is hue 43° at 31% saturation,
+which is olive; it looks like warm tan only because it is always drawn on cream
+paper. Next to a hue-17° orange body on a near-black ground it reads as the lime
+of the original artwork. The outline needs to stay near the body's hue with the
+chroma kept low — see `LESSONS-LEARNED.md`.
 
 `dragon.svg` and `dragon-mark.svg` are self-switching copies that follow
 `prefers-color-scheme` from an internal `<style>`. They exist for the favicon
