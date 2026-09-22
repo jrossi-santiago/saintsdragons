@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Nightly Receipt — Saints &amp; Dragons</title>
-<meta name="description" content="Every night, two minutes: today in history, a piece of history worth knowing, and a bedtime tale — delivered like a receipt.">
+<title>Saints &amp; Dragons — History for Dads, Tales for Bedtime</title>
+<meta name="description" content="One true piece of history for you, one tale to read aloud to them, written to go together. The Nightly Receipt is how it arrives.">
 <link rel="icon" href="/assets/dragon-mark.svg" type="image/svg+xml">
 <link rel="alternate icon" href="/assets/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -169,7 +169,7 @@
   .lp-feature p{ margin: 0; color: var(--text-dim); font-size: .95rem; line-height: 1.6; }
 
   /* ritual section */
-  .lp-ritual{ background: var(--sidebar-top); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .lp-band, .lp-ritual{ background: var(--sidebar-top); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .lp-ritual .lp-section-inner{ max-width: 780px; text-align: center; }
   .lp-ritual .lp-h2{ max-width: none; margin-left: auto; margin-right: auto; }
   .lp-ritual .lp-lede{ margin-left: auto; margin-right: auto; }
@@ -216,6 +216,23 @@
   .lp-ticks svg{ flex: none; width: 18px; height: 18px; color: var(--accent); margin-top: 1px; }
   .lp-pricing-card .lp-cta{ width: 100%; justify-content: center; padding: 15px; }
 
+  /* the body of work */
+  #work .lp-h2{ max-width: 24ch; }
+  .lp-work{ display: grid; gap: 30px; margin-top: 42px; grid-template-columns: 1fr; }
+  @media (min-width: 780px){ .lp-work{ grid-template-columns: 1fr 1fr; gap: 44px; } }
+  .lp-work-col h3{
+    font-family: "Space Mono", monospace; font-size: .72rem; font-weight: 700;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--text-faint);
+    margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line);
+  }
+  .lp-work-col ul{ list-style: none; margin: 0; padding: 0; display: grid; gap: 13px; }
+  .lp-work-col li{ display: flex; gap: 11px; font-size: .95rem; line-height: 1.55; color: var(--text-dim); }
+  .lp-work-col svg{ flex: none; width: 18px; height: 18px; margin-top: 2px; color: var(--accent); }
+  /* The right-hand column is a hollow dot, never a tick. A tick is a claim
+     that the thing exists, and nothing over there has shipped. */
+  .lp-work-col.is-next svg{ color: var(--text-faint); }
+  .lp-work-note{ margin: 34px 0 0; font-size: .88rem; line-height: 1.6; color: var(--text-faint); max-width: 62ch; }
+
   /* footer */
   .lp-footer{
     padding: 28px clamp(20px, 5vw, 56px) 36px;
@@ -238,6 +255,7 @@
     <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></symbol>
     <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13.2A8.5 8.5 0 1 1 10.8 3a7 7 0 0 0 10.2 10.2z"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-dot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5"/></symbol>
   </defs>
 </svg>
@@ -382,6 +400,37 @@
   </div>
 </section>
 
+<section class="lp-section lp-band" id="work">
+  <div class="lp-section-inner">
+    <p class="lp-kicker">The bigger thing</p>
+    <h2 class="lp-h2">The receipt is the door. It is not the house.</h2>
+    <p class="lp-lede">Saints &amp; Dragons is not a newsletter that happens to be about history. It is a standard for what gets handed to your children — real history told as history, and stories that carry something older than this week. The nightly receipt is simply the easiest way in.</p>
+
+    <div class="lp-work">
+      <div class="lp-work-col">
+        <h3>Here now</h3>
+        <ul>
+          <li><svg><use href="#i-check"/></svg><span>Twice a week: one true history for you, one tale for them, written to go together</span></li>
+          <li><svg><use href="#i-check"/></svg><span>The full archive, so no night you were sent ever disappears</span></li>
+          <li><svg><use href="#i-check"/></svg><span>A history shelf filed by era and by kind, read in any order you like</span></li>
+          <li><svg><use href="#i-check"/></svg><span>A bedtime library filed by age and by theme, for the night you need a particular one</span></li>
+          <li><svg><use href="#i-check"/></svg><span>Seven bedtime stories as a printable PDF</span></li>
+        </ul>
+      </div>
+      <div class="lp-work-col is-next">
+        <h3>Where it goes</h3>
+        <ul>
+          <li><svg><use href="#i-dot"/></svg><span>Books a child can sit down with on his own</span></li>
+          <li><svg><use href="#i-dot"/></svg><span>Shows a dad is glad to put on, rather than ones he tolerates</span></li>
+          <li><svg><use href="#i-dot"/></svg><span>More centuries, more of the tradition, more of it read out loud</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="lp-work-note">Nothing in the second column exists yet. It is written down here so you know what you are joining — not so you will pay for it today.</p>
+  </div>
+</section>
+
 <section class="lp-section" id="pricing">
   <div class="lp-section-inner" style="text-align:center;">
     <p class="lp-kicker">Start tonight</p>
@@ -403,7 +452,7 @@
 
 <footer class="lp-footer">
   <span>© <span id="year"></span> Saints &amp; Dragons</span>
-  <span><a href="/account">Already a member? Go to tonight's receipt</a></span>
+  <span><a href="/account#about">What this is</a> &middot; <a href="/account">Already a member? Go to tonight's receipt</a></span>
 </footer>
 
 <script>

@@ -60,6 +60,11 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
 - **Pages** — the `About` and `Contact` pages are the only ones left in the `PAGES` object in `app.js`; nav links live in `account/index.html`. Everything else on the site is nightly content — see below.
 - **Social links** — the three `<a href="#">` entries in `.socials`.
 - **The marketing home (`index.html`)** — headline, pricing, and the "product shot" receipt preview in the hero are all hand-written copy, not pulled from `content.js`. Update them by hand when the pitch or price changes.
+- **The "bigger thing" section (`#work`)** — two hand-maintained columns. The
+  left one uses a tick and may only list things that actually exist; the right
+  one uses a hollow dot (`#i-dot`) and is explicitly unshipped, which the note
+  underneath says out loud. When something ships, move it across and change its
+  icon — never tick an item in the right-hand column in place.
 - **Campaign page** — all visible copy in `7stories/index.html` is sample text. The form fields are first name, children's age ranges (multi-select: 0–2, 3–5, 6–9, 10+) and email; all are required.
 - **Signup collection** — the form posts to Formspree (`https://formspree.io/f/xqpaqzne`, set as the form's `action`) as JSON: `firstName`, `email`, `childAges`, `source`. Submissions are collected there; no email is sent to the reader. To change endpoints, edit the `action` attribute — `stories.js` reads it from the form. If the POST fails, the download is still unlocked so a network error never blocks a reader.
 - **Contact form** — posts to the same Formspree endpoint as the campaign page,
