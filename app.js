@@ -214,7 +214,7 @@ function backLink(hash, label) {
 
 const filters = {
   history: { era: null, kind: null },
-  bedtime: { age: null, theme: null }
+  bedtime: { age: null, theme: null, virtue: null }
 };
 
 function chip(group, field, value, label) {
@@ -241,7 +241,7 @@ function taleCardHTML(slug, t) {
   const brief = t.brief ? BRIEFS[t.brief] : null;
   return `<article class="shelf-item">
     <h3>${esc(t.title)}</h3>
-    <p class="shelf-meta">Age ${t.age} · ${esc(t.minutes)} min read-aloud · ${esc(t.theme)}</p>
+    <p class="shelf-meta">Age ${t.age} · ${esc(t.minutes)} min read-aloud${t.theme ? ` · ${esc(t.theme)}` : ""} · ${esc(t.virtue)}</p>
     <p class="shelf-tag">${esc(t.origin)}</p>
     ${t.night ? `<p class="shelf-line"><strong>Night ${t.night.n} of ${t.night.of}.</strong></p>` : ""}
     ${brief ? `<p class="shelf-line"><strong>Goes with:</strong> <a href="#brief/${t.brief}">${esc(brief.title)}</a></p>` : ""}
@@ -388,7 +388,7 @@ function renderSearch(query) {
   const briefHits = Object.entries(BRIEFS).filter(([, b]) =>
     (b.title + " " + b.hook + " " + b.era + " " + b.kind).toLowerCase().includes(q));
   const taleHits = Object.entries(TALES).filter(([, t]) =>
-    (t.title + " " + t.theme + " " + t.origin + " " + (t.source || "")).toLowerCase().includes(q));
+    (t.title + " " + (t.theme || "") + " " + t.virtue + " " + t.origin + " " + (t.source || "")).toLowerCase().includes(q));
   const hits = briefHits.length + taleHits.length;
 
   main.innerHTML = `
@@ -488,7 +488,9 @@ function renderToday(md) {
 function renderBedtime() {
   const f = filters.bedtime;
   const list = Object.entries(TALES).filter(([, t]) =>
-    (!f.age || t.age === f.age) && (!f.theme || t.theme === f.theme));
+    (!f.age || t.age === f.age) &&
+    (!f.theme || t.theme === f.theme) &&
+    (!f.virtue || t.virtue === f.virtue));
 
   main.innerHTML = `
     <div class="content">
@@ -507,7 +509,14 @@ function renderBedtime() {
       </div>
 
       <div class="filter-row">
+        <p class="filter-label">What&rsquo;s in it?</p>
         <div class="chips">${THEMES.map(t => chip("bedtime", "theme", t, t)).join("")}</div>
+      </div>
+
+      <div class="filter-row">
+        <p class="filter-label">What&rsquo;s it about?</p>
+        <div class="chips">${VIRTUES.map(v => chip("bedtime", "virtue", v, v)).join("")}</div>
+        <p class="filter-note">The one to reach for when something happened today. A tale does not have to have a castle in it, but it is always about something.</p>
       </div>
 
       ${list.length ? `<div class="shelf">${list.map(([slug, t]) => taleCardHTML(slug, t)).join("")}</div>`
@@ -550,7 +559,7 @@ function renderTale(slug) {
       ${backLink("bedtime", "Bedtime stories")}
       <header class="page-head">
         <h2>${esc(t.title)}</h2>
-        <p>Age ${t.age} · ${esc(t.minutes)} min read-aloud · ${esc(t.theme)} · ${esc(t.origin)}${t.night ? ` · night ${t.night.n} of ${t.night.of}` : ""}</p>
+        <p>Age ${t.age} · ${esc(t.minutes)} min read-aloud${t.theme ? ` · ${esc(t.theme)}` : ""} · ${esc(t.virtue)} · ${esc(t.origin)}${t.night ? ` · night ${t.night.n} of ${t.night.of}` : ""}</p>
       </header>
       ${t.source ? `<p class="tale-source"><strong>Where it comes from.</strong> ${esc(t.source)}</p>` : ""}
       <div class="tale-body">${t.body.map(p => `<p>${esc(p)}</p>`).join("")}</div>

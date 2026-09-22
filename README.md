@@ -109,13 +109,13 @@ so nothing here depends on a relative path to its own assets.
 | `#home` | **Tonight's receipt** — the actual product: today in history, a brief for you, and a tale, pulled live from `CARDS`/`BRIEFS`/`TALES`/`TODAY` and printed in the receipt format. Below it, "Earlier nights": the five previous cards as miniature torn-off receipts, cut off with a fade, scrolling horizontally, with a link to the full archive. `#tonight` is kept as a redirect for old links, but is not a real page. |
 | `#history` | History for dads — the brief shelf, filtered by era and kind |
 | `#today` | Today in history — opens on today's date. `#today/MM-DD` opens a specific one |
-| `#bedtime` | Bedtime stories — the tale shelf, filtered by age and theme |
+| `#bedtime` | Bedtime stories — the tale shelf, filtered by age, by theme and by virtue |
 
 Two more routes are reachable but deliberately not in the nav: `#brief/<slug>`
 and `#tale/<slug>`, the detail pages.
 
 The sidebar search box searches across `BRIEFS` and `TALES` (title, hook,
-era/kind, theme) and swaps the receipt view for a results shelf while
+era/kind, theme, virtue, provenance) and swaps the receipt view for a results shelf while
 there's a query; clearing it goes back to tonight's receipt.
 
 To add a night, edit `content.js`:
@@ -131,6 +131,30 @@ To add a night, edit `content.js`:
 Tales without a brief are fine — they show on the bedtime shelf and simply have
 no "Goes with" line. Cards, however, should always carry both halves. A
 multi-night tale sets `night: { n, of }` and a shared `series` key.
+
+### Theme and virtue on a tale
+
+Two separate axes, because a reader asks two different questions:
+
+- **`theme`** — what is *in* the story. "One with knights in it." The list is
+  `THEMES`: Knights, Dragons, Forests, Castles, Princes and princesses, The sea.
+  **Optional.** A couple of tales (the dome, Cincinnatus) are history-shaped and
+  have no fantasy furniture in them; filing them under a theme they do not have
+  to make a chip row look tidy would be a lie. They are still reachable by
+  virtue, by age and by search.
+- **`virtue`** — what the story is *about*. "One about telling the truth
+  tonight." The list is `VIRTUES`: Courage, Obedience, Mercy, Honesty, Humility,
+  Perseverance, Forgiveness, Faithfulness. **Required on every tale.**
+
+These were one mixed list until they were split, which made both axes weaker —
+"Knights" and "Mercy" were offered as if they were the same kind of choice. Both
+now get their own labelled row of chips on the bedtime shelf.
+
+Add to `VIRTUES` when a tale genuinely needs a word that is not there. Do not
+add to either list speculatively: an empty chip filters to an empty shelf.
+`Princes and princesses` is the one exception, carried deliberately because the
+brand names it and no tale has one yet — so it doubles as a visible gap in the
+catalogue.
 
 ### Provenance on a tale
 
