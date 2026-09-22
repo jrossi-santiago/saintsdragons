@@ -217,6 +217,17 @@ const filters = {
   bedtime: { age: null, theme: null, virtue: null }
 };
 
+/* A chip with nothing behind it filters to an empty shelf, which reads as
+   broken rather than as "coming soon". So ERAS, KINDS, THEMES and VIRTUES stay
+   whole in content.js — they are the plan — and only the entries something is
+   actually filed under get drawn. A chip appears by itself the night the first
+   brief or tale lands in it. Counted across all the data, never the filtered
+   list, so the row does not shift under the reader as they click. */
+function withContent(values, items, field) {
+  const used = new Set(Object.values(items).map(x => x[field]).filter(Boolean));
+  return values.filter(v => used.has(v));
+}
+
 function chip(group, field, value, label) {
   const on = filters[group][field] === value;
   return `<button class="chip${on ? " is-on" : ""}" data-group="${group}" data-field="${field}" data-value="${esc(value)}">${esc(label)}</button>`;
@@ -422,11 +433,11 @@ function renderHistory() {
 
       <div class="filter-row">
         <p class="filter-label">Browse by era</p>
-        <div class="chips">${ERAS.map(e => chip("history", "era", e, e)).join("")}</div>
+        <div class="chips">${withContent(ERAS, BRIEFS, "era").map(e => chip("history", "era", e, e)).join("")}</div>
       </div>
       <div class="filter-row">
         <p class="filter-label">Browse by kind</p>
-        <div class="chips">${KINDS.map(k => chip("history", "kind", k, k)).join("")}</div>
+        <div class="chips">${withContent(KINDS, BRIEFS, "kind").map(k => chip("history", "kind", k, k)).join("")}</div>
       </div>
 
       ${list.length ? `<div class="shelf">${list.map(([slug, b]) => briefCardHTML(slug, b)).join("")}</div>`
@@ -510,12 +521,12 @@ function renderBedtime() {
 
       <div class="filter-row">
         <p class="filter-label">What&rsquo;s in it?</p>
-        <div class="chips">${THEMES.map(t => chip("bedtime", "theme", t, t)).join("")}</div>
+        <div class="chips">${withContent(THEMES, TALES, "theme").map(t => chip("bedtime", "theme", t, t)).join("")}</div>
       </div>
 
       <div class="filter-row">
         <p class="filter-label">What&rsquo;s it about?</p>
-        <div class="chips">${VIRTUES.map(v => chip("bedtime", "virtue", v, v)).join("")}</div>
+        <div class="chips">${withContent(VIRTUES, TALES, "virtue").map(v => chip("bedtime", "virtue", v, v)).join("")}</div>
         <p class="filter-note">The one to reach for when something happened today. A tale does not have to have a castle in it, but it is always about something.</p>
       </div>
 

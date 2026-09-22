@@ -55,7 +55,13 @@
  * of the above.
  */
 
-const ERAS = ["Greece and Rome", "Knights and lords", "The 1700s", "The 1800s", "1900 to 1950", "And everything else"];
+/* Chronological, and the shelf draws them in this order. Two were added after
+   an audit found briefs stranded in "And everything else" for want of a bucket:
+   "After Rome" for late antiquity (Patrick, and Benedict and Columba when they
+   are written), and "Kings and gunpowder" for the early modern centuries, which
+   Lepanto and Vienna had been sitting outside of. "And everything else" stays
+   as the catch-all and currently holds nothing, which is the point of it. */
+const ERAS = ["Greece and Rome", "After Rome", "Knights and lords", "Kings and gunpowder", "The 1700s", "The 1800s", "1900 to 1950", "And everything else"];
 const KINDS = ["A person", "A battle", "A saint", "A council", "A builder", "A mother", "A heresy", "A feast"];
 /* Two axes, deliberately separate, because they answer two different questions
    a reader actually asks. THEMES is what is IN the story — "one with knights in
@@ -78,7 +84,7 @@ const VIRTUES = ["Courage", "Obedience", "Mercy", "Honesty", "Humility", "Persev
 const BRIEFS = {
   "lepanto": {
     title: "The Battle of Lepanto, 1571",
-    era: "And everything else",
+    era: "Kings and gunpowder",
     kind: "A battle",
     minutes: 3,
     hook: "The last great battle fought by oared galleys, and the last decided by men crossing from one deck to another. Both fleets moved by muscle: three or four men to an oar, and most of them chained to the bench.",
@@ -98,7 +104,7 @@ const BRIEFS = {
 
   "vienna": {
     title: "The Siege of Vienna, 1683",
-    era: "And everything else",
+    era: "Kings and gunpowder",
     kind: "A battle",
     minutes: 3,
     hook: "Ottoman siege engineering did not attack walls. It went underneath them. For two months the tunnels crept toward Vienna\u2019s defences, and the garrison fought most of the siege underground and in the dark.",
@@ -218,7 +224,7 @@ const BRIEFS = {
 
   "patrick": {
     title: "Patrick in Ireland, the 430s",
-    era: "And everything else",
+    era: "After Rome",
     kind: "A saint",
     minutes: 4,
     hook: "Fifth-century Ireland had no cities, no roads and no court a stranger could appeal to. A man standing outside his own kin-group had no legal standing at all, which made a foreign missionary less hated than simply unprotected.",
