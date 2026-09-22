@@ -62,6 +62,13 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
 - **The marketing home (`index.html`)** — headline, pricing, and the "product shot" receipt preview in the hero are all hand-written copy, not pulled from `content.js`. Update them by hand when the pitch or price changes.
 - **Campaign page** — all visible copy in `7stories/index.html` is sample text. The form fields are first name, children's age ranges (multi-select: 0–2, 3–5, 6–9, 10+) and email; all are required.
 - **Signup collection** — the form posts to Formspree (`https://formspree.io/f/xqpaqzne`, set as the form's `action`) as JSON: `firstName`, `email`, `childAges`, `source`. Submissions are collected there; no email is sent to the reader. To change endpoints, edit the `action` attribute — `stories.js` reads it from the form. If the POST fails, the download is still unlocked so a network error never blocks a reader.
+- **Contact form** — posts to the same Formspree endpoint as the campaign page,
+  as JSON: `name`, `email`, `message`, `source`. The endpoint is `FORM_ENDPOINT`
+  at the top of `app.js`; change it in that one place. Unlike `/7stories`, a
+  failed POST here is reported to the reader rather than swallowed — there is no
+  download to fall back on, so silently thanking someone for a message that went
+  nowhere would be a lie. Both surfaces send a `source` field, so submissions are
+  distinguishable in one Formspree inbox.
 
 ## The pages
 

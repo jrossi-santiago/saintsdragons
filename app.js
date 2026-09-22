@@ -1,32 +1,91 @@
 /* Saints & Dragons — content, routing, search, theme */
 
+/* The contact form posts to the same Formspree endpoint as /7stories.
+   Unlike that one, a failed POST here has nothing to fall back on — there is
+   no download to unlock — so this one tells the reader it failed instead of
+   swallowing the error and thanking them for a message that went nowhere. */
+const FORM_ENDPOINT = "https://formspree.io/f/xqpaqzne";
+
 const PAGES = {
   about: {
     title: "About",
-    sub: "A short introduction.",
+    sub: "What this is, and who it is for.",
     html: `
       <div class="prose">
-        <p>Saints &amp; Dragons is a writing practice about clarity, discipline, and intentional living — the ordinary work of building a life you would choose again.</p>
-        <h3>What this space is</h3>
-        <p>A quiet log of growth, one entry at a time. No hustle theatre, no shortcuts — just notes from the work as it happens.</p>
-        <h3>What I do</h3>
+        <p>You stopped learning things for fun at about the same time you stopped being graded on it. Not on purpose. School ended, work started, and everything you have read since then has been read for a reason — a decision at work, a thing that needed fixing, the news. Nobody has handed you anything in years that was simply worth knowing.</p>
+        <p>Then you had kids, and the reading became somebody else's twelve-page book about a truck, for the fourth night running.</p>
+        <p>Saints &amp; Dragons puts both back. One true piece of history for you, written for a grown adult, about four minutes. One tale to read out loud to them, about two, carrying the same thing the history carried. Twice a week, together, in the order they are printed.</p>
+
+        <h3>The circle</h3>
+        <p>The two halves are not two products. That is the entire idea.</p>
+        <p>You read how Patrick, a man with no kin on the island and therefore no legal protection at all, had to buy the right to stand somewhere and not be killed for free — and went back anyway to the country that had enslaved him. Then you sit on the edge of a bed and read them a story about a boy on a cold hill who walks all the way home, and then turns around. They get what you got, shaped for a five-year-old.</p>
+        <p>At the bottom of the card there is a question to ask at the table tomorrow, and a line for before lights out. That is the circle: you learn something real, they get a story worth hearing, and the two of you have something to talk about that is not school and not a screen. It takes about six minutes, and you did not have to plan any of it.</p>
+
+        <h3>What this is not</h3>
         <ul>
-          <li>Write essays on habits, attention, and self-trust.</li>
-          <li>Coach individuals through periods of transition.</li>
-          <li>Publish books and long-form guides.</li>
+          <li><strong>Not fun facts.</strong> Something you repeat once and lose is not worth your evening. Every night is tied to how a thing actually worked, why it came out the way it did, and what it cost somebody.</li>
+          <li><strong>Not a curriculum.</strong> Nobody is testing you. You are allowed to learn things now purely because they are good, and that is most of the point.</li>
+          <li><strong>Not moralising.</strong> The history is history: named sources, dates, and an honest line about what the evidence will actually carry. Where a story has a virtue in it, the story carries it. We do not stop to explain the lesson, and neither should you.</li>
+          <li><strong>Not a feed.</strong> Nothing to scroll, nothing to catch up on. Twice a week, and it is over before you can talk yourself out of it.</li>
         </ul>
+
+        <h3>Why the name</h3>
+        <p>Dragons are the furniture of a child's imagination, and it is good furniture — knights, castles, forests, princes and princesses, something to be brave about. Children have always been given this and they should go on being given it.</p>
+        <p>Saints are the other half: real people, in real centuries, who are interesting long before they are edifying. They get written here the way a battle or a builder gets written — how it worked, and what it cost. Tradition is not the decoration on this. It is the material.</p>
+
+        <h3>Where this goes</h3>
+        <p>The nightly card is the start of it and not the whole of it. The same work runs on toward books a child can sit with on his own, and toward more of what they watch. The standard is easy to say and hard to hit: things a dad is glad to hand his children, rather than things he tolerates.</p>
+        <p>All of it is built to be easy to get, easy to read, and easy to pass on. That is not a compromise. Anything worth handing down has to be something you can actually pick up.</p>
       </div>`
   },
   contact: {
     title: "Contact",
     sub: "Say hello — I read everything.",
     html: `
-      <form class="prose" onsubmit="event.preventDefault(); this.reset(); alert('Thanks — your message has been noted.');">
-        <label class="field"><span>Name</span><input type="text" required /></label>
-        <label class="field"><span>Email</span><input type="email" required /></label>
-        <label class="field"><span>Message</span><textarea required></textarea></label>
+      <form class="prose" id="contactForm" method="POST" action="${FORM_ENDPOINT}">
+        <label class="field"><span>Name</span><input type="text" name="name" required /></label>
+        <label class="field"><span>Email</span><input type="email" name="email" required /></label>
+        <label class="field"><span>Message</span><textarea name="message" required></textarea></label>
         <button class="btn" type="submit">Send message</button>
-      </form>`
+        <p class="filter-note" id="contactStatus" role="status" aria-live="polite"></p>
+      </form>`,
+    init() {
+      const form = document.getElementById("contactForm");
+      const status = document.getElementById("contactStatus");
+      const btn = form.querySelector("button[type=submit]");
+      form.addEventListener("submit", async ev => {
+        ev.preventDefault();
+        const body = {
+          name: form.name.value.trim(),
+          email: form.email.value.trim(),
+          message: form.message.value.trim(),
+          source: "/account#contact"
+        };
+        if (!body.name || !body.message || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(body.email)) {
+          status.textContent = "Please fill in your name, a valid email, and a message.";
+          return;
+        }
+        btn.disabled = true;
+        const label = btn.textContent;
+        btn.textContent = "Sending…";
+        status.textContent = "";
+        try {
+          const res = await fetch(FORM_ENDPOINT, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(body)
+          });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          form.reset();
+          status.textContent = "Thanks — that came through. I read everything, and I will reply.";
+        } catch (err) {
+          console.warn("contact message did not reach Formspree", err);
+          status.textContent = "That did not send. Your message is still in the box — please try again in a moment.";
+        }
+        btn.disabled = false;
+        btn.textContent = label;
+      });
+    }
   }
 };
 
@@ -40,6 +99,7 @@ function renderPage(key) {
       <header class="page-head"><h2>${page.title}</h2><p>${page.sub}</p></header>
       ${page.html}
     </div>`;
+  page.init?.();
 }
 
 /* ---------------------------------------------------------------- helpers */
