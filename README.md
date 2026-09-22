@@ -158,8 +158,9 @@ to evaluate `content.js` the way a browser does, then walks what it defined.
 **Errors fail the run (exit 1). Warnings never do.** Warnings are things worth
 a look that are not broken: a brief on the shelf that no card ever sent, a
 `TODAY` entry outside the 100-to-150-word house length, and any chip in `ERAS`,
-`KINDS`, `THEMES` or `VIRTUES` with nothing behind it — an empty chip filters
-to an empty shelf, which looks broken unless you meant it.
+`KINDS`, `THEMES` or `VIRTUES` with nothing behind it. That last one is not a
+fault — the shelves only draw a chip once something is filed under it — it is
+the roadmap, and the warning list is what has not been written yet.
 
 Run it after editing `content.js` and before merging, alongside the
 `node --check` step in `CLAUDE.md`.
@@ -168,12 +169,32 @@ Tales without a brief are fine — they show on the bedtime shelf and simply hav
 no "Goes with" line. Cards, however, should always carry both halves. A
 multi-night tale sets `night: { n, of }` and a shared `series` key.
 
+### Era and kind on a brief
+
+`ERAS` is chronological and the shelf draws it in order:
+
+    Greece and Rome · After Rome · Knights and lords · Kings and gunpowder ·
+    The 1700s · The 1800s · 1900 to 1950 · And everything else
+
+"After Rome" covers late antiquity, roughly 300 to 600 — Patrick lives there,
+and Benedict, Columba and the fall of Rome belong there when they are written.
+"Kings and gunpowder" covers the early modern centuries, and holds Lepanto and
+Vienna. Both were added after an audit found briefs parked in "And everything
+else" for want of a bucket; that catch-all now holds nothing, which is the
+point of it.
+
+Brunelleschi's dome (1420) is filed under "Knights and lords", which is a
+stretch for Renaissance Florence. It is left there on purpose rather than moved
+without a decision — if enough Renaissance material arrives, that is when the
+list wants another entry.
+
 ### Theme and virtue on a tale
 
 Two separate axes, because a reader asks two different questions:
 
 - **`theme`** — what is *in* the story. "One with knights in it." The list is
   `THEMES`: Knights, Dragons, Forests, Castles, Princes and princesses, The sea.
+  (Princes and princesses has no tale yet, so no chip is drawn for it.)
   **Optional.** A couple of tales (the dome, Cincinnatus) are history-shaped and
   have no fantasy furniture in them; filing them under a theme they do not have
   to make a chip row look tidy would be a lie. They are still reachable by
@@ -186,11 +207,23 @@ These were one mixed list until they were split, which made both axes weaker —
 "Knights" and "Mercy" were offered as if they were the same kind of choice. Both
 now get their own labelled row of chips on the bedtime shelf.
 
-Add to `VIRTUES` when a tale genuinely needs a word that is not there. Do not
-add to either list speculatively: an empty chip filters to an empty shelf.
-`Princes and princesses` is the one exception, carried deliberately because the
-brand names it and no tale has one yet — so it doubles as a visible gap in the
-catalogue.
+Add to `VIRTUES` when a tale genuinely needs a word that is not there. Adding
+speculatively is safe: an entry nothing is filed under simply is not drawn (see
+"Chips draw themselves" below). `Princes and princesses` is carried for exactly
+that reason — the brand names it, no tale has one yet, so it sits in the list
+as a note to self and appears on the shelf the night the first one lands.
+
+### Chips draw themselves
+
+`ERAS`, `KINDS`, `THEMES` and `VIRTUES` stay whole in `content.js` — they are
+the plan. The shelves draw a chip only for the entries something is actually
+filed under, so a reader never clicks a filter and gets an empty shelf, and a
+chip appears by itself the night the first brief or tale lands in it. The
+renderer counts across all the data rather than the filtered list, so the row
+does not shift under the reader as they click.
+
+This means `node tools/check-content.js` is the only place the gaps are
+visible. Read its warnings as the to-write list.
 
 ### Provenance on a tale
 

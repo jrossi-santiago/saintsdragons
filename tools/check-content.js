@@ -264,16 +264,18 @@ for (const slug of Object.keys(TALES)) {
   }
 }
 
-/* An empty chip filters to an empty shelf, which looks broken unless it is
-   deliberate. Worth saying out loud on every run. */
+/* The shelves only draw a chip once something is filed under it, so an empty
+   entry no longer shows a reader an empty shelf. It is still worth naming on
+   every run: it is the roadmap, and this is the list of what is not written
+   yet. */
 const usedThemes = new Set(Object.values(TALES).map(t => t.theme).filter(Boolean));
-for (const t of THEMES) if (!usedThemes.has(t)) warn("THEMES", `"${t}" has no tale — its chip filters to an empty shelf`);
+for (const t of THEMES) if (!usedThemes.has(t)) warn("THEMES", `"${t}" has no tale — nothing is written there yet, so no chip is drawn`);
 const usedVirtues = new Set(Object.values(TALES).map(t => t.virtue));
-for (const v of VIRTUES) if (!usedVirtues.has(v)) warn("VIRTUES", `"${v}" has no tale — its chip filters to an empty shelf`);
+for (const v of VIRTUES) if (!usedVirtues.has(v)) warn("VIRTUES", `"${v}" has no tale — nothing is written there yet, so no chip is drawn`);
 const usedEras = new Set(Object.values(BRIEFS).map(b => b.era));
-for (const e of ERAS) if (!usedEras.has(e)) warn("ERAS", `"${e}" has no brief — its chip filters to an empty shelf`);
+for (const e of ERAS) if (!usedEras.has(e)) warn("ERAS", `"${e}" has no brief — nothing is written there yet, so no chip is drawn`);
 const usedKinds = new Set(Object.values(BRIEFS).map(b => b.kind));
-for (const k of KINDS) if (!usedKinds.has(k)) warn("KINDS", `"${k}" has no brief — its chip filters to an empty shelf`);
+for (const k of KINDS) if (!usedKinds.has(k)) warn("KINDS", `"${k}" has no brief — nothing is written there yet, so no chip is drawn`);
 
 /* ---------------------------------------------------------------- report */
 
