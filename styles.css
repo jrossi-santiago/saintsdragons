@@ -15,6 +15,20 @@
   --sidebar-w: 330px;
   --serif: "Young Serif", Georgia, "Times New Roman", serif;
   --sans: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  /* receipt paper — the same in both themes, so the card and the paper
+     pages below read as one surface. Hoisted here because three places
+     now use it: the home receipt, the mini archive, and the paper pages. */
+  --rcpt-paper: #f6f1e3;
+  --rcpt-paper-shadow: #e7dfc9;
+  --rcpt-paper-raised: #efe7d3;
+  --rcpt-paper-tint: #e6dcc2;
+  --rcpt-ink: #221c15;
+  --rcpt-ink-dim: #6b6153;
+  --rcpt-ink-faint: #948a78;
+  --rcpt-rule: #cfc3a4;
+  --rcpt-rule-soft: #e0d7bf;
+  --rcpt-red: #a8451f;
 }
 
 :root[data-theme="light"] {
@@ -499,14 +513,39 @@ a { color: inherit; text-decoration: none; }
   .rcpt-controls { left: 0; right: auto; }
 }
 
+/* ---------- paper pages ---------- */
+/* The three nightly surfaces — history for dads, today in history and
+   bedtime stories, plus their detail pages — are printed on the same
+   paper as the receipt card on #home, so the card and the full breakdown
+   read as one object. Only the palette changes: every rule below just
+   re-points the theme tokens at the receipt's ink-on-paper values, so
+   fonts, spacing and layout stay exactly as they are, in either theme. */
+.main.is-paper {
+  --bg: var(--rcpt-paper);
+  --surface: var(--rcpt-paper-raised);
+  --text: var(--rcpt-ink);
+  --text-dim: var(--rcpt-ink-dim);
+  --text-faint: var(--rcpt-ink-faint);
+  --line: var(--rcpt-rule);
+  --line-soft: var(--rcpt-rule-soft);
+  /* a shade under the raised surface, so pills still read on a card */
+  --chip: var(--rcpt-paper-tint);
+  --accent: var(--rcpt-red);
+  background: var(--rcpt-paper);
+  color: var(--rcpt-ink);
+  /* the same faint ruling as the receipt body */
+  background-image: repeating-linear-gradient(0deg,
+    rgba(34,28,21,.025) 0px, rgba(34,28,21,.025) 1px, transparent 1px, transparent 3px);
+}
+
+/* the date picker's icon is inverted for the dark chrome; on paper it is
+   dark-on-light again, so put it back */
+:root[data-theme="dark"] .main.is-paper .date-pick input::-webkit-calendar-picker-indicator {
+  filter: none; opacity: .7;
+}
+
 /* ---------- tonight's receipt (Home) ---------- */
 .receipt-wrap{
-  --rcpt-paper: #f6f1e3;
-  --rcpt-paper-shadow: #e7dfc9;
-  --rcpt-ink: #221c15;
-  --rcpt-ink-dim: #6b6153;
-  --rcpt-ink-faint: #948a78;
-  --rcpt-rule: #cfc3a4;
   --rcpt-scale: 1;
   position: relative;
   max-width: 27rem;
@@ -597,12 +636,6 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- earlier nights: mini receipts torn off the roll ---------- */
 .rcpt-archive{
-  --rcpt-paper: #f6f1e3;
-  --rcpt-paper-shadow: #e7dfc9;
-  --rcpt-ink: #221c15;
-  --rcpt-ink-dim: #6b6153;
-  --rcpt-ink-faint: #948a78;
-  --rcpt-rule: #cfc3a4;
   margin-top: 3.5rem;
 }
 .rcpt-archive > h3{ margin: 0 0 .3rem; }
