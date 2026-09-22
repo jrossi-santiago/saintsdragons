@@ -232,21 +232,6 @@
   .lp-loop-step p{ margin: 0; color: var(--text-dim); font-size: .95rem; line-height: 1.6; }
   .lp-loop-step p + p{ margin-top: 10px; }
   .lp-loop-step em{ color: var(--text); font-style: italic; }
-  /* the real words off the card, printed on receipt paper */
-  .lp-loop-quote{
-    margin: 14px 0 0; padding: 18px 20px; border-radius: 6px;
-    background: #f6f1e3; color: var(--rcpt-ink);
-    box-shadow: 0 14px 30px -18px rgba(0,0,0,.5);
-  }
-  .lp-loop-quote .lbl{
-    display: block; font-family: "Space Mono", monospace; font-size: .6rem; font-weight: 700;
-    letter-spacing: .16em; text-transform: uppercase; color: var(--rcpt-ink-faint);
-    margin: 0 0 9px;
-  }
-  .lp-loop-quote p{
-    margin: 0; color: var(--rcpt-ink); font-family: var(--serif);
-    font-size: 1.02rem; line-height: 1.55;
-  }
   .lp-loop-close{
     margin: 30px 0 0; padding-left: 54px; max-width: 680px;
     color: var(--text-dim); font-size: .95rem; line-height: 1.65;
@@ -417,26 +402,6 @@
         <p><em>The Lion and the Mouse.</em> A lion laughs at a mouse who promises to help him one day. The day comes, the net holds him, and the small one everybody counted out chews him free.</p>
         <p>Each day tells you in one line why the two go together: <em>&ldquo;Harold marched the length of England twice in three weeks and still stood in the shield wall himself. We don't get to sit out the fight because we're tired — we show up anyway, and that is most of what courage actually is.&rdquo;</em></p>
       </li>
-      <li class="lp-loop-step">
-        <span class="no">03</span>
-        <p class="lp-loop-when">Next morning &middot; at breakfast</p>
-        <h3>You have a question to ask</h3>
-        <p>Each day comes with one question for your child, so you don't have to think of one.</p>
-        <div class="lp-loop-quote">
-          <span class="lbl">Ask them</span>
-          <p>&ldquo;The mouse promised to help a lion, and the lion almost laughed at her. Has anyone ever been surprised that you could help them?&rdquo;</p>
-        </div>
-      </li>
-      <li class="lp-loop-step">
-        <span class="no">04</span>
-        <p class="lp-loop-when">Before lights out &middot; one line</p>
-        <h3>And a line to end the day</h3>
-        <p>A few seconds in the dark. Say it or don't.</p>
-        <div class="lp-loop-quote">
-          <span class="lbl">Before lights out</span>
-          <p>&ldquo;For steady hands when the ground gives way beneath us, and for the small kindnesses that come back around exactly when we need them.&rdquo;</p>
-        </div>
-      </li>
     </ol>
 
     <p class="lp-loop-close"><strong>Tomorrow, a new one.</strong> A new date, a new history, a new story &mdash; the same shape every day, so the habit does the remembering for you.</p>
@@ -537,8 +502,7 @@
       </div>
       <div class="lp-pricing-card is-featured">
         <h3 class="lp-plan-name">Every day</h3>
-        <!-- $4.99 is still a placeholder price: confirm before launch. -->
-        <div class="lp-price">$4.99<span>/month</span></div>
+        <div class="lp-price">$6<span>/month</span></div>
         <p class="lp-price-note">Less than a coffee</p>
         <ul class="lp-ticks">
           <li><svg><use href="#i-check"/></svg> A new history and bedtime story every day &mdash; 7 of each a week</li>
