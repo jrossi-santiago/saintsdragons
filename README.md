@@ -139,6 +139,31 @@ To add a night, edit `content.js`:
 3. Optionally add a `TODAY` entry keyed `"MM-DD"`, 100 to 150 words. A date with
    no entry shows the nearest one that has been written.
 
+### Check it before you ship it
+
+```sh
+node tools/check-content.js
+```
+
+The only test this site has. It reads `content.js` and verifies the things
+that break silently: every card points at a brief and a tale that exist, every
+pairing reciprocates (the brief names the tale *and* the tale names the brief),
+every era, kind, theme and virtue is in its taxonomy, no card is missing its
+question, why-ours line or prayer, dates are real and in order, a series adds
+up to the number of nights it claims, and every slug in `TODAY` resolves.
+
+No dependencies, and none are wanted — it uses `vm` from the standard library
+to evaluate `content.js` the way a browser does, then walks what it defined.
+
+**Errors fail the run (exit 1). Warnings never do.** Warnings are things worth
+a look that are not broken: a brief on the shelf that no card ever sent, a
+`TODAY` entry outside the 100-to-150-word house length, and any chip in `ERAS`,
+`KINDS`, `THEMES` or `VIRTUES` with nothing behind it — an empty chip filters
+to an empty shelf, which looks broken unless you meant it.
+
+Run it after editing `content.js` and before merging, alongside the
+`node --check` step in `CLAUDE.md`.
+
 Tales without a brief are fine — they show on the bedtime shelf and simply have
 no "Goes with" line. Cards, however, should always carry both halves. A
 multi-night tale sets `night: { n, of }` and a shared `series` key.

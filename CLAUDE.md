@@ -87,9 +87,13 @@ push the branch straight after, as step 5 does.
    configured to find it — never run `playwright install`. Two real bugs in
    one session were caught this way and by nothing else: a truncation that
    cut "1937 J.R.R." mid-name, and a card grid that wrapped 4+1.
-3. `node --check app.js && node --check content.js` — there is no build step
-   and no test suite, so a syntax error ships.
-4. Click through the other hash routes. `app.js` renders every page from one
+3. `node --check app.js && node --check content.js` — there is no build step,
+   so a syntax error ships.
+4. `node tools/check-content.js` if you touched `content.js`. It catches the
+   cross-reference breakage `node --check` cannot see — a card pointing at a
+   slug that does not exist, a pairing only one side agrees to, an era or
+   virtue that is not in its list. Exit 1 means do not merge.
+5. Click through the other hash routes. `app.js` renders every page from one
    file; a change to a shared helper reaches all of them.
 
 Report what the screenshot actually shows, including what still looks wrong.
