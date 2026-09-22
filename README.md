@@ -1,8 +1,31 @@
 # Saints & Dragons
 
-History for dads. Tales for bedtime. **The Nightly Receipt** is the product:
-today in history, a piece of history for you, and a tale to read aloud,
-printed like a till receipt. `/` sells it; `/account` is it.
+> Dads learning things worth knowing & passing them on to their kids.
+> History, faith and virtue, handed down rather than explained.
+
+That line is the positioning. It is the meta description on `/` and
+`/account`, the `home` entry in `META` in `app.js`, and the bio on every
+external profile. **If you change it, change it in all of those places at
+once** — it is the one sentence that has to match everywhere.
+
+Two things it commits us to, both easy to break by accident:
+
+- **The subject is the dad, not the product.** It opens with what he does,
+  not with what arrives. Copy that starts "The Nightly Receipt is…" has
+  quietly changed the subject.
+- **"Handed down rather than explained" is a refusal.** No moralising, no
+  lesson spelled out after the story, no fun facts. The About page says the
+  same thing at length under *What this is not*; that section and this line
+  have to keep agreeing.
+
+**The Nightly Receipt** is the product: today in history, a piece of history
+for you, and a tale to read aloud, printed like a till receipt. `/` sells it;
+`/account` is it.
+
+`History for dads · Tales for bedtime` stays as the short lockup — the
+sidebar, the receipt header, the banners. It is a subset of the line above,
+not a competing claim, and it is baked into rendered PNGs, so changing it
+means re-rendering `assets/social/`.
 
 Static site: plain HTML, CSS, and vanilla JavaScript. No build step, no dependencies.
 

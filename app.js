@@ -569,9 +569,9 @@ function renderMissing(msg, hash, label) {
 /* per-page title and meta description, from the copy doc */
 const META = {
   home:    ["Saints & Dragons | History for dads, tales for bedtime",
-            "One true story from history for dads, one tale to read aloud to the kids. Written to go together. About twenty minutes."],
+            "Dads learning things worth knowing & passing them on to their kids. History, faith and virtue, handed down rather than explained."],
   history: ["History for Dads | Saints & Dragons",
-            "Short history notes on how things actually worked. Battles, builders, knights and Romans, each paired with a bedtime tale."],
+            "Short history notes on how things actually worked \u2014 battles, builders, saints and Romans, each paired with a tale that carries the same thing."],
   today:   ["Today in History | Saints & Dragons",
             "One short, true story for each date, filled in week by week. Under a minute to read."],
   bedtime: ["Bedtime Stories for Ages 1 and 3 | Saints & Dragons",
