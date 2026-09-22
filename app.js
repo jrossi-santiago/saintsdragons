@@ -535,6 +535,9 @@ function setMeta(key, param) {
 /* which sidebar link lights up for a given route */
 const NAV_OWNER = { brief: "#history", tale: "#bedtime", today: "#today" };
 
+/* routes printed on receipt paper, so they match the card on #home */
+const PAPER_ROUTES = new Set(["history", "today", "bedtime", "brief", "tale"]);
+
 function route() {
   const raw = (location.hash || "#home").slice(1);
 
@@ -546,6 +549,7 @@ function route() {
 
   document.querySelectorAll(".nav-item").forEach(a =>
     a.classList.toggle("is-active", a.getAttribute("href") === owner));
+  main.classList.toggle("is-paper", PAPER_ROUTES.has(key));
   setMeta(key, param);
 
   if (key === "history") renderHistory();
