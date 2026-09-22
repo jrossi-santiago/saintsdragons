@@ -57,7 +57,21 @@
 
 const ERAS = ["Greece and Rome", "Knights and lords", "The 1700s", "The 1800s", "1900 to 1950", "And everything else"];
 const KINDS = ["A person", "A battle", "A saint", "A council", "A builder", "A mother", "A heresy", "A feast"];
-const THEMES = ["Knights", "Dragons", "Forests", "Courage", "Obedience", "Mercy"];
+/* Two axes, deliberately separate, because they answer two different questions
+   a reader actually asks. THEMES is what is IN the story — "one with knights in
+   it" — imaginative furniture a child picks by. VIRTUES is what the story is
+   ABOUT — "one about telling the truth tonight" — which is the axis a parent
+   picks by, and the one that makes this more than fun facts.
+
+   They were one list until now, which mixed the two and made both weaker. Both
+   are filters on the bedtime shelf, in two labelled rows.
+
+   A tale must carry a `virtue`. `theme` is optional: a couple of tales (the
+   dome, Cincinnatus) are history-shaped and have no fantasy furniture in them,
+   and filing them under a theme they do not have would be a lie told to make a
+   chip row look tidy. They are still reachable by virtue, by age and by search. */
+const THEMES = ["Knights", "Dragons", "Forests", "Castles", "Princes and princesses", "The sea"];
+const VIRTUES = ["Courage", "Obedience", "Mercy", "Honesty", "Humility", "Perseverance", "Forgiveness", "Faithfulness"];
 
 /* ---------------------------------------------------------------- briefs */
 
@@ -240,7 +254,8 @@ const TALES = {
     title: "The Boy Who Counted Oars",
     age: 3,
     minutes: "10",
-    theme: "Courage",
+    theme: "The sea",
+    virtue: "Perseverance",
     origin: "New tale, from Lepanto, 1571",
     source: "Tomas is invented. The galley, the drum, the men chained to the benches and the morning somebody struck the pins out are not.",
     brief: "lepanto",
@@ -281,6 +296,7 @@ const TALES = {
     age: 3,
     minutes: "11",
     theme: "Knights",
+    virtue: "Courage",
     origin: "New tale, from Vienna, 1683",
     source: "Mila is invented. The tunnels creeping under the wall, the march over a mountain nobody thought an army could cross, and the winged hussars at the top of it are not.",
     brief: "vienna",
@@ -318,7 +334,8 @@ const TALES = {
     title: "The Wall That Would Not Move",
     age: 3,
     minutes: "9",
-    theme: "Obedience",
+    theme: "Knights",
+    virtue: "Obedience",
     origin: "New tale, from Tours, 732",
     source: "Odo is invented. The Frankish line that stood on a wooded hill for seven days and would not break is not.",
     brief: "tours",
@@ -360,7 +377,7 @@ const TALES = {
     title: "The Egg and the Dome",
     age: 3,
     minutes: "9",
-    theme: "Courage",
+    virtue: "Humility",
     origin: "Vasari, 1550",
     source: "Giorgio Vasari put the egg in his Lives of the Artists, a hundred and thirty years after the dome was begun. A near-identical story is told about Columbus, which usually means the story travelled.",
     brief: "dome",
@@ -399,7 +416,8 @@ const TALES = {
     title: "The King Who Burnt the Bread",
     age: 1,
     minutes: "8",
-    theme: "Mercy",
+    theme: "Castles",
+    virtue: "Humility",
     origin: "English legend, about 1000 AD",
     source: "No account written in Alfred's lifetime mentions the cakes. The story first appears in an anonymous Life of St Neot roughly a century after he died, and English children have been told it ever since.",
     brief: "athelney",
@@ -433,7 +451,7 @@ const TALES = {
     title: "The Farmer Who Was King for Sixteen Days",
     age: 1,
     minutes: "8",
-    theme: "Obedience",
+    virtue: "Obedience",
     origin: "Livy, about 25 BC",
     source: "Livy tells it in book three of his history of Rome, four centuries after it was supposed to have happened. Washington's officers named a society after Cincinnatus, and the society named a city in Ohio.",
     brief: "cincinnatus",
@@ -471,6 +489,7 @@ const TALES = {
     age: 3,
     minutes: "8",
     theme: "Dragons",
+    virtue: "Honesty",
     origin: "New tale, from the old dragon stories",
     source: "Invented, and standing in a long queue: Fáfnir on his gold, the barrow-dragon in Beowulf, the Lambton Worm, and every hill in England somebody was told not to dig.",
     night: { n: 1, of: 3 },
@@ -502,6 +521,7 @@ const TALES = {
     age: 3,
     minutes: "8",
     theme: "Dragons",
+    virtue: "Honesty",
     origin: "New tale, from the old dragon stories",
     source: "Invented, and standing in a long queue: Fáfnir on his gold, the barrow-dragon in Beowulf, the Lambton Worm, and every hill in England somebody was told not to dig.",
     night: { n: 2, of: 3 },
@@ -538,6 +558,7 @@ const TALES = {
     age: 3,
     minutes: "9",
     theme: "Dragons",
+    virtue: "Honesty",
     origin: "New tale, from the old dragon stories",
     source: "Invented, and standing in a long queue: Fáfnir on his gold, the barrow-dragon in Beowulf, the Lambton Worm, and every hill in England somebody was told not to dig.",
     night: { n: 3, of: 3 },
@@ -579,6 +600,7 @@ const TALES = {
     age: 1,
     minutes: "8",
     theme: "Forests",
+    virtue: "Faithfulness",
     origin: "New tale, from the old forest stories",
     source: "Invented. A forest that watches and keeps accounts is as old as the Grimms, but this one is not theirs.",
     body: [
@@ -611,7 +633,8 @@ const TALES = {
        filter bucket (1 or 3); this is the editorial line the card prints. */
     ageLabel: "Ages 4\u20136",
     minutes: "2",
-    theme: "Mercy",
+    theme: "Forests",
+    virtue: "Mercy",
     origin: "Aesop, roughly 600 BC",
     source: "One of the Aesop fables, told in Greek for centuries before anyone wrote the collection down. Caxton printed it in English in 1484, which makes it one of the first stories ever printed in this language.",
     brief: "hastings",
@@ -638,7 +661,8 @@ const TALES = {
     age: 1,
     ageLabel: "Ages 4–6",
     minutes: "3",
-    theme: "Mercy",
+    theme: "The sea",
+    virtue: "Forgiveness",
     origin: "Patrick's Confession, 5th century",
     source: "Patrick wrote his own account of the raid, the six years and the walk back. It is one of the very few documents from fifth-century Britain by somebody who was there.",
     brief: "patrick",
