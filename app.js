@@ -314,6 +314,7 @@ function renderHome(query = "") {
             <div class="rcpt-slot-label"><span class="no">03</span> Tonight&rsquo;s Tale</div>
             <h3 class="rcpt-story-title">${esc(tale.title)}</h3>
             <p class="rcpt-dek">About ${esc(tale.minutes)} minutes &middot; ${esc(tale.ageLabel || `Ages ${tale.age}`)}${tale.night ? ` &middot; night ${tale.night.n} of ${tale.night.of}` : ""}</p>
+            ${tale.origin ? `<p class="rcpt-origin">${esc(tale.origin)}</p>` : ""}
             <p class="rcpt-excerpt">&ldquo;${esc(tale.body[0])}&rdquo;</p>
             <a class="rcpt-more" href="#tale/${card.tale}">Read the rest &rarr;</a>
           </section>
@@ -387,7 +388,7 @@ function renderSearch(query) {
   const briefHits = Object.entries(BRIEFS).filter(([, b]) =>
     (b.title + " " + b.hook + " " + b.era + " " + b.kind).toLowerCase().includes(q));
   const taleHits = Object.entries(TALES).filter(([, t]) =>
-    (t.title + " " + t.theme + " " + t.origin).toLowerCase().includes(q));
+    (t.title + " " + t.theme + " " + t.origin + " " + (t.source || "")).toLowerCase().includes(q));
   const hits = briefHits.length + taleHits.length;
 
   main.innerHTML = `
@@ -551,6 +552,7 @@ function renderTale(slug) {
         <h2>${esc(t.title)}</h2>
         <p>Age ${t.age} · ${esc(t.minutes)} min read-aloud · ${esc(t.theme)} · ${esc(t.origin)}${t.night ? ` · night ${t.night.n} of ${t.night.of}` : ""}</p>
       </header>
+      ${t.source ? `<p class="tale-source"><strong>Where it comes from.</strong> ${esc(t.source)}</p>` : ""}
       <div class="tale-body">${t.body.map(p => `<p>${esc(p)}</p>`).join("")}</div>
       ${siblings.length ? `<p class="callout"><strong>The rest of it.</strong> ${siblings.map(([s, x]) =>
         s === slug ? `<span class="is-here">Night ${x.night.n}</span>` : `<a href="#tale/${s}">Night ${x.night.n}</a>`).join(" · ")}</p>` : ""}
