@@ -97,6 +97,22 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
 - **Pages** — the `About` and `Contact` pages are the only ones left in the `PAGES` object in `app.js`; nav links live in `account/index.html`. Everything else on the site is nightly content — see below.
 - **Social links** — the three `<a href="#">` entries in `.socials`.
 - **The marketing home (`index.html`)** — headline, pricing, and the "product shot" receipt preview in the hero are all hand-written copy, not pulled from `content.js`. Update them by hand when the pitch or price changes.
+  - **Page order.** Hero (headline "Be the dad with stories worth passing
+    on.", then the format line "A true story for you. A bedtime story for
+    them.") → *What you get* (real screenshots) → *How one day goes* → *Why
+    dads use it* → *Who it's for* → *What this is not* → library → reader
+    quotes → plans → signup. The hero receipt shows the pairing, history
+    then bedtime story, because the pairing is the product; today in history
+    is the tag line under it.
+  - **Screenshots** in *What you get* are real captures of `/account`, one
+    per theme, in `assets/landing/`. They bake in the day's content, so
+    re-render them with `node tools/render-landing-shots.js` (server running
+    on :8000) when `#home` or the Lion and the Mouse page changes.
+  - **What this is not** repeats the About page's section of the same name,
+    shortened. The two have to keep agreeing.
+  - **Reader quotes (`#voices`)** ship `hidden`, with an empty grid. Only
+    real words from real readers go in; the HTML comment above the section
+    shows the shape. Remove `hidden` once there are two or three.
 - **The "bigger thing" section (`#work`)** — two hand-maintained columns. The
   left one uses a tick and may only list things that actually exist; the right
   one uses a hollow dot (`#i-dot`) and is explicitly unshipped, which the note
