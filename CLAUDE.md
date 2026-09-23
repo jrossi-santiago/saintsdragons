@@ -223,3 +223,8 @@ decision instead of re-deriving it.
 See `README.md` for the file map, how to add a night, and how accounts,
 Stripe and the free/paid gate fit together, and `LESSONS-LEARNED.md` before
 changing how pages or assets are linked.
+
+New histories for dads are written to `docs/history-for-dads.md`, with
+`docs/histories/golden-hind.md` as the reference piece. That standard
+replaced the brief voice in the header of `data/content.js` on 2026-09-23.
+The `history-for-dads` skill runs it when the owner uploads a source PDF.
