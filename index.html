@@ -643,11 +643,10 @@
           <li><svg><use href="#i-check"/></svg> Browse by era, age and theme</li>
           <li><svg><use href="#i-check"/></svg> Cancel any time</li>
         </ul>
-        <!-- Straight to Stripe, signed in or not: the script below asks
-             /api/billing/checkout for the URL. The href is only for when the
-             script cannot run — it signs the reader in first and /account
-             opens Stripe the moment they land. -->
-        <a class="lp-cta" id="upgradeCta" href="/login?next=%2Faccount%3Fupgrade%3D1%23account">Get every day</a>
+        <!-- The checkout is a page in the account. Signed out, /account
+             sends the reader to /login with this as where to go next; a new
+             address is signed straight in and lands on it. No script. -->
+        <a class="lp-cta" href="/account#checkout">Get every day</a>
       </div>
     </div>
   </div>
@@ -702,32 +701,6 @@
   requestAnimationFrame(function(){
     document.querySelectorAll('.lp-reveal').forEach(function(el){ el.classList.add('is-in'); });
   });
-
-  /* The paid plan. /api/billing/checkout answers with a Stripe URL whether
-     or not the reader is signed in — signed out, Stripe asks for the email
-     and that address becomes the account. Already paying, their account
-     page. Anything else, the link's own href. */
-  (function(){
-    var cta = document.getElementById('upgradeCta');
-    cta.addEventListener('click', function(ev){
-      ev.preventDefault();
-      var label = cta.textContent;
-      cta.textContent = 'Opening Stripe\u2026';
-      fetch('/api/billing/checkout', { method: 'POST', headers: { Accept: 'application/json' } })
-        .then(function(res){
-          if (res.status === 409) { location.href = '/account#account'; return; }
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.json().then(function(body){
-            if (!body.url) throw new Error('no url');
-            location.href = body.url;
-          });
-        })
-        .catch(function(){
-          cta.textContent = label;
-          location.href = cta.href;
-        });
-    });
-  })();
 
   /* Signup, which is also login: /api/auth/request-link signs a new address
      straight in and emails a known one a link, so nobody is ever asked

@@ -245,8 +245,8 @@ function heldTitle(card) {
    the same on the receipt, on a shelf and on a story's own page. It names
    what is behind it rather than saying "upgrade to continue" — a reader
    deciding whether to pay should be able to see what they are deciding
-   about. The button posts to /api/billing/checkout; the handler is
-   delegated, at the foot of this file. */
+   about. The button opens #checkout; the handler is delegated, at the
+   foot of this file. */
 function lockPanel(heading, line, { small = false } = {}) {
   return `<aside class="lock${small ? " is-small" : ""}">
     <p class="lock-kicker">Every day &middot; $6 a month</p>
@@ -837,8 +837,9 @@ function renderAccount() {
   });
 }
 
-/* Both billing buttons do the same thing: ask our side for a Stripe URL and
-   hand the reader over. Nothing about a card is ever typed on this site. */
+/* Manage billing: ask our side for a Billing Portal URL and hand the reader
+   over to Stripe. (Paying is on our own page now — see #checkout — but
+   cancelling, cards and invoices still live in Stripe's portal.) */
 async function goToStripe(endpoint) {
   const res = await fetch(endpoint, { method: "POST", headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error("HTTP " + res.status);
@@ -967,7 +968,7 @@ function renderCheckout() {
   const run = ++checkoutRun;
   liveCheckout = null;
 
-  if (isPaid()) return drawCheckoutDone();
+  if (isPaid()) return drawCheckoutDone({ justPaid: false });
   if (checkoutReturned) return drawCheckoutWaiting(run);
 
   main.innerHTML = `
@@ -1243,7 +1244,7 @@ function drawCheckoutWaiting(run) {
       ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS } = data.content);
       applyAgePreference();
       checkoutReturned = false;
-      return drawCheckoutDone();
+      return drawCheckoutDone({ justPaid: true });
     }
     if (++tries === 15) {
       const note = document.getElementById("coWaitNote");
@@ -1255,16 +1256,21 @@ function drawCheckoutWaiting(run) {
   tick();
 }
 
-function drawCheckoutDone() {
+/* "You're in", or, for a reader who was already paying and followed a
+   "Get every day" link anyway, the same page saying so — never a second
+   card form. The server refuses a second subscription too (409). */
+function drawCheckoutDone({ justPaid }) {
   main.innerHTML = `
     <div class="content">
       <section class="co co-done" role="status" aria-live="polite">
         <div class="co-mark" aria-hidden="true"></div>
         <p class="co-kicker">Every day</p>
-        <h2>You&rsquo;re in.</h2>
-        <p>Tonight&rsquo;s history and bedtime story are open, and so is every one before them.</p>
+        <h2>${justPaid ? "You&rsquo;re in." : "You&rsquo;re already in."}</h2>
+        <p>${justPaid
+          ? "Tonight&rsquo;s history and bedtime story are open, and so is every one before them."
+          : "You&rsquo;re on Every day, so there is nothing to pay. Tonight&rsquo;s is waiting."}</p>
         <a class="btn co-submit co-submit-inline" href="#home">Read tonight&rsquo;s</a>
-        <p class="co-fine">A receipt is on its way to ${esc(ME.email)}.<br>
+        <p class="co-fine">${justPaid ? `A receipt is on its way to ${esc(ME.email)}.<br>` : ""}
           Cards, invoices and cancelling live under <a href="#account">Your account</a>.</p>
       </section>
     </div>`;
@@ -1394,22 +1400,11 @@ toggle.addEventListener("click", () => {
 scrim.addEventListener("click", closeSidebar);
 
 /* every "get every day" button on every page, delegated for the same reason
-   the chips are: these panels are re-rendered on each route */
-main.addEventListener("click", async ev => {
-  const btn = ev.target.closest("[data-upgrade]");
-  if (!btn) return;
-  btn.disabled = true;
-  const label = btn.textContent;
-  btn.textContent = "Opening Stripe\u2026";
-  try {
-    await goToStripe("/api/billing/checkout");
-  } catch (err) {
-    console.warn("checkout did not open", err);
-    btn.textContent = label;
-    btn.disabled = false;
-    btn.insertAdjacentHTML("afterend",
-      `<p class="filter-note">Stripe did not open. Try again in a moment.</p>`);
-  }
+   the chips are: these panels are re-rendered on each route. They open the
+   checkout page; nothing is asked of Stripe until it draws. */
+main.addEventListener("click", ev => {
+  if (!ev.target.closest("[data-upgrade]")) return;
+  location.hash = "#checkout";
 });
 
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -1462,19 +1457,13 @@ async function boot() {
     if (checkout === "done" && !isPaid()) checkoutReturned = true;
   }
 
-  /* Arriving from the paid plan on the landing page, by way of the login
-     link: they already chose to pay, so open Stripe rather than making them
-     find the button again. A reader who is already paying just lands. */
+  /* ?upgrade=1 is the old way in from the paid plan on the landing page,
+     and it still sits in login links already in people's inboxes. They
+     chose to pay, so take them to the checkout rather than making them find
+     the button again. (The landing page links straight to #checkout now.)
+     #checkout itself tells a reader who is already paying so. */
   if (params.get("upgrade")) {
-    history.replaceState(null, "", location.pathname + location.hash);
-    if (!isPaid()) {
-      try {
-        await goToStripe("/api/billing/checkout");
-        return;
-      } catch (err) {
-        console.warn("checkout did not open", err);
-      }
-    }
+    history.replaceState(null, "", location.pathname + "#checkout");
   }
 
   if (!ME.onboarded && !location.hash) location.hash = "#welcome";

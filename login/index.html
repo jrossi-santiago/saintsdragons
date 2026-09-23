@@ -77,8 +77,8 @@
      in somebody's inbox into an open redirect. */
   var next = params.get('next') || '';
   if (next.charAt(0) === '/' && next.charAt(1) !== '/') document.getElementById('next').value = next;
-  /* Sent here by the paid plan: say where the link goes after this. */
-  if (/[?&]upgrade=1/.test(document.getElementById('next').value)) {
+  /* Sent here by the paid plan: say where this goes next. */
+  if (/[?&]upgrade=1|#checkout$/.test(document.getElementById('next').value)) {
     document.querySelector('.lede').textContent =
       'Put in your email. New here, and you go straight to checkout; been here before, and we send you a link that does.';
   }
