@@ -24,7 +24,7 @@ catch (e) {
 const BASE = process.env.BASE || "http://localhost:8000";
 const OUT = path.join(__dirname, "..", "assets", "landing");
 
-/* [file stem, route, viewport, scroll-to selector or null] */
+/* [file stem, route, viewport] */
 const SHOTS = [
   ["app-desktop", "/account/#home", { width: 1280, height: 800 }],
   ["tale-phone", "/account/#tale/lion-and-the-mouse", { width: 390, height: 780 }],

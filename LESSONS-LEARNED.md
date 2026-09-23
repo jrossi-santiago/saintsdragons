@@ -39,7 +39,9 @@ runs.
 **Fix.** `7stories/index.html` is self-contained: its CSS and JS are inlined, so
 there is no page-specific asset whose path can break. The gate renders by default
 rather than being unhidden by script, and the PDF link is resolved at load from
-`location.pathname`, which covers both URL forms.
+`location.pathname`, which covers both URL forms. (Later replaced by a
+root-absolute `href="/7stories/7-bedtime-stories.pdf"`: rule 1 below, and it
+no longer needs script to be right.)
 
 ### Rules
 

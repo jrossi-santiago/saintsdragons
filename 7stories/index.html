@@ -47,11 +47,6 @@
 .field.is-invalid .multi-trigger { border-color: #e4756b; }
 
 .btn-wide { width: 100%; justify-content: center; margin-top: 4px; }
-.btn-quiet {
-  background: transparent; color: var(--text);
-  border-color: var(--line); font-weight: 500;
-}
-.btn-quiet:hover { border-color: var(--text-faint); background: var(--chip); }
 
 .fineprint { margin: 14px 0 0; font-size: .8rem; color: var(--text-faint); text-align: center; }
 
@@ -268,8 +263,8 @@
             <p>Print it, or keep it on your phone for bedtime.</p>
           </div>
           <div class="download-actions">
-            <a class="btn" id="pdfDownload" href="7-bedtime-stories.pdf" download><svg class="ic"><use href="#i-download"/></svg> Download the PDF</a>
-            <a class="btn btn-quiet" id="pdfOpen" href="7-bedtime-stories.pdf" target="_blank" rel="noopener"><svg class="ic"><use href="#i-print"/></svg> Open to read or print</a>
+            <a class="btn" id="pdfDownload" href="/7stories/7-bedtime-stories.pdf" download><svg class="ic"><use href="#i-download"/></svg> Download the PDF</a>
+            <a class="btn btn-quiet" id="pdfOpen" href="/7stories/7-bedtime-stories.pdf" target="_blank" rel="noopener"><svg class="ic"><use href="#i-print"/></svg> Open to read or print</a>
           </div>
         </div>
 
@@ -422,20 +417,13 @@ scrim.addEventListener("click", closeSidebar);
 const searchInput = document.getElementById("search");
 searchInput.addEventListener("keydown", e => {
   if (e.key === "Enter" && searchInput.value.trim()) {
-    location.href = "../index.html#home";
+    location.href = "/account#home";
   }
 });
 
 /* ---------- boot ---------- */
 document.getElementById("year").textContent = new Date().getFullYear();
 syncAgeLabel();
-
-/* This page is reachable as /7stories and as /7stories/. In the first case
-   relative URLs resolve against the site root, so point the PDF explicitly. */
-const PDF = "7-bedtime-stories.pdf";
-const pdfHref = location.pathname.endsWith("/") ? PDF : "7stories/" + PDF;
-document.getElementById("pdfDownload").href = pdfHref;
-document.getElementById("pdfOpen").href = pdfHref;
 </script>
 </body>
 </html>

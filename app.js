@@ -109,14 +109,6 @@ function esc(s) {
   return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 }
 
-/* "2026-09-21" -> "Monday, 21 September" */
-function longDate(iso) {
-  const [y, m, d] = iso.split("-").map(Number);
-  const dt = new Date(y, m - 1, d);
-  const day = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][dt.getDay()];
-  return `${day}, ${d} ${MONTHS[m - 1]}`;
-}
-
 /* "2026-09-21" -> "Monday \u00b7 September 21, 2026" (the receipt dateline) */
 function receiptDate(iso) {
   const [y, m, d] = iso.split("-").map(Number);
@@ -148,12 +140,6 @@ function miniDate(iso) {
   const dt = new Date(y, m - 1, d);
   const day = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][dt.getDay()];
   return `${day} \u00b7 ${MONTHS[m - 1]} ${d}`;
-}
-
-/* "2026-09-21" -> "21 Sep" */
-function shortDate(iso) {
-  const [, m, d] = iso.split("-").map(Number);
-  return `${d} ${MONTHS[m - 1].slice(0, 3)}`;
 }
 
 /* "09-21" -> "September 21" */
@@ -192,16 +178,9 @@ function nearestKey(md) {
 
 /* the card for tonight: the most recent one not in the future */
 function tonightCard() {
-  const now = new Date();
-  const key = now.getFullYear() + "-" +
-    String(now.getMonth() + 1).padStart(2, "0") + "-" +
-    String(now.getDate()).padStart(2, "0");
+  const key = new Date().getFullYear() + "-" + todayKey();
   const past = CARDS.filter(c => c.date <= key);
   return past.length ? past[past.length - 1] : CARDS[CARDS.length - 1];
-}
-
-function readTime(tale) {
-  return tale ? `${tale.minutes} min` : "";
 }
 
 function backLink(hash, label) {
@@ -215,12 +194,6 @@ const filters = {
   bedtime: { age: null, theme: null, virtue: null }
 };
 
-/* A chip with nothing behind it filters to an empty shelf, which reads as
-   broken rather than as "coming soon". So ERAS, KINDS, THEMES and VIRTUES stay
-   whole in content.js — they are the plan — and only the entries something is
-   actually filed under get drawn. A chip appears by itself the night the first
-   brief or tale lands in it. Counted across all the data, never the filtered
-   list, so the row does not shift under the reader as they click. */
 /* The one place a tale's age becomes words. `age` is a bucket id and is never
    printed; AGE_BANDS turns it into a label, and a tale's own `ageLabel` wins
    where it has one. Every surface goes through here so the receipt and the
@@ -229,6 +202,12 @@ function ageText(t) {
   return t.ageLabel || AGE_BANDS[t.age] || `Ages ${t.age}`;
 }
 
+/* A chip with nothing behind it filters to an empty shelf, which reads as
+   broken rather than as "coming soon". So ERAS, KINDS, THEMES and VIRTUES stay
+   whole in content.js — they are the plan — and only the entries something is
+   actually filed under get drawn. A chip appears by itself the night the first
+   brief or tale lands in it. Counted across all the data, never the filtered
+   list, so the row does not shift under the reader as they click. */
 function withContent(values, items, field) {
   const used = new Set(Object.values(items).map(x => x[field]).filter(Boolean));
   return values.filter(v => used.has(v));
