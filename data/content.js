@@ -250,6 +250,11 @@ const BRIEFS = {
     era: "Kings and gunpowder",
     kind: "A person",
     minutes: 5,
+    image: {
+      src: "/assets/histories/golden-hind.jpg",
+      alt: "Francis Drake in 1591: a bearded man in a black cloak and white ruff, a hand on his sword, a globe on the table beside him and his coat of arms above.",
+      credit: "Francis Drake, painted by Marcus Gheeraerts the Younger, 1591. Public domain, via Wikimedia Commons."
+    },
     hook: "One small English ship sailed all the way around the world, and on the way robbed Spain's Pacific treasure fleet of the biggest haul anyone had ever taken. The Queen came aboard to knight her captain. Spain called him a pirate.",
     opening: "An English sea captain took a ship about 100 feet long around the entire planet. On the way he robbed Spain's Pacific treasure fleet, and he came home so rich that his investors made 47 times their money. The Queen paid off her whole national debt with her share.",
     sections: [
