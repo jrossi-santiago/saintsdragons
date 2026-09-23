@@ -43,10 +43,14 @@ means re-rendering `assets/social/`.
 Static site: plain HTML, CSS, and vanilla JavaScript. No build step.
 
 Since accounts arrived there is also a small API — nine serverless functions
-under `api/`, deployed on Vercel, reading a Neon Postgres. The pages are still
-plain files with no build step; the API is the only part with dependencies
-(`stripe`, `resend`, `@neondatabase/serverless`). See **Accounts, money and
-the gate** below.
+under `api/`, deployed on Vercel, reading a Supabase Postgres. The pages are
+still plain files with no build step; the API is the only part with
+dependencies (`pg`, `stripe`, `resend`). See **Accounts, money and the gate**
+below.
+
+Supabase is used as a database and nothing else — not its auth, not its Data
+API. Logins are the magic links described below, and every query goes through
+`api/_lib/db.js` as plain SQL.
 
 ## Structure
 
@@ -229,7 +233,7 @@ receipt, on a shelf and on a story's own page.
 
 | File | What it does |
 | --- | --- |
-| `api/_lib/db.js` | The only place SQL leaves the codebase. A tagged template that turns interpolations into placeholders — there is no escaping helper, on purpose. Picks the Neon HTTP driver for a `*.neon.tech` URL and node-postgres for anything else, which is how local development works. |
+| `api/_lib/db.js` | The only place SQL leaves the codebase. A tagged template that turns interpolations into placeholders — there is no escaping helper, on purpose. Plain node-postgres, so the same file talks to Supabase in production and to a Postgres on your own machine in development. Read the header before changing `DATABASE_URL`: the pooler and the port are both load-bearing. |
 | `api/_lib/session.js` | Magic-link tokens, sessions, and the one query that answers "who is this and what are they entitled to". |
 | `api/_lib/content.js` | Loads `data/content.js` with `vm`, the same way `tools/check-content.js` does, and decides what a given reader may have. The free/paid rules above are all in here. |
 | `api/_lib/email.js` | The only thing that sends mail. Resend behind one function; with no API key it prints the link to the log rather than swallowing it. |
@@ -241,8 +245,20 @@ receipt, on a shelf and on a story's own page.
 
 ### Setting it up
 
-1. **Neon** — a project and a database, then `psql "$DATABASE_URL" -f
-   db/schema.sql`. Use the pooled connection string.
+1. **Supabase** — a project, then run `db/schema.sql` in the SQL Editor (or
+   `psql "$DATABASE_URL" -f db/schema.sql`). Take the connection string from
+   Project Settings → Database → **Transaction pooler, port 6543**; the
+   direct connection is IPv6-only and Vercel cannot reach it. `.env.example`
+   spells this out.
+
+   The schema ends by enabling row-level security on all five tables and
+   revoking `anon`/`authenticated`. That is not decoration: Supabase
+   publishes the `public` schema through its Data API and grants those roles
+   access to new tables, and these tables hold reader emails and the session
+   hashes that stand in for passwords. The site connects as `postgres`,
+   which bypasses RLS, so it costs our queries nothing. **Do not add a
+   policy to make something work** — if code needs a row it goes through
+   `api/_lib/db.js`.
 2. **Resend** — verify the sending domain and set `RESEND_API_KEY` and
    `EMAIL_FROM`. Until the domain is verified, links will not arrive.
 3. **Stripe** — one product with a $6/month recurring price; set

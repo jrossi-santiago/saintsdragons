@@ -1,7 +1,8 @@
 # Working on this repo
 
 Static site, no build step, plus a small serverless API under `api/` for
-accounts, billing and the content gate. `main` is what ships.
+accounts, billing and the content gate, on Vercel over a Supabase Postgres.
+`main` is what ships.
 
 ## Getting to main
 
@@ -124,6 +125,13 @@ rather than looking fine until it ships.
 
 Every key the site reads is named in `.env.example`, with nothing real in
 it. Add a name there when you add one.
+
+The database tables carry reader emails and the session hashes that stand in
+for passwords, and Supabase publishes the `public` schema through its Data
+API. `db/schema.sql` therefore ends by enabling row-level security on every
+table and revoking the `anon` and `authenticated` roles. The site connects as
+`postgres` and bypasses RLS, so nothing here needs a policy — if a new table
+arrives, it gets the same two lines.
 
 ## Content vs. display
 

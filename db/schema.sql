@@ -1,9 +1,11 @@
 -- Saints & Dragons — the whole database.
 --
--- Run it against a fresh Neon branch, or against a local Postgres for
+-- Run it against a fresh Supabase project, or against a local Postgres for
 -- development:
 --
 --     psql "$DATABASE_URL" -f db/schema.sql
+--
+-- or paste the whole file into Supabase's SQL Editor and run it.
 --
 -- It is written to be re-runnable: every statement is `if not exists`, so
 -- applying it to a database that already has some of this is safe. When a
@@ -85,3 +87,45 @@ create table if not exists stripe_events (
   type         text not null,
   received_at  timestamptz not null default now()
 );
+
+-- ------------------------------------------------- keeping it off the web
+--
+-- Supabase publishes the `public` schema through its Data API, and grants
+-- the `anon` and `authenticated` roles access to new tables in it. The
+-- anon key is meant to ship in a browser, so left alone that would put
+-- every row below one public key away: reader emails in `users`, and the
+-- session and login-token hashes that are the nearest thing this system has
+-- to passwords.
+--
+-- Nothing here uses the Data API. The site talks to Postgres directly, as
+-- the `postgres` role, which holds BYPASSRLS — so enabling row-level
+-- security with no policies at all costs our queries nothing and leaves
+-- every other role with no way in. The revoke is the same argument made
+-- twice, in case a future table is reached by a different role.
+--
+-- Do not add a policy to these tables to "make something work". If code
+-- needs a row, it goes through api/_lib/db.js like everything else.
+
+alter table users         enable row level security;
+alter table login_tokens  enable row level security;
+alter table sessions      enable row level security;
+alter table subscriptions enable row level security;
+alter table stripe_events enable row level security;
+
+-- Guarded, because a plain local Postgres has no such roles and the bare
+-- REVOKE would abort the script.
+do $$
+declare
+  r text;
+  t text;
+begin
+  foreach r in array array['anon', 'authenticated'] loop
+    if exists (select 1 from pg_roles where rolname = r) then
+      foreach t in array array['users', 'login_tokens', 'sessions',
+                               'subscriptions', 'stripe_events'] loop
+        execute format('revoke all on table public.%I from %I', t, r);
+      end loop;
+    end if;
+  end loop;
+end
+$$;
