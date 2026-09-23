@@ -97,12 +97,11 @@ for (const [slug, b] of Object.entries(BRIEFS)) {
   /* Two shapes (see the note above BRIEFS in content.js). A brief carrying
      any of the sectioned fields is written to docs/history-for-dads.md and
      is checked against it; anything else is an older brief with a flat body. */
-  const sectioned = ["sections", "opening", "kidsQuestion", "sideNotes"].some(k => b[k] !== undefined);
+  const sectioned = ["sections", "opening", "sideNotes"].some(k => b[k] !== undefined);
   if (sectioned) {
     if (b.body !== undefined) err(where, "has both body and the sectioned fields — pick one shape");
     if (b.dek !== undefined && !isText(b.dek)) err(where, "dek is present but empty");
     requireText(where, b, "opening");
-    requireText(where, b, "kidsQuestion");
     if (!Array.isArray(b.sections) || b.sections.length === 0) {
       err(where, "sections must be a non-empty array of { heading, body }");
     } else {
@@ -116,8 +115,7 @@ for (const [slug, b] of Object.entries(BRIEFS)) {
     /* The standard's numbers. Worth a look, never a failure: the piece is
        the owner's call, and a long one still renders. */
     const words = t => (isText(t) ? t.trim().split(/\s+/).length : 0);
-    let main = words(b.title) + words(b.dek) + words(b.opening) +
-      words("A question for the kids:") + words(b.kidsQuestion);
+    let main = words(b.title) + words(b.dek) + words(b.opening);
     if (Array.isArray(b.sections)) {
       for (const s of b.sections) {
         if (!s) continue;

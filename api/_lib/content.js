@@ -40,7 +40,7 @@
  * card's question, why-ours line and prayer.
  *
  * A brief's text is `body` in the older shape and, in the shape written to
- * docs/history-for-dads.md, `opening`, `sections`, `kidsQuestion` and
+ * docs/history-for-dads.md, `opening`, `sections` and
  * `sideNotes`. BRIEF_TEXT names all of them; a new field that carries paid
  * words has to be added there, or it ships to every free reader. The dek
  * stays, like the title: it is the who, what and when, not the piece.
@@ -154,7 +154,7 @@ function freeCardDates(cards) {
   return new Set(first.values());
 }
 
-const BRIEF_TEXT = ["body", "opening", "sections", "kidsQuestion", "sideNotes"];
+const BRIEF_TEXT = ["body", "opening", "sections", "sideNotes"];
 
 function omit(obj, keys) {
   const out = {};

@@ -29,7 +29,7 @@ description: Write a "history for dads" piece for Saints & Dragons from an uploa
    - the main piece is about 750–800 words, in paragraphs, with every section
      present and in order
    - 6–8 side notes in bullets with bold lead-ins, about 250–300 words
-   - it ends on a question for the kids before the side notes
+   - it ends on "For the dinner table" before the side notes
    - count the words (`wc -w`) and don't guess
 
 5. **Deliver it in chat**: the piece, then a two- or three-line note with the
@@ -40,7 +40,7 @@ description: Write a "history for dads" piece for Saints & Dragons from an uploa
 6. **Put it on the site only when asked.** When the owner asks for an
    approved piece to go live, enter it into `BRIEFS` in `data/content.js`
    following **Putting it on the site** in `docs/history-for-dads.md`: the
-   sectioned shape (`dek`, `opening`, `sections`, `kidsQuestion`,
+   sectioned shape (`dek`, `opening`, `sections`,
    `sideNotes`), word for word from the Markdown, with `"golden-hind"` as
    the worked example. Generate the entry from the file with a short script
    rather than retyping it. Fill `era`, `kind`, `minutes` and a `hook`, show
