@@ -160,3 +160,66 @@ once. The payer never has to pay again.
 12. **Vercel stores an environment value exactly as pasted, quotes
     included.** `.env.example` quotes values for dotenv's sake, so code that
     reads a value with spaces in it should strip surrounding quotes.
+
+---
+
+## 2026-09-23 — building the on-site checkout without keys
+
+Not a bug that shipped: a list of things that cost time while replacing the
+redirect to Stripe's hosted Checkout with `#checkout`, so the next session
+does not pay for them again.
+
+**Stripe renamed the thing mid-flight.** The custom Checkout Sessions UI
+mode is `ui_mode: 'custom'` with `stripe.initCheckout` on the pinned API
+version (`2025-08-27.basil`), became synchronous and took `clientSecret`
+in clover, and is `ui_mode: 'elements'` with `initCheckoutElementsSdk` in
+dahlia. Stripe's docs now show only the newest names. The basil shape was
+settled by loading the real `js.stripe.com/basil/stripe.js` in a headless
+page and calling it: `initCheckout` returns a Promise and rejects
+`clientSecret` as "not an accepted parameter", so it takes
+`fetchClientSecret`.
+
+**The sandbox could not see Vercel's keys.** Environment variables set in
+Vercel live on Vercel. A cloud session only has what its own environment
+settings give it, and only picks those up when the session starts. The
+card form was merged without ever being run against Stripe, which is why
+the hosted page stays in as a fallback (rule 15).
+
+**Headless screenshots lied four ways**, each caught only by looking at the
+image:
+
+- `hidden` does nothing to an element whose CSS sets `display` (a flex row,
+  an inline-flex button). Every "hidden" state showed at once until
+  `[hidden] { display: none !important }` was scoped in.
+- Web fonts come from Google through the sandbox's proxy, which Chromium
+  does not use; the shots silently fell back to Georgia. Route
+  `fonts.googleapis.com`/`gstatic.com` through `curl` in Playwright, or
+  check `document.fonts` before trusting a shot.
+- Resizing a loaded page from desktop to phone width catches the sidebar
+  mid-transition. Load the page at the size you mean to shoot.
+- `page.goto` to a URL that differs only in its hash does not reload, so
+  a plan flipped in the database did not show (see CLAUDE.md, step 6).
+
+**Stripe.js cannot load in the sandbox either.** `js.stripe.com` answers
+curl through the proxy, but Chromium rejects the proxy's certificate, so
+the card form never mounts in a headless test here. That is a real-world
+case too (Stripe.js blocked), and the page's fallback was tested on it.
+
+### Rules
+
+13. **Pin Stripe.js to the same release as the API version, and move them
+    together.** `STRIPE_JS` in `app.js` and `apiVersion` in
+    `api/_lib/stripe.js`. When the docs and the pinned version disagree,
+    ask the real script, not the docs.
+14. **A column added to a table that has already shipped must be
+    tolerated until the migration runs.** Deploy and `schema.sql` are two
+    separate steps done by two different people. Catch `42703` (undefined
+    column), fall back to the old behaviour, and let `/api/health` name
+    what is missing. Never let a login fail over a migration.
+15. **A new way to pay keeps the old way as its fallback until it has
+    taken a real payment.** `#checkout` offers Stripe's hosted page
+    whenever its own form cannot run, and the server sends the hosted URL
+    whenever Stripe refuses the custom session.
+16. **Keys live where the code runs.** If a session needs a key, it goes in
+    that session's environment settings and a new session is started. Keys
+    are never pasted into the chat.

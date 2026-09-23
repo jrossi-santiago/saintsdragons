@@ -61,6 +61,21 @@ create table if not exists sessions (
 
 create index if not exists sessions_user on sessions (user_id);
 
+-- A new address is signed in on the spot, with no email round trip (see
+-- api/auth/request-link.js), so an account can exist for an address nobody
+-- has proved they own. This is when somebody first did, by clicking a link
+-- sent to it. api/auth/verify.js signs out every other session at that
+-- moment: whoever made the account before the owner turned up does not get
+-- to stay in it.
+alter table users add column if not exists email_verified_at timestamptz;
+
+-- Everybody who has ever used a link has proved their address already.
+update users u
+   set email_verified_at = t.first_used
+  from (select user_id, min(used_at) as first_used
+          from login_tokens where used_at is not null group by user_id) t
+ where t.user_id = u.id and u.email_verified_at is null;
+
 -- -------------------------------------------------------------------- money
 --
 -- Written only by api/stripe/webhook.js. One row per Stripe subscription;

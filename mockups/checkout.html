@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Checkout mockup | Saints &amp; Dragons</title>
+<!--
+  DESIGN REFERENCE — the on-site checkout for Every day (#checkout in /account).
+
+  A standalone static mockup: no Stripe, no API, no payments. It exists so the
+  live page has something fixed to be held against (see "Design references" in
+  CLAUDE.md — the receipt card drifted from its mockup once the mockup was
+  deleted). Don't delete it while #checkout is built from it.
+
+  The card box and the Apple Pay / Google Pay buttons are drawn placeholders.
+  On the live page they are Stripe's Payment Element and Express Checkout
+  Element, in iframes, styled through Stripe's Appearance API with the values
+  noted beside .co-field below. Card details never touch our servers.
+
+  Every state is one URL, so each can be screenshotted on its own:
+    ?state=ready | promo | promo-bad | paying | declined | waiting | done
+    &theme=light|dark   &shot=1 hides the state switcher
+
+  Self-contained on purpose (LESSONS-LEARNED rule 1): its own CSS and JS are
+  inline and the shared stylesheet is root-absolute.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles.css" />
+<link rel="icon" href="/assets/dragon-mark.svg" type="image/svg+xml">
+<style>
+/* ---------------------------------------------------------- checkout */
+/* Written in theme tokens only, like .lock, so both themes come for free. */
+
+.co { max-width: 560px; margin: 0 auto; }
+.co [hidden], .co[hidden] { display: none !important; }
+.co .back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px;
+  font-size: .9rem; color: var(--text-dim); }
+.co .back-link .ic { transform: rotate(180deg); width: 16px; height: 16px; }
+.co .back-link:hover { color: var(--text); }
+
+.co-kicker {
+  margin: 0 0 10px;
+  font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
+  font-weight: 700; color: var(--accent);
+}
+.co-head { margin-bottom: 26px; }
+.co-head h2 {
+  margin: 0 0 8px;
+  font-family: var(--serif); font-size: 2.15rem; font-weight: 600;
+  letter-spacing: -0.015em; line-height: 1.15;
+}
+.co-head p { margin: 0; color: var(--text-dim); }
+
+/* the plan */
+.co-plan {
+  padding: 24px 26px 20px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.co-plan-top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.co-plan-name { margin: 0; font-family: var(--serif); font-size: 1.4rem; font-weight: 600; }
+.co-price { margin: 0; font-family: var(--serif); font-size: 1.4rem; white-space: nowrap; }
+.co-price small { font-family: var(--sans); font-size: .85rem; color: var(--text-dim); }
+
+.co-includes { list-style: none; margin: 16px 0 18px; padding: 0; }
+.co-includes li {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 7px 0; color: var(--text-dim); font-size: .97rem; line-height: 1.5;
+}
+.co-includes .ic { width: 16px; height: 16px; margin-top: 4px; color: var(--accent); stroke-width: 2.4; }
+.co-includes strong { color: var(--text); font-weight: 600; }
+
+/* the tally — Space Mono, a nod to the receipt */
+.co-tally { margin: 0; padding: 14px 0 0; border-top: 1px dashed var(--line); font-family: "Space Mono", ui-monospace, Menlo, monospace; font-size: .85rem; }
+.co-tally > div { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; color: var(--text-dim); }
+.co-tally dt, .co-tally dd { margin: 0; }
+.co-tally .is-total { color: var(--text); font-weight: 700; padding-top: 8px; }
+.co-tally .is-off dd { color: var(--accent); }
+
+.co-cancel { margin: 14px 0 0; font-size: .85rem; color: var(--text-faint); }
+
+/* promo code, behind "Have a code?" */
+.co-promo { margin: 14px 0 0; }
+.co-linkish {
+  padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: .9rem; color: var(--text-dim);
+  border-bottom: 1px solid var(--line);
+}
+.co-linkish:hover { color: var(--text); border-color: var(--text); }
+.co-promo-row { display: flex; gap: 8px; margin-top: 10px; }
+.co-promo-row input {
+  flex: 1; min-width: 0; padding: 11px 14px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: transparent; color: var(--text); font: inherit; font-size: .95rem;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.co-promo-row input::placeholder { text-transform: none; letter-spacing: 0; color: var(--text-faint); }
+.co-promo-row input.is-bad { border-color: var(--accent); }
+.co-applied {
+  display: inline-flex; align-items: center; gap: 10px; margin-top: 2px;
+  padding: 6px 8px 6px 12px; border: 1px solid var(--line); border-radius: 999px;
+  font-size: .85rem; color: var(--text);
+}
+.co-applied .co-linkish { font-size: .8rem; }
+.co-msg { margin: 8px 0 0; font-size: .87rem; color: var(--text-dim); }
+.co-msg.is-bad { color: var(--accent); }
+
+/* payment */
+.co-pay { margin-top: 30px; }
+.co-section { margin: 0 0 12px; font-family: var(--serif); font-size: 1.2rem; font-weight: 600; }
+
+.co-express { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.co-wallet {
+  height: 46px; border-radius: 8px; border: 0;
+  display: grid; place-items: center;
+  background: #000; color: #fff;
+  font: 600 1.02rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: -.01em;
+}
+:root[data-theme="dark"] .co-wallet { box-shadow: inset 0 0 0 1px #3a3a38; }
+.co-or {
+  display: flex; align-items: center; gap: 14px; margin: 18px 0;
+  font-size: .8rem; color: var(--text-faint);
+}
+.co-or::before, .co-or::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+
+/* Placeholder for Stripe's Payment Element. The live page gets this look
+   from the Appearance API, not from this CSS (it is an iframe):
+     theme 'flat', labels 'above'
+     variables: fontFamily Figtree, colorBackground transparent-ish surface,
+       colorText --text, colorTextSecondary --text-dim, colorPrimary --accent,
+       colorDanger --accent, borderRadius 12px, spacingUnit 4px
+     rules: .Input border 1px --line, focus border --text-faint (as .field),
+       .Label .875rem --text-dim (as .field span) */
+.co-card { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 12px; }
+.co-field { display: block; }
+.co-field.is-wide { grid-column: 1 / -1; }
+.co-label { display: block; font-size: .875rem; color: var(--text-dim); margin-bottom: 6px; }
+.co-input {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  height: 46px; padding: 0 14px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--surface); color: var(--text-faint); font-size: .95rem;
+}
+.co-input.is-filled { color: var(--text); }
+.co-input.is-bad { border-color: var(--accent); }
+.co-brands { display: flex; gap: 4px; }
+.co-brands i {
+  width: 26px; height: 17px; border-radius: 3px; border: 1px solid var(--line);
+  font: 700 .5rem/15px var(--sans); font-style: normal; text-align: center; color: var(--text-dim);
+}
+.co-field-err { margin: 6px 0 0; font-size: .82rem; color: var(--accent); }
+
+.co-error {
+  margin: 18px 0 0; padding: 14px 16px;
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  border-radius: var(--radius); background: var(--surface);
+  font-size: .93rem; line-height: 1.55; color: var(--text-dim);
+}
+.co-error strong { color: var(--text); }
+
+.co-submit {
+  width: 100%; justify-content: center; margin-top: 22px; padding: 15px 20px;
+  background: var(--accent); color: #1a1208; border-color: var(--accent); font-size: 1rem;
+}
+:root[data-theme="light"] .co-submit { color: #fff; }
+.co-submit[disabled] { opacity: .7; cursor: progress; }
+.co-spin {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent;
+  animation: co-spin .7s linear infinite;
+}
+@keyframes co-spin { to { transform: rotate(360deg); } }
+
+.co-fine { margin: 14px 0 0; font-size: .82rem; line-height: 1.55; color: var(--text-faint); text-align: center; }
+.co-fine .ic { width: 13px; height: 13px; vertical-align: -2px; margin-right: 4px; }
+
+/* after paying */
+.co-done { text-align: center; padding: 20px 0 0; }
+.co-done .co-mark {
+  width: 84px; height: 84px; margin: 0 auto 22px; border-radius: 50%;
+  background: var(--chip) url("/assets/dragon-dark.svg") no-repeat 50% 52% / 74%;
+  border: 1px solid var(--accent);
+}
+:root[data-theme="light"] .co-done .co-mark { background-image: url("/assets/dragon-light.svg"); }
+.co-done h2 { margin: 0 0 10px; line-height: 1.15; font-family: var(--serif); font-size: 2.4rem; font-weight: 600; letter-spacing: -.015em; }
+.co-done p { margin: 0 auto 10px; max-width: 26rem; color: var(--text-dim); }
+.co-done .btn { margin-top: 18px; }
+.co-done .co-kicker { color: var(--accent); margin-bottom: 10px; }
+.co-done .co-fine { margin-top: 26px; }
+.co-wait .co-spin { width: 28px; height: 28px; margin: 0 auto 22px; color: var(--accent); border-width: 3px; }
+
+@media (max-width: 900px) {
+  .co-head h2 { font-size: 1.75rem; }
+  .co-plan { padding: 20px 18px 18px; }
+}
+@media (max-width: 420px) {
+  .co-express { grid-template-columns: 1fr; }
+}
+
+/* mockup-only: the state switcher */
+.mock-bar {
+  max-width: 560px; margin: 0 auto 26px; padding: 10px 12px;
+  border: 1px dashed var(--line); border-radius: var(--radius);
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  font-size: .78rem; color: var(--text-faint);
+}
+.mock-bar a { padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; }
+.mock-bar a.is-on { color: var(--accent); border-color: var(--accent); }
+.is-shot .mock-bar { display: none; }
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-about" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 19a5.8 5.8 0 0 1 11 0"/></symbol>
+    <symbol id="i-contact" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+    <symbol id="i-stories" viewBox="0 0 24 24"><path d="M12 21s-1.2-1.6-4-3c-2.4-1.2-5-1-5-1V5s2.6-.2 5 1c2.8 1.4 4 3 4 3s1.2-1.6 4-3c2.4-1.2 5-1 5-1v12s-2.6-.2-5 1c-2.8 1.4-4 3-4 3z"/><path d="M12 9v12"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 13.2A8.5 8.5 0 1 1 10.8 3a7 7 0 0 0 10.2 10.2z"/></symbol>
+    <symbol id="i-scroll" viewBox="0 0 24 24"><path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6"/><path d="M6 4a2 2 0 0 0-2 2v1.5h3"/><path d="M6 20a2 2 0 0 0 2-2V6"/><path d="M11 9h5M11 13h5"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><circle cx="12" cy="14.5" r="1.4" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-dragon" viewBox="0 0 24 24"><path d="M3 15c2.5-5.5 7-8 11-8 2.2 0 3.7.8 4.6 1.8L21 7l-.7 3.2c.5 1.4.4 3-1 4.3"/><path d="M14 7.2V4l2.4 1.8"/><circle cx="16.4" cy="10.2" r=".9" fill="currentColor" stroke="none"/><path d="M3 15c1 3 4 5 8 5h7"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-account" viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M2.5 10h19"/><path d="M6 14.5h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-padlock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  </defs>
+</svg>
+
+<button class="mobile-toggle" aria-label="Open menu" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+
+<div class="layout">
+  <aside class="sidebar">
+    <header class="identity">
+      <div class="avatar" aria-hidden="true"></div>
+      <div class="identity-text">
+        <h1>Saints <span class="amp">&amp;</span> Dragons</h1>
+        <p>History for dads. Tales for bedtime.</p>
+      </div>
+    </header>
+    <div class="sidebar-block">
+      <p class="bio">Every day: a true story from history for you, and a bedtime story on the same idea for them.</p>
+      <div class="search">
+        <svg class="ic"><use href="#i-search"/></svg>
+        <input type="search" placeholder="Search" aria-label="Search" />
+      </div>
+    </div>
+    <nav class="nav" aria-label="Pages">
+      <p class="nav-title">Pages</p>
+      <a class="nav-item" href="#"><svg class="ic"><use href="#i-home"/></svg><span>Home</span></a>
+      <a class="nav-item" href="#"><svg class="ic"><use href="#i-scroll"/></svg><span>History for dads</span></a>
+      <a class="nav-item" href="#"><svg class="ic"><use href="#i-calendar"/></svg><span>Today in history</span></a>
+      <a class="nav-item" href="#"><svg class="ic"><use href="#i-dragon"/></svg><span>Bedtime stories</span></a>
+      <a class="nav-item" href="#"><svg class="ic"><use href="#i-about"/></svg><span>About</span></a>
+      <a class="nav-item" href="#"><svg class="ic"><use href="#i-contact"/></svg><span>Contact</span></a>
+      <a class="nav-item is-active" href="#"><svg class="ic"><use href="#i-account"/></svg><span>Your account</span></a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="content">
+      <nav class="mock-bar" id="mockBar" aria-label="Mockup states">Mockup:</nav>
+
+      <!-- ============================================ checkout (ready) -->
+      <section class="co" data-view="form">
+        <a class="back-link" href="#"><svg class="ic"><use href="#i-arrow"/></svg>Back</a>
+
+        <header class="co-head">
+          <p class="co-kicker">Every day &middot; $6 a month</p>
+          <h2>Every day, instead of once a week.</h2>
+          <p>A new history for you and a new bedtime story for them, every day, and every past one to keep.</p>
+        </header>
+
+        <div class="co-plan">
+          <div class="co-plan-top">
+            <p class="co-plan-name">Every day</p>
+            <p class="co-price">$6 <small>/ month</small></p>
+          </div>
+          <ul class="co-includes">
+            <li><svg class="ic"><use href="#i-check"/></svg><span><strong>A history for you, every day.</strong> Under 10 minutes, on your own time.</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span><strong>A bedtime story for them</strong> on the same idea, to read aloud that night.</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span><strong>The whole archive,</strong> and every day of Today in history.</span></li>
+          </ul>
+          <dl class="co-tally">
+            <div><dt>Every day, monthly</dt><dd>$6.00</dd></div>
+            <div class="is-off" data-when="promo"><dt>Code FIRSTNIGHT</dt><dd>&minus;$3.00</dd></div>
+            <div class="is-total"><dt>Due today</dt><dd data-total>$6.00</dd></div>
+          </dl>
+          <p class="co-cancel">Cancel any time from Your account. Your free story every week stays free.</p>
+        </div>
+
+        <div class="co-promo">
+          <button class="co-linkish" type="button" data-when="ready paying declined">Have a code?</button>
+          <div data-when="promo-bad">
+            <div class="co-promo-row">
+              <input type="text" value="FIRSTNIHGT" aria-label="Code" class="is-bad" />
+              <button class="btn btn-quiet" type="button">Apply</button>
+            </div>
+            <p class="co-msg is-bad">That code didn&rsquo;t take. Check the spelling &mdash; or it may have run its course.</p>
+          </div>
+          <div data-when="promo">
+            <span class="co-applied">FIRSTNIGHT &middot; $3 off your first month <button class="co-linkish" type="button">Remove</button></span>
+            <p class="co-msg">Then $6 a month after that.</p>
+          </div>
+        </div>
+
+        <div class="co-pay">
+          <h3 class="co-section">Pay</h3>
+
+          <div class="co-express" aria-label="Express checkout (placeholder)">
+            <div class="co-wallet">Apple&nbsp;Pay</div>
+            <div class="co-wallet">Google&nbsp;Pay</div>
+          </div>
+          <p class="co-or">or pay by card</p>
+
+          <div class="co-card" aria-label="Card details (placeholder for Stripe's Payment Element)">
+            <label class="co-field is-wide"><span class="co-label">Card number</span>
+              <span class="co-input" data-fill="4000 0000 0000 0002|4242 4242 4242 4242">1234 1234 1234 1234
+                <span class="co-brands"><i>VISA</i><i>MC</i><i>AMEX</i></span></span></label>
+            <label class="co-field"><span class="co-label">Expiry</span><span class="co-input" data-fill="12 / 29">MM / YY</span></label>
+            <label class="co-field"><span class="co-label">Security code</span><span class="co-input" data-fill="123">CVC</span></label>
+            <label class="co-field"><span class="co-label">Country</span><span class="co-input is-filled">United States <span>&#9662;</span></span></label>
+            <label class="co-field"><span class="co-label">ZIP</span><span class="co-input" data-fill="94107">12345</span></label>
+          </div>
+
+          <div class="co-error" data-when="declined" role="alert">
+            <strong>Your bank said no to that card.</strong> Nothing was taken.
+            Try another card, or ring the number on the back of this one and try again.
+          </div>
+
+          <button class="btn co-submit" type="button" data-when="ready promo promo-bad declined">Start every day &mdash; <span data-total>$6.00</span></button>
+          <button class="btn co-submit" type="button" disabled data-when="paying"><span class="co-spin" aria-hidden="true"></span>Paying&hellip;</button>
+
+          <p class="co-fine"><svg class="ic"><use href="#i-padlock"/></svg>Your card goes straight to Stripe. We never see it.<br>
+            <span data-total>$6.00</span> today, then $6 on this date each month until you cancel.</p>
+        </div>
+      </section>
+
+      <!-- ====================================== waiting for the webhook -->
+      <section class="co co-done co-wait" data-view="waiting" role="status" aria-live="polite">
+        <div class="co-spin" aria-hidden="true"></div>
+        <h2>Paid. Opening the door&hellip;</h2>
+        <p>Stripe has your payment. We&rsquo;re just waiting for it to tell us so &mdash; usually a few seconds.</p>
+        <p class="co-fine">You can leave this page. It will be open when you come back.</p>
+      </section>
+
+      <!-- ============================================== you're in -->
+      <section class="co co-done" data-view="done" role="status" aria-live="polite">
+        <div class="co-mark" aria-hidden="true"></div>
+        <p class="co-kicker">Every day</p>
+        <h2>You&rsquo;re in.</h2>
+        <p>Tonight&rsquo;s history and bedtime story are open, and so is every one before them.</p>
+        <a class="btn co-submit" style="width:auto" href="#">Read tonight&rsquo;s</a>
+        <p class="co-fine">A receipt is on its way to you@example.com.<br>
+          Cards, invoices and cancelling live under Your account.</p>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+/* Mockup plumbing only: pick a state and a theme from the URL. */
+(function () {
+  var q = new URLSearchParams(location.search);
+  var state = q.get("state") || "ready";
+  var theme = q.get("theme") || localStorageTheme();
+  if (theme) document.documentElement.setAttribute("data-theme", theme);
+  if (q.get("shot")) document.body.classList.add("is-shot");
+
+  function localStorageTheme() { try { return localStorage.getItem("sd-theme"); } catch (e) { return null; } }
+
+  var view = state === "waiting" ? "waiting" : state === "done" ? "done" : "form";
+  document.querySelectorAll("[data-view]").forEach(function (el) {
+    el.hidden = el.getAttribute("data-view") !== view;
+  });
+  document.querySelectorAll("[data-when]").forEach(function (el) {
+    el.hidden = el.getAttribute("data-when").split(" ").indexOf(state) < 0;
+  });
+
+  /* the card box looks typed-in once the reader has pressed pay */
+  if (state === "paying" || state === "declined") {
+    document.querySelectorAll("[data-fill]").forEach(function (el) {
+      var fills = el.getAttribute("data-fill").split("|");
+      el.firstChild.nodeValue = (state === "declined" ? fills[0] : fills[fills.length - 1]) + " ";
+      el.classList.add("is-filled");
+    });
+  }
+  if (state === "promo") {
+    document.querySelectorAll("[data-total]").forEach(function (el) { el.textContent = "$3.00"; });
+  }
+
+  var bar = document.getElementById("mockBar");
+  ["ready", "promo", "promo-bad", "paying", "declined", "waiting", "done"].forEach(function (s) {
+    var a = document.createElement("a");
+    a.textContent = s;
+    a.href = "?state=" + s + (q.get("theme") ? "&theme=" + q.get("theme") : "");
+    if (s === state) a.className = "is-on";
+    bar.appendChild(a);
+  });
+  var t = document.createElement("a");
+  var next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+  t.textContent = next + " theme";
+  t.href = "?state=" + state + "&theme=" + next;
+  bar.appendChild(t);
+})();
+</script>
+</body>
+</html>

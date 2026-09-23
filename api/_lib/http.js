@@ -112,6 +112,20 @@ function clientIP(req) {
   return fwd.split(",")[0].trim() || req.socket?.remoteAddress || "";
 }
 
+/* Did this request come from a page on this site? Browsers send Origin on
+   every POST (Referer as the fallback), and another site cannot forge
+   either. Used before anything that signs a reader in without a link: a
+   form on somebody else's page must not be able to drop a visitor into an
+   account the other site controls. No header at all means "not proven". */
+function sameOrigin(req) {
+  const from = req.headers.origin || req.headers.referer;
+  if (!from) return false;
+  let host;
+  try { host = new URL(from).host; } catch (e) { return false; }
+  const own = String(req.headers["x-forwarded-host"] || req.headers.host || "");
+  return !!own && host === own;
+}
+
 /* Email is the account key, so it is normalised in exactly one place. */
 function normaliseEmail(value) {
   const email = String(value || "").trim().toLowerCase();
@@ -121,5 +135,5 @@ function normaliseEmail(value) {
 
 module.exports = {
   SITE_URL, json, methodNotAllowed, rawBody, readBody, wantsHTML,
-  cookies, setCookie, redirect, clientIP, normaliseEmail
+  cookies, setCookie, redirect, clientIP, normaliseEmail, sameOrigin
 };

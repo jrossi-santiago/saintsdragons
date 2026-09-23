@@ -245,8 +245,8 @@ function heldTitle(card) {
    the same on the receipt, on a shelf and on a story's own page. It names
    what is behind it rather than saying "upgrade to continue" — a reader
    deciding whether to pay should be able to see what they are deciding
-   about. The button posts to /api/billing/checkout; the handler is
-   delegated, at the foot of this file. */
+   about. The button opens #checkout; the handler is delegated, at the
+   foot of this file. */
 function lockPanel(heading, line, { small = false } = {}) {
   return `<aside class="lock${small ? " is-small" : ""}">
     <p class="lock-kicker">Every day &middot; $6 a month</p>
@@ -837,14 +837,485 @@ function renderAccount() {
   });
 }
 
-/* Both billing buttons do the same thing: ask our side for a Stripe URL and
-   hand the reader over. Nothing about a card is ever typed on this site. */
+/* Manage billing: ask our side for a Billing Portal URL and hand the reader
+   over to Stripe. (Paying is on our own page now — see #checkout — but
+   cancelling, cards and invoices still live in Stripe's portal.) */
 async function goToStripe(endpoint) {
   const res = await fetch(endpoint, { method: "POST", headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error("HTTP " + res.status);
   const { url } = await res.json();
   if (!url) throw new Error("no url");
   location.href = url;
+}
+
+/* ------------------------------------------------------------ #checkout
+
+   The on-site checkout, drawn from mockups/checkout.html (the design
+   reference — hold changes against it). Stripe's Checkout Sessions API in
+   its custom UI mode: our server makes the session and hands back its client
+   secret (api/billing/checkout.js), and Stripe.js mounts the card form and
+   the Apple Pay / Google Pay buttons as iframes on this page. Card details
+   are typed into those iframes and go straight to Stripe; nothing here ever
+   sees them.
+
+   Paying does not grant anything. Stripe sends the reader back to
+   return_url, and the plan changes only when the webhook says so —
+   drawCheckoutWaiting below asks until it has.
+
+   Pinned to Stripe.js "basil" to match the API version in
+   api/_lib/stripe.js. On basil, initCheckout is async and takes
+   fetchClientSecret; from clover on it is synchronous and takes
+   clientSecret, and dahlia renames it again. Move both pins together. */
+
+const STRIPE_JS = "https://js.stripe.com/basil/stripe.js";
+const PLAN_PRICE = "$6";                  /* matches lockPanel and index.html */
+
+let stripeJs = null;                      /* the one <script> load */
+let checkoutRun = 0;                      /* bumped per render; a stale start stops */
+let liveCheckout = null;                  /* for re-theming while the page is open */
+let checkoutReturned = false;             /* set by boot() on the way back from Stripe */
+let STRIPE_KEY = null;                    /* publishable, from /api/session */
+
+/* Loaded only when a reader opens #checkout, never on every page: nobody
+   reading tonight's story needs Stripe on the page. From js.stripe.com
+   itself, as PCI requires — never bundled or self-hosted. */
+function loadStripeJs() {
+  if (window.Stripe) return Promise.resolve(window.Stripe);
+  if (!stripeJs) {
+    stripeJs = new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = STRIPE_JS;
+      s.onload = () => (window.Stripe ? resolve(window.Stripe) : reject(new Error("Stripe.js loaded empty")));
+      s.onerror = () => { stripeJs = null; reject(new Error("Stripe.js did not load")); };
+      document.head.appendChild(s);
+    });
+  }
+  return stripeJs;
+}
+
+/* The Appearance API cannot read our CSS (the form is an iframe), so hand
+   it the live values of the same tokens the rest of the page is drawn in.
+   Read at the moment of asking, so it follows the theme toggle. */
+function stripeAppearance() {
+  const cs = getComputedStyle(document.documentElement);
+  const v = name => cs.getPropertyValue(name).trim();
+  return {
+    theme: "flat",
+    labels: "above",
+    variables: {
+      fontFamily: "Figtree, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      fontSizeBase: "15px",
+      colorPrimary: v("--accent"),
+      colorBackground: v("--bg"),
+      colorText: v("--text"),
+      colorTextSecondary: v("--text-dim"),
+      colorTextPlaceholder: v("--text-faint"),
+      colorDanger: v("--accent"),
+      borderRadius: v("--radius") || "12px",
+      spacingUnit: "4px",
+      gridRowSpacing: "14px",
+      gridColumnSpacing: "12px"
+    },
+    rules: {
+      ".Input": {
+        backgroundColor: v("--surface"),
+        border: `1px solid ${v("--line")}`,
+        boxShadow: "none",
+        padding: "12px 14px"
+      },
+      ".Input:focus": { border: `1px solid ${v("--text-faint")}`, boxShadow: "none", outline: "none" },
+      ".Input--invalid": { border: `1px solid ${v("--accent")}`, boxShadow: "none" },
+      ".Label": { fontSize: "14px", fontWeight: "400", color: v("--text-dim"), marginBottom: "6px" },
+      ".Error": { fontSize: "13px", color: v("--accent") }
+    }
+  };
+}
+
+/* A basil result is { type: "success", session } or { type: "error", error }. */
+const failed = r => !r || r.type === "error";
+
+/* Stripe's amounts arrive formatted ("$6.00") inside an object; take the
+   words as Stripe wrote them rather than doing currency sums here. */
+function money(x) {
+  if (x == null) return "";
+  if (typeof x === "string") return x;
+  if (typeof x.amount === "string") return x.amount;
+  return "";
+}
+
+/* Declines and bad cards, said the way the rest of the site talks. Anything
+   not listed falls back to Stripe's own sentence, which is always true even
+   when it is not ours. */
+function checkoutErrorText(error) {
+  const code = error && (error.code || error.decline_code || (error.error && error.error.code));
+  const declined = ["card_declined", "generic_decline", "insufficient_funds", "do_not_honor",
+                    "lost_card", "stolen_card", "fraudulent", "transaction_not_allowed"];
+  if (declined.includes(code) || /declin/i.test(error && error.message || "")) {
+    return "<strong>Your bank said no to that card.</strong> Nothing was taken. " +
+      "Try another card, or ring the number on the back of this one and try again.";
+  }
+  if (code === "expired_card") return "<strong>That card has expired.</strong> Nothing was taken. Try another one.";
+  if (code === "incorrect_cvc") return "<strong>The security code did not match.</strong> It is the three digits on the back. Nothing was taken.";
+  if (code === "incorrect_number" || code === "invalid_number") return "<strong>That card number is not right.</strong> Check it against the card and try again.";
+  if (code === "processing_error") return "<strong>Something went wrong between us and your bank.</strong> Nothing was taken. Try again in a moment.";
+  if (code === "authentication_required" || code === "payment_intent_authentication_failure") {
+    return "<strong>Your bank wanted to check it was you, and that did not go through.</strong> Nothing was taken. Try again, or use another card.";
+  }
+  return esc(error && error.message || "That did not go through. Nothing was taken. Try again in a moment.");
+}
+
+function renderCheckout() {
+  const run = ++checkoutRun;
+  liveCheckout = null;
+
+  if (isPaid()) return drawCheckoutDone({ justPaid: false });
+  if (checkoutReturned) return drawCheckoutWaiting(run);
+
+  main.innerHTML = `
+    <div class="content">
+      <section class="co">
+        ${backLink("home", "Back")}
+
+        <header class="co-head">
+          <p class="co-kicker">Every day &middot; ${PLAN_PRICE} a month</p>
+          <h2>Every day, instead of once a week.</h2>
+          <p>A new history for you and a new bedtime story for them, every day, and every past one to keep.</p>
+        </header>
+
+        <div class="co-plan">
+          <div class="co-plan-top">
+            <p class="co-plan-name">Every day</p>
+            <p class="co-price">${PLAN_PRICE} <small>/ month</small></p>
+          </div>
+          <ul class="co-includes">
+            <li><svg class="ic"><use href="#i-check"/></svg><span><strong>A history for you, every day.</strong> Under 10 minutes, on your own time.</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span><strong>A bedtime story for them</strong> on the same idea, to read aloud that night.</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span><strong>The whole archive,</strong> and every day of Today in history.</span></li>
+          </ul>
+          <dl class="co-tally" id="coTally">
+            <div><dt>Every day, monthly</dt><dd id="coSubtotal">${PLAN_PRICE}.00</dd></div>
+            <div class="is-total"><dt>Due today</dt><dd id="coTotal">${PLAN_PRICE}.00</dd></div>
+          </dl>
+          <p class="co-cancel">Cancel any time from Your account. Your free story every week stays free.</p>
+        </div>
+
+        <div class="co-promo" id="coPromo">
+          <button class="co-linkish" type="button" id="coPromoOpen">Have a code?</button>
+          <form id="coPromoForm" hidden>
+            <div class="co-promo-row">
+              <input type="text" id="coPromoInput" aria-label="Code" placeholder="Your code" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+              <button class="btn btn-quiet" type="submit">Apply</button>
+            </div>
+          </form>
+          <div id="coPromoApplied" hidden></div>
+          <p class="co-msg" id="coPromoMsg" role="status" aria-live="polite" hidden></p>
+        </div>
+
+        <div class="co-pay">
+          <h3 class="co-section">Pay</h3>
+          <div id="coExpressWrap" hidden>
+            <div class="co-express" id="coExpress"></div>
+            <p class="co-or">or pay by card</p>
+          </div>
+          <div class="co-card" id="coCard"><p class="co-loading">Loading the card form&hellip;</p></div>
+
+          <div class="co-error" id="coError" role="alert" hidden></div>
+
+          <button class="btn co-submit" type="button" id="coPay" disabled>Start every day &mdash; <span id="coPayAmount">${PLAN_PRICE}.00</span></button>
+
+          <p class="co-fine"><svg class="ic"><use href="#i-padlock"/></svg>Your card goes straight to Stripe. We never see it.<br>
+            <span id="coFineAmount">${PLAN_PRICE}.00</span> today, then ${PLAN_PRICE} on this date each month until you cancel.</p>
+        </div>
+      </section>
+    </div>`;
+
+  /* Back goes wherever they came from — a locked story, the receipt, their
+     account — and home only when there is nowhere to go back to. */
+  main.querySelector(".back-link").addEventListener("click", ev => {
+    if (history.length > 1) { ev.preventDefault(); history.back(); }
+  });
+
+  startCheckout(run).catch(err => {
+    if (run !== checkoutRun || (err && err.leaving)) return;
+    console.error("checkout did not start", err);
+    offerHostedCheckout(err && err.readerMessage);
+    /* Nothing below the plan can work without the form, so take it all
+       away rather than leave a pay button that cannot pay. */
+    ["coPromo", "coCard", "coPay"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+    main.querySelectorAll(".co-pay .co-section, .co-pay .co-fine").forEach(el => { el.hidden = true; });
+  });
+}
+
+/* When our card form cannot run here (no publishable key on this
+   deployment, Stripe.js blocked or failing), Stripe's own hosted page still
+   can. Say so plainly and offer it, rather than leave a dead end: paying
+   must never be more broken than it was before this page existed. */
+function offerHostedCheckout(readerMessage) {
+  showCheckoutError(readerMessage ||
+    "<strong>The card form did not load here.</strong> Nothing has been taken. " +
+    "You can pay on Stripe&rsquo;s own secure page instead.");
+  const box = document.getElementById("coError");
+  if (!box) return;
+  const btn = document.createElement("button");
+  btn.className = "btn co-submit";
+  btn.type = "button";
+  btn.textContent = "Pay on Stripe\u2019s secure page";
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    btn.textContent = "Opening Stripe\u2026";
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ hosted: true })
+      });
+      if (res.status === 409) return location.reload();
+      const body = await res.json();
+      if (!res.ok || !body.url) throw new Error(body.message || "HTTP " + res.status);
+      location.href = body.url;
+    } catch (e) {
+      console.error("hosted checkout did not open", e);
+      btn.disabled = false;
+      btn.textContent = "Pay on Stripe\u2019s secure page";
+      showCheckoutError("<strong>Stripe did not open either.</strong> Nothing has been taken. " +
+        "Try again in a few minutes, and if it keeps happening it is us, not you.");
+      box.after(btn);
+    }
+  });
+  box.after(btn);
+}
+
+function showCheckoutError(html) {
+  const box = document.getElementById("coError");
+  if (!box) return;
+  box.innerHTML = html;
+  box.hidden = !html;
+}
+
+async function startCheckout(run) {
+  const key = STRIPE_KEY;
+  if (!key) {
+    const e = new Error("no publishable key");
+    e.readerMessage = "<strong>Payment opens on Stripe&rsquo;s own secure page.</strong> " +
+      "Your card goes straight to Stripe; we never see it.";
+    throw e;
+  }
+
+  const Stripe = await loadStripeJs();
+  if (run !== checkoutRun) return;
+  const stripe = Stripe(key);
+
+  const checkout = await stripe.initCheckout({
+    fetchClientSecret: async () => {
+      const res = await fetch("/api/billing/checkout", { method: "POST", headers: { Accept: "application/json" } });
+      const body = await res.json().catch(() => ({}));
+      /* Already paying: the server refuses a second subscription, and a
+         reload shows them what they already have. */
+      const leave = (why, go) => { go(); const e = new Error(why); e.leaving = true; throw e; };
+      if (res.status === 409) leave("already subscribed", () => location.reload());
+      /* The server fell back to Stripe's hosted page (see checkout.js). */
+      if (res.ok && body.url) leave("sent to the hosted page", () => { location.href = body.url; });
+      if (!res.ok || !body.clientSecret) {
+        const e = new Error(body.message || "HTTP " + res.status);
+        e.readerMessage = esc(body.message || "The card form did not load. Nothing has been taken. Reload the page to try again.");
+        throw e;
+      }
+      return body.clientSecret;
+    },
+    elementsOptions: {
+      appearance: stripeAppearance(),
+      fonts: [{ cssSrc: "https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap" }]
+    }
+  });
+  if (run !== checkoutRun) return;
+  liveCheckout = checkout;
+
+  const pay = document.getElementById("coPay");
+  const payLabel = pay.innerHTML;
+
+  /* Every price on the page comes from the session, so a code or a change
+     of plan in Stripe shows up here without a line of arithmetic of ours. */
+  function drawTotals(session) {
+    if (!session || run !== checkoutRun) return;
+    const total = money(session.total && session.total.total);
+    const subtotal = money(session.total && session.total.subtotal);
+    if (subtotal) document.getElementById("coSubtotal").textContent = subtotal;
+    if (total) {
+      ["coTotal", "coPayAmount", "coFineAmount"].forEach(id => {
+        document.getElementById(id).textContent = total;
+      });
+    }
+    const tally = document.getElementById("coTally");
+    tally.querySelectorAll(".is-off").forEach(el => el.remove());
+    (session.discountAmounts || []).forEach(d => {
+      const row = document.createElement("div");
+      row.className = "is-off";
+      row.innerHTML = `<dt>${esc(d.promotionCode ? "Code " + d.promotionCode : d.displayName || "Discount")}</dt><dd>&minus;${esc(money(d.amount) || String(d.amount || ""))}</dd>`;
+      tally.insertBefore(row, tally.querySelector(".is-total"));
+    });
+    drawPromo(session);
+  }
+
+  /* ------------------------------------------------ the code, if any */
+  const promoOpen = document.getElementById("coPromoOpen");
+  const promoForm = document.getElementById("coPromoForm");
+  const promoInput = document.getElementById("coPromoInput");
+  const promoApplied = document.getElementById("coPromoApplied");
+  const promoMsg = document.getElementById("coPromoMsg");
+
+  function promoSay(text, bad) {
+    promoMsg.textContent = text;
+    promoMsg.hidden = !text;
+    promoMsg.classList.toggle("is-bad", !!bad);
+    promoInput.classList.toggle("is-bad", !!bad);
+  }
+
+  function drawPromo(session) {
+    const d = (session.discountAmounts || []).find(x => x.promotionCode);
+    if (d) {
+      promoOpen.hidden = true;
+      promoForm.hidden = true;
+      promoApplied.hidden = false;
+      promoApplied.innerHTML = `<span class="co-applied">${esc(d.promotionCode)} &middot; &minus;${esc(money(d.amount))}
+        <button class="co-linkish" type="button" id="coPromoRemove">Remove</button></span>`;
+      promoSay(`Then ${PLAN_PRICE} a month after that.`);
+      document.getElementById("coPromoRemove").addEventListener("click", async () => {
+        const r = await checkout.removePromotionCode();
+        if (failed(r)) return promoSay("That code would not come off. Reload the page and it will be gone.", true);
+        promoApplied.hidden = true;
+        promoOpen.hidden = false;
+        promoSay("");
+        drawTotals(r.session);
+      });
+    } else if (!promoApplied.hidden) {
+      promoApplied.hidden = true;
+      promoOpen.hidden = false;
+    }
+  }
+
+  promoOpen.addEventListener("click", () => {
+    promoOpen.hidden = true;
+    promoForm.hidden = false;
+    promoInput.focus();
+  });
+
+  promoForm.addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const code = promoInput.value.trim();
+    if (!code) return promoInput.focus();
+    const btn = promoForm.querySelector("button");
+    btn.disabled = true;
+    promoSay("");
+    const r = await checkout.applyPromotionCode(code);
+    btn.disabled = false;
+    if (failed(r)) return promoSay("That code didn’t take. Check the spelling — or it may have run its course.", true);
+    promoInput.value = "";
+    drawTotals(r.session);
+  });
+
+  /* --------------------------------------------------- paying */
+  async function confirmPayment(options) {
+    showCheckoutError("");
+    pay.disabled = true;
+    pay.innerHTML = `<span class="co-spin" aria-hidden="true"></span>Paying&hellip;`;
+    const r = await checkout.confirm(options);
+    /* On success Stripe takes the reader to return_url, so nothing after
+       this line runs. Only a failure comes back here. */
+    if (run !== checkoutRun) return;
+    pay.disabled = false;
+    pay.innerHTML = payLabel;
+    if (failed(r)) {
+      const error = r && r.error;
+      /* A card box left half-filled is shown in the form itself, in red,
+         by Stripe. Only say something here for what the form cannot. */
+      if (error && error.type === "validation_error") return;
+      showCheckoutError(checkoutErrorText(error));
+    }
+  }
+
+  const paymentElement = checkout.createPaymentElement({ layout: "tabs" });
+  document.getElementById("coCard").innerHTML = "";
+  paymentElement.mount("#coCard");
+  paymentElement.on("ready", () => { if (run === checkoutRun) pay.disabled = false; });
+  pay.addEventListener("click", () => confirmPayment());
+
+  /* Apple Pay and Google Pay, only where this device and browser can
+     actually use one. Otherwise the block stays hidden rather than showing
+     a button that does nothing. */
+  const express = checkout.createExpressCheckoutElement({ buttonHeight: 46 });
+  express.mount("#coExpress");
+  express.on("ready", ev => {
+    const methods = ev && ev.availablePaymentMethods;
+    const any = methods && Object.values(methods).some(Boolean);
+    const wrap = document.getElementById("coExpressWrap");
+    if (wrap) wrap.hidden = !any;
+  });
+  express.on("confirm", ev => confirmPayment({ expressCheckoutConfirmEvent: ev }));
+
+  checkout.on("change", drawTotals);
+  drawTotals(checkout.session());
+}
+
+/* Back from Stripe, paid, and waiting on the webhook to say so. Ask the
+   session every two seconds rather than guess; the page redraws as "you're
+   in" the moment the plan changes, from the same payload every other page
+   uses. */
+function drawCheckoutWaiting(run) {
+  main.innerHTML = `
+    <div class="content">
+      <section class="co co-done co-wait" role="status" aria-live="polite">
+        <div class="co-spin" aria-hidden="true"></div>
+        <h2>Paid. Opening the door&hellip;</h2>
+        <p>Stripe has your payment. We&rsquo;re just waiting for it to tell us so &mdash; usually a few seconds.</p>
+        <p class="co-fine" id="coWaitNote">You can leave this page. It will be open when you come back.</p>
+      </section>
+    </div>`;
+
+  let tries = 0;
+  const tick = async () => {
+    if (run !== checkoutRun) return;
+    const data = await fetch("/api/session", { headers: { Accept: "application/json" } })
+      .then(r => (r.ok ? r.json() : null)).catch(() => null);
+    if (run !== checkoutRun) return;
+    if (data && data.user.plan === "paid") {
+      /* The whole payload changes with the plan, so take all of it. */
+      ME = data.user;
+      ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS } = data.content);
+      applyAgePreference();
+      checkoutReturned = false;
+      return drawCheckoutDone({ justPaid: true });
+    }
+    if (++tries === 15) {
+      const note = document.getElementById("coWaitNote");
+      if (note) note.textContent = "This is taking longer than it should. Your payment is safe with Stripe — " +
+        "leave this open, or come back in a few minutes and it will be done.";
+    }
+    setTimeout(tick, tries < 30 ? 2000 : 10000);
+  };
+  tick();
+}
+
+/* "You're in", or, for a reader who was already paying and followed a
+   "Get every day" link anyway, the same page saying so — never a second
+   card form. The server refuses a second subscription too (409). */
+function drawCheckoutDone({ justPaid }) {
+  main.innerHTML = `
+    <div class="content">
+      <section class="co co-done" role="status" aria-live="polite">
+        <div class="co-mark" aria-hidden="true"></div>
+        <p class="co-kicker">Every day</p>
+        <h2>${justPaid ? "You&rsquo;re in." : "You&rsquo;re already in."}</h2>
+        <p>${justPaid
+          ? "Tonight&rsquo;s history and bedtime story are open, and so is every one before them."
+          : "You&rsquo;re on Every day, so there is nothing to pay. Tonight&rsquo;s is waiting."}</p>
+        <a class="btn co-submit co-submit-inline" href="#home">Read tonight&rsquo;s</a>
+        <p class="co-fine">${justPaid ? `A receipt is on its way to ${esc(ME.email)}.<br>` : ""}
+          Cards, invoices and cancelling live under <a href="#account">Your account</a>.</p>
+      </section>
+    </div>`;
 }
 
 function renderMissing(msg, hash, label) {
@@ -864,7 +1335,8 @@ const META = {
   bedtime: ["Bedtime Stories for Ages 4 to 9 | Saints & Dragons",
             "Fairy tales, legends and true stories retold for reading aloud, for ages 4 to 9. Knights, dragons, castles and the sea."],
   welcome: ["Welcome | Saints & Dragons", "Two questions, then tonight's story."],
-  account: ["Your account | Saints & Dragons", "Your plan, your details, and how to leave."]
+  account: ["Your account | Saints & Dragons", "Your plan, your details, and how to leave."],
+  checkout: ["Every day | Saints & Dragons", "A new history and a new bedtime story every day, for $6 a month."]
 };
 
 const DEFAULT_META = [document.title,
@@ -885,7 +1357,7 @@ function setMeta(key, param) {
 
 /* which sidebar link lights up for a given route */
 const NAV_OWNER = { brief: "#history", tale: "#bedtime", today: "#today",
-                    welcome: "#account" };
+                    welcome: "#account", checkout: "#account" };
 
 /* routes printed on receipt paper, so they match the card on #home */
 const PAPER_ROUTES = new Set(["history", "today", "bedtime", "brief", "tale"]);
@@ -911,6 +1383,7 @@ function route() {
   else if (key === "tale") renderTale(param);
   else if (key === "welcome") renderWelcome();
   else if (key === "account") renderAccount();
+  else if (key === "checkout") renderCheckout();
   else if (key === "home" || !PAGES[key]) renderHome(searchInput.value);
   else renderPage(key);
 
@@ -944,6 +1417,11 @@ document.getElementById("themeToggle").addEventListener("click", () => {
   const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
   root.setAttribute("data-theme", next);
   localStorage.setItem("sd-theme", next);
+  /* Stripe's card form is an iframe and cannot see the theme change;
+     tell it. */
+  if (liveCheckout && typeof liveCheckout.changeAppearance === "function") {
+    liveCheckout.changeAppearance(stripeAppearance());
+  }
 });
 
 /* mobile sidebar */
@@ -964,22 +1442,11 @@ toggle.addEventListener("click", () => {
 scrim.addEventListener("click", closeSidebar);
 
 /* every "get every day" button on every page, delegated for the same reason
-   the chips are: these panels are re-rendered on each route */
-main.addEventListener("click", async ev => {
-  const btn = ev.target.closest("[data-upgrade]");
-  if (!btn) return;
-  btn.disabled = true;
-  const label = btn.textContent;
-  btn.textContent = "Opening Stripe\u2026";
-  try {
-    await goToStripe("/api/billing/checkout");
-  } catch (err) {
-    console.warn("checkout did not open", err);
-    btn.textContent = label;
-    btn.disabled = false;
-    btn.insertAdjacentHTML("afterend",
-      `<p class="filter-note">Stripe did not open. Try again in a moment.</p>`);
-  }
+   the chips are: these panels are re-rendered on each route. They open the
+   checkout page; nothing is asked of Stripe until it draws. */
+main.addEventListener("click", ev => {
+  if (!ev.target.closest("[data-upgrade]")) return;
+  location.hash = "#checkout";
 });
 
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -1016,41 +1483,29 @@ async function boot() {
 
   ME = data.user;
   ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS } = data.content);
+  STRIPE_KEY = data.stripe && data.stripe.publishableKey || null;
   applyAgePreference();
 
   /* Coming back from Stripe. The webhook is what actually grants the plan,
-     and it can land a moment after the reader does, so say what is true
-     rather than guessing. */
+     and it can land a moment after the reader does, so #checkout shows
+     "opening the door" and keeps asking until it has (drawCheckoutWaiting),
+     rather than guessing either way. It takes the whole new payload when the
+     plan changes: patching half of it into a drawn page is how two surfaces
+     end up disagreeing. */
   const params = new URLSearchParams(location.search);
   const checkout = params.get("checkout");
   if (checkout) {
     history.replaceState(null, "", location.pathname + location.hash);
-    if (checkout === "done" && !isPaid()) {
-      /* Give the webhook a beat and ask once more. A reload is the honest
-         way to pick up the answer: the whole payload changes when the plan
-         does, and patching half of it into a drawn page is how two surfaces
-         end up disagreeing. */
-      setTimeout(async () => {
-        const again = await fetch("/api/session")
-          .then(r => (r.ok ? r.json() : null)).catch(() => null);
-        if (again && again.user.plan === "paid") location.reload();
-      }, 2500);
-    }
+    if (checkout === "done" && !isPaid()) checkoutReturned = true;
   }
 
-  /* Arriving from the paid plan on the landing page, by way of the login
-     link: they already chose to pay, so open Stripe rather than making them
-     find the button again. A reader who is already paying just lands. */
+  /* ?upgrade=1 is the old way in from the paid plan on the landing page,
+     and it still sits in login links already in people's inboxes. They
+     chose to pay, so take them to the checkout rather than making them find
+     the button again. (The landing page links straight to #checkout now.)
+     #checkout itself tells a reader who is already paying so. */
   if (params.get("upgrade")) {
-    history.replaceState(null, "", location.pathname + location.hash);
-    if (!isPaid()) {
-      try {
-        await goToStripe("/api/billing/checkout");
-        return;
-      } catch (err) {
-        console.warn("checkout did not open", err);
-      }
-    }
+    history.replaceState(null, "", location.pathname + "#checkout");
   }
 
   if (!ME.onboarded && !location.hash) location.hash = "#welcome";
