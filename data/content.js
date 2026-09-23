@@ -255,6 +255,7 @@ const BRIEFS = {
     era: "Kings and gunpowder",
     kind: "A person",
     minutes: 5,
+    tale: "three-little-pigs",
     hook: "One small English ship sailed all the way around the world, and on the way robbed Spain's Pacific treasure fleet of the biggest haul anyone had ever taken. The Queen came aboard to knight her captain. Spain called him a pirate.",
     opening: "An English sea captain took a ship about 100 feet long around the entire planet. On the way he robbed Spain's Pacific treasure fleet, and he came home so rich that his investors made 47 times their money. The Queen paid off her whole national debt with her share.",
     sections: [
@@ -763,6 +764,40 @@ const TALES = {
       "And the strangest part is this: he did not go back to get even, and he did not go back because he had forgotten. He remembered every single cold night.",
       "He went back because he knew the way."
     ]
+  },
+  "three-little-pigs": {
+    title: "The Three Little Pigs",
+    age: 1,
+    minutes: "4",
+    virtue: "Perseverance",
+    origin: "English folk tale, first printed 1843",
+    source: "An English nursery tale, printed by James Halliwell in 1843 and by Joseph Jacobs in 1890. This telling follows Flora Annie Steel's, in which the first two pigs get away. Here the wolf gets away too, and the last line is new.",
+    brief: "golden-hind",
+    body: [
+      "Once upon a time there was an old mother pig who had three little pigs, and not enough food to go round. So when they were old enough, she kissed them each on the snout and sent them out into the world to make their own way.",
+      "The first little pig did not like work at all. He found a pile of straw, and he built his house out of that, and it was finished by lunchtime.",
+      "The second little pig worked a little harder, but not much. He built his house out of sticks, and it was finished by teatime. Then the two of them sang and danced and played for the rest of the day.",
+      "The third little pig worked all day long. He carried bricks, one at a time, and he laid them one on top of the other, and he did not stop until the sun went down. His house had thick walls, a strong door, and a fine fireplace with a big black pot.",
+      "The next day a wolf came down the lane. He smelled the first little pig inside the straw house, and his mouth began to water. He knocked on the door.",
+      "\"Little pig, little pig, let me in!\"",
+      "\"No, no, no! Not by the hair on my chinny chin chin!\"",
+      "\"Then I'll huff, and I'll puff, and I'll blow your house down!\"",
+      "So he huffed, and he puffed, and he blew the straw house down. But the first little pig was too quick for him, and ran all the way to the house made of sticks.",
+      "The wolf followed him. He knocked on the door.",
+      "\"Little pigs, little pigs, let me in!\"",
+      "\"No, no, no! Not by the hair on our chinny chin chins!\"",
+      "\"Then I'll huff, and I'll puff, and I'll blow your house down!\"",
+      "So he huffed, and he puffed, and he blew the stick house down. But the two little pigs scrambled away as fast as their little hooves would carry them, all the way to the house made of bricks, and they slammed the door behind them.",
+      "The wolf knocked on the door.",
+      "\"Little pigs, little pigs, let me in!\"",
+      "\"No, no, no! Not by the hair on our chinny chin chins!\"",
+      "\"Then I'll huff, and I'll puff, and I'll blow your house down!\"",
+      "Well, he huffed, and he puffed. And he puffed, and he huffed. And he huffed and he puffed and he huffed and he puffed, until he had no huff and no puff left in him. And the brick house did not move at all.",
+      "So the wolf climbed up onto the roof to come down the chimney.",
+      "But the third little pig had heard him. He built up the fire, and he filled the big black pot with water, and just as the wolf came down the chimney, he took off the lid. Splash! In went the wolf.",
+      "He shot straight back up the chimney with his tail steaming, and ran off over the hill, and the three little pigs never saw him again.",
+      "And the first two little pigs, who had watched their brother lay every brick, went out the very next morning and started building houses of their own. Out of bricks."
+    ]
   }
 };
 
@@ -846,6 +881,15 @@ const CARDS = [
     prayer: "For steady hands when the ground gives way beneath us, and for the small kindnesses that come back around exactly when we need them."
   },
   {
+    date: "2026-09-23",
+    title: "Drake Around the World, 1577\u20131580",
+    brief: "golden-hind",
+    tale: "three-little-pigs",
+    question: "The third little pig took the longest to build his house. What is something that was worth taking your time over?",
+    whyOurs: "Drake came home because the ship held and every man aboard pulled a rope, gentleman and sailor alike. We lay the bricks while the neighbours are dancing, so there is somewhere to run to when the wolf comes down the lane.",
+    prayer: "For the patience to build it properly, and for a door that holds when the wind gets up."
+  },
+  {
     date: "2026-09-24",
     title: "Patrick in Ireland, the 430s",
     brief: "patrick",
@@ -881,6 +925,16 @@ const TODAY = {
     {
       year: "1937",
       text: "J.R.R. Tolkien's The Hobbit was published in London, in an edition of about 1,500 copies, with a jacket illustration and a map drawn by Tolkien himself. He had been writing it for years to read to his own children and never intended it for anyone else, until a publisher's ten-year-old son was handed the manuscript to review and came back with a one-page report that ended: children of any age from six to twelve will want to hear it read to them again and again. It sold out by Christmas. The sequel he then spent seventeen years on became The Lord of the Rings."
+    }
+  ],
+  "09-23": [
+    {
+      year: "1939",
+      text: "Sigmund Freud, the founder of modern psychoanalysis, died in London. He was eighty-three, and he had lived there for little more than a year. When Germany took over Austria in 1938, Freud was the most famous Jew in Vienna. The Gestapo came to his flat and took his daughter Anna away for a day of questioning, and friends abroad paid the tax the Nazis charged to let the family leave that June. He had smoked cigars all his adult life and had spent sixteen years with cancer of the jaw, through more than thirty operations. Four of his sisters could not get out, and died in the camps. The couch his patients lay on came with him, and it is still in his house in Hampstead, which is now a museum."
+    },
+    {
+      year: "1862",
+      text: "Otto von Bismarck was appointed prime minister of Prussia by William I. The king had nearly abdicated instead. His parliament had refused to pay for the army he wanted, and he had already drafted his letter of abdication when his war minister talked him into sending for Bismarck, a diplomat with a reputation for being impossible. They walked in the palace gardens at Babelsberg, and Bismarck promised to govern without parliament's money if he had to. A week later he told a budget committee that the great questions of the day would be settled not by speeches and majority votes but by iron and blood. Three wars followed in seven years, and in 1871 the king of Prussia was proclaimed emperor of a united Germany in the Hall of Mirrors at Versailles."
     }
   ],
   "09-22": [{
