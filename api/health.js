@@ -4,6 +4,9 @@
  * Vercel answers a crashed function with a bare 500, and the pages can only
  * say "that did not work". This names the broken piece instead.
  *
+ * Email is checked by reading the Resend account's domains, never by
+ * sending, so opening this page costs nothing.
+ *
  * It reports whether each key is set, never its value, and a database
  * failure as an error code plus a hint, never the message — a connection
  * error's message can carry the host and user from DATABASE_URL.
@@ -11,6 +14,7 @@
 
 const { sql } = require("./_lib/db");
 const { json, methodNotAllowed } = require("./_lib/http");
+const { checkSending } = require("./_lib/email");
 
 const TABLES = ["users", "login_tokens", "sessions", "subscriptions", "stripe_events"];
 
@@ -62,8 +66,17 @@ module.exports = async function handler(req, res) {
     console.error("health: database check failed:", e.message);
   }
 
-  const ok = database.connected && !database.missingTables.length &&
+  let email;
+  try {
+    email = await checkSending();
+  } catch (e) {
+    email = { ok: false, hint: "could not reach Resend to check — see the function log" };
+    console.error("health: email check failed:", e.message);
+  }
+
+  /* email.ok is null when the key cannot say; that is not counted a failure. */
+  const ok = database.connected && !database.missingTables.length && email.ok !== false &&
     KEYS.filter(k => !OPTIONAL.includes(k)).every(k => env[k]);
 
-  return json(res, ok ? 200 : 503, { ok, database, env });
+  return json(res, ok ? 200 : 503, { ok, database, email, env });
 };

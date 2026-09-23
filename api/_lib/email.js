@@ -8,7 +8,14 @@
 
 const { SITE_URL } = require("./http");
 
-const FROM = process.env.EMAIL_FROM || "Saints & Dragons <hello@saintsanddragons.com>";
+/* Quotes around the whole value are dropped: .env.example shows them (a
+   dotenv file needs them for the space and the &), and pasted as-is into
+   Vercel, which keeps them, they make a from line Resend rejects. */
+function unquote(value) {
+  return String(value || "").trim().replace(/^(["'])(.*)\1$/, "$2").trim();
+}
+
+const FROM = unquote(process.env.EMAIL_FROM) || "Saints & Dragons <hello@saintsanddragons.com>";
 const REPLY_TO = process.env.EMAIL_REPLY_TO || null;
 
 function esc(s) {
@@ -82,4 +89,44 @@ async function sendLoginLink({ to, url, firstName, minutes, isNew, paid = false 
   return send({ to, ...loginEmail({ url, firstName, minutes, isNew, paid }) });
 }
 
-module.exports = { send, sendLoginLink, loginEmail };
+/* For /api/health: can Resend send from FROM at all? Reads the account's
+   domains, which sends nothing and spends no quota. A key made with
+   "sending access" only is not allowed to list them, and says so. */
+async function checkSending() {
+  const key = process.env.RESEND_API_KEY;
+  const address = (/<([^>]+)>/.exec(FROM) || [null, FROM])[1].trim();
+  const domain = address.includes("@") ? address.split("@").pop().toLowerCase() : null;
+  const report = { from: FROM, domain };
+
+  if (!key) return { ...report, ok: false, hint: "RESEND_API_KEY is not set — links go to the log, not to readers" };
+  if (!domain || !/^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(address)) {
+    return { ...report, ok: false, hint: 'EMAIL_FROM is not a usable from line — it should look like Saints & Dragons <hello@saintsanddragons.com>' };
+  }
+  if (domain === "resend.dev") {
+    return { ...report, ok: false, hint: "resend.dev only delivers to the Resend account's own address — verify your domain and send from it" };
+  }
+
+  const { Resend } = require("resend");
+  const { data, error } = await new Resend(key).domains.list();
+  if (error) {
+    const said = `${error.name} ${error.message}`;
+    if (/restricted|only send/i.test(said)) {
+      return { ...report, ok: null, hint: `this key can only send, so the domain cannot be checked from here — look at resend.com/domains: ${domain} must say Verified` };
+    }
+    return { ...report, ok: false, error: error.name,
+      hint: /api.?key/i.test(said) ? "RESEND_API_KEY is not a valid key — make a new one at resend.com/api-keys" : error.message };
+  }
+
+  const list = data?.data || [];
+  const match = list.find(d => d.name.toLowerCase() === domain);
+  if (!match) {
+    return { ...report, ok: false, domains: list.map(d => d.name),
+      hint: `${domain} is not added in this Resend account — add it at resend.com/domains and put the DNS records it gives you on the domain` };
+  }
+  return { ...report, ok: match.status === "verified", status: match.status,
+    ...(match.status === "verified" ? {} : {
+      hint: `${match.name} is "${match.status}" in Resend — add the DNS records shown at resend.com/domains, then press Verify; it can take a while to go through`
+    }) };
+}
+
+module.exports = { send, sendLoginLink, loginEmail, checkSending };
