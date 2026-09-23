@@ -227,6 +227,10 @@ decision instead of re-deriving it.
 
 ## Where things live
 
+`docs/why.md` is the owner's own statement of what this is for, in their words
+(2026-09-23). It is the standard to test new work against. Quote it as
+written. Posts written from it are in `docs/social/`.
+
 See `README.md` for the file map, how to add a night, and how accounts,
 Stripe and the free/paid gate fit together, and `LESSONS-LEARNED.md` before
 changing how pages or assets are linked.
