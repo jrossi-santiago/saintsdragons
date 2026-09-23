@@ -729,8 +729,8 @@
     });
   })();
 
-  /* Signup, which is also login: /api/auth/request-link makes the account if
-     the address is new and emails a link either way, so nobody is ever asked
+  /* Signup, which is also login: /api/auth/request-link signs a new address
+     straight in and emails a known one a link, so nobody is ever asked
      which of the two they are. The endpoint is read off the form's action, as
      on /7stories, so there is one place to change it. Failure is reported
      rather than swallowed: there is no download to fall back on here, so
@@ -776,6 +776,8 @@
         return res.json().then(function(body){ return { ok: res.ok, body: body }; });
       }).then(function(r){
         if (!r.ok) throw new Error(r.body && r.body.message || 'HTTP error');
+        /* A new address is signed in on the spot: go straight in. */
+        if (r.body.signedIn) { location.href = r.body.next || '/account'; return; }
         form.reset();
         status.textContent = 'Thanks, ' + firstName + ' \u2014 check ' + email +
           ' for your way in. The link works once and lasts twenty minutes.';

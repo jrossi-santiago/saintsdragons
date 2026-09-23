@@ -22,6 +22,18 @@ module.exports = async function handler(req, res) {
     return redirect(res, "/login?error=expired", 302);
   }
 
+  /* The first link this address has ever used is the first proof that the
+     person holding it owns it. A new address is signed in without that proof
+     (see request-link), so somebody else may have made this account first
+     and still hold a session on it. End every one of them before starting
+     the owner's. Only the first time: after that, a link is an ordinary
+     login and the reader's other devices stay signed in. */
+  const proving = await sql.one`
+    update users set email_verified_at = now()
+     where id = ${row.user_id} and email_verified_at is null
+    returning id`;
+  if (proving) await sql`delete from sessions where user_id = ${row.user_id}`;
+
   await startSession(res, row.user_id, req.headers["user-agent"]);
   await sql`update users set last_seen_at = now() where id = ${row.user_id}`;
 

@@ -20,7 +20,7 @@ const TABLES = ["users", "login_tokens", "sessions", "subscriptions", "stripe_ev
 
 const KEYS = [
   "DATABASE_URL", "RESEND_API_KEY", "EMAIL_FROM",
-  "STRIPE_SECRET_KEY", "STRIPE_PRICE_ID", "STRIPE_WEBHOOK_SECRET", "SITE_URL",
+  "STRIPE_SECRET_KEY", "STRIPE_PUBLISHABLE_KEY", "STRIPE_PRICE_ID", "STRIPE_WEBHOOK_SECRET", "SITE_URL",
   "DATABASE_CA_CERT"
 ];
 /* EMAIL_FROM has a default in api/_lib/email.js; the email check below
@@ -56,9 +56,17 @@ module.exports = async function handler(req, res) {
 
   try {
     const rows = await sql`select ${TABLES}::text[] as wanted,
-      array(select t from unnest(${TABLES}::text[]) t where to_regclass('public.' || t) is null) as missing`;
+      array(select t from unnest(${TABLES}::text[]) t where to_regclass('public.' || t) is null) as missing,
+      exists(select 1 from information_schema.columns
+              where table_schema = 'public' and table_name = 'users'
+                and column_name = 'email_verified_at') as has_verified`;
     database.connected = true;
     database.missingTables = rows[0].missing;
+    /* A column added after the table shipped: schema.sql adds it, but only
+       once somebody re-runs it. Signup fails without it. */
+    if (!rows[0].has_verified && !database.missingTables.includes("users")) {
+      database.missingTables.push("users.email_verified_at");
+    }
     if (database.missingTables.length) {
       database.hint = "run db/schema.sql against this database (Supabase: SQL Editor)";
     }

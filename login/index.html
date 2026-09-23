@@ -47,7 +47,7 @@
 <main class="box">
   <div class="mark" aria-hidden="true"></div>
   <h1>Saints &amp; Dragons</h1>
-  <p class="lede">Put in your email and we will send you a link. There is no password to remember.</p>
+  <p class="lede">Put in your email. Been here before? We send you a link &mdash; there is no password to remember.</p>
 
   <!-- Ships as a real form with a real action, so it still posts if the
        script below never runs. The script only upgrades it. -->
@@ -61,7 +61,7 @@
 
   <p class="msg" id="msg" role="status" aria-live="polite"></p>
 
-  <p class="note">New here? The same box works &mdash; it makes the account and sends you in.</p>
+  <p class="note">New here? The same box works &mdash; it makes the account and takes you straight in, no email needed.</p>
   <p class="foot"><a href="/">&larr; Saints &amp; Dragons</a></p>
 </main>
 
@@ -80,7 +80,7 @@
   /* Sent here by the paid plan: say where the link goes after this. */
   if (/[?&]upgrade=1/.test(document.getElementById('next').value)) {
     document.querySelector('.lede').textContent =
-      'Put in your email and we will send you a link. It signs you in and takes you straight to checkout.';
+      'Put in your email. New here, and you go straight to checkout; been here before, and we send you a link that does.';
   }
 
   function say(text, bad) {
@@ -127,6 +127,8 @@
          platform reporting a crash, which is ours to fix, not theirs. */
       if (!r.ok) throw new Error(r.body && r.body.message ||
         'Something broke on our side, not yours. Please try again in a few minutes.');
+      /* A new address is signed in on the spot: go straight in. */
+      if (r.body.signedIn) { location.href = r.body.next || '/account'; return; }
       say('Check ' + email + ' — the link is on its way. It works once, and lasts twenty minutes.');
       form.reset();
       btn.textContent = 'Send another';

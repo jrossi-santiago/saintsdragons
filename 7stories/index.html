@@ -111,6 +111,8 @@
   .page-head { border-bottom: 1px solid #ccc; margin-bottom: 24px; }
   .page-head p, .download-text p { color: #333 !important; }
 }
+/* the way into the account, once the signup has opened it */
+#welcome a { color: var(--accent); border-bottom: 1px solid currentColor; }
 </style>
 <link rel="icon" href="/assets/dragon-mark.svg" type="image/svg+xml">
 <link rel="alternate icon" href="/assets/favicon-32.png" sizes="32x32">
@@ -283,8 +285,8 @@ const delivery = document.getElementById("delivery");
 const form = document.getElementById("gateForm");
 const submitBtn = document.getElementById("submitBtn");
 
-/* The same endpoint the landing page and /login post to: it makes the
-   account if this address is new, and emails a link in. The PDF is not held
+/* The same endpoint the landing page and /login post to: it signs a new
+   address straight in, and emails a known one a link. The PDF is not held
    behind any of that — see the catch below. */
 const FORM_ENDPOINT = form.action;
 
@@ -364,8 +366,9 @@ form.addEventListener("submit", async e => {
   const label = submitBtn.innerHTML;
   submitBtn.textContent = "Sending…";
 
+  let signedIn = false;
   try {
-    await fetch(FORM_ENDPOINT, {
+    const res = await fetch(FORM_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({
@@ -375,6 +378,8 @@ form.addEventListener("submit", async e => {
         source: "/7stories"
       })
     });
+    /* A new address comes back signed in; a known one is emailed a link. */
+    signedIn = res.ok && !!(await res.json()).signedIn;
   } catch (err) {
     /* Never hold the download hostage to a failed network call. */
     console.warn("7stories signup did not go through", err);
@@ -383,9 +388,16 @@ form.addEventListener("submit", async e => {
   submitBtn.disabled = false;
   submitBtn.innerHTML = label;
 
-  document.getElementById("welcome").textContent =
-    `Thanks, ${firstName}. One story for every night of the week, ready to read ` +
-    `or print — and there is a link to your account on its way to ${email}.`;
+  const welcome = document.getElementById("welcome");
+  welcome.textContent =
+    `Thanks, ${firstName}. One story for every night of the week, ready to read or print — ` +
+    (signedIn ? "and your account is open: " : `and there is a link to your account on its way to ${email}.`);
+  if (signedIn) {
+    const a = document.createElement("a");
+    a.href = "/account#welcome";
+    a.textContent = "this week\u2019s free story is waiting.";
+    welcome.appendChild(a);
+  }
   gate.hidden = true;
   delivery.hidden = false;
   window.scrollTo(0, 0);

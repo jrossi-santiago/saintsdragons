@@ -184,18 +184,28 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
 
 Three ideas, and everything else follows from them.
 
-**One door.** `POST /api/auth/request-link` is signup and login at once. A
-first-time address gets an account and an emailed link; a returning one gets
-a link. Nobody is asked which of the two they are, and there is no password
-anywhere in the system. The landing page's `#start` form, `/7stories` and
-`/login` all post to that one endpoint, each with its own `source` so the
-three surfaces stay apart in the `users` table.
+**One door.** `POST /api/auth/request-link` is signup and login at once, and
+nobody is asked which of the two they are. There is no password anywhere in
+the system. The landing page's `#start` form, `/7stories` and `/login` all
+post to that one endpoint, each with its own `source` so the three surfaces
+stay apart in the `users` table.
+
+- **A new address is signed in on the spot** — an account, a session, and
+  no email. A brand-new account holds nothing a stranger could take, so an
+  inbox round trip first bought nothing but drop-off. Only from a page on
+  this site (the request's `Origin` is checked), so another site's form
+  cannot drop a visitor into an account it made.
+- **An address we already know gets a link**, because signing in whoever
+  typed a known address would hand them that reader's account.
 
 The link goes to `GET /api/auth/verify`, which spends the token (single use,
 twenty minutes, enforced by the database rather than in node), starts a
 session, and sends a first-time reader to `#welcome` and everybody else to
-`#home`. Tokens and session cookies are 32 random bytes; the database only
-ever holds their SHA-256, so a dump of it cannot be replayed as a login.
+`#home`. **The first link an address ever uses signs out every other session
+on that account** and stamps `users.email_verified_at`: somebody who signed
+up with an address before its owner did does not get to stay in once the
+owner turns up. Tokens and session cookies are 32 random bytes; the database
+only ever holds their SHA-256, so a dump of it cannot be replayed as a login.
 
 **The webhook is the only thing that grants access.** Not Checkout's success
 page — the reader can close it, and a card can fail a month later with
@@ -245,7 +255,8 @@ receipt, on a shelf and on a story's own page.
 | `api/_lib/stripe.js` | One configured client; creates a Stripe customer once per reader and reuses it. |
 | `api/session.js` | What `/account` boots from: reader, plan, content. `401` means "not signed in" and is not an error. |
 | `api/profile.js` | The two onboarding answers, and any later edit of them. |
-| `api/billing/checkout.js`, `api/billing/portal.js` | Hand the reader to Stripe. No card detail ever touches this site; cancelling and invoices live in Stripe's portal, which is how "cancel any time" is kept. |
+| `api/billing/checkout.js` | Starts the subscription for a signed-in reader: a Checkout Session in Stripe's custom UI mode, answered with its `client_secret` for the on-site checkout (`#checkout`) to mount Stripe's Payment Element. The card goes into Stripe's iframe and never touches this site. |
+| `api/billing/portal.js` | Hands the reader to Stripe's Billing Portal. Cancelling and invoices live there, which is how "cancel any time" is kept. |
 | `api/_lib/users.js` | The one statement that turns an email into an account, shared by the login box and a checkout. |
 | `api/stripe/webhook.js` | The only writer of `subscriptions`. A checkout started while signed out (the paid plan on `/`) arrives here with no user: the email given to Stripe becomes the account, or finds the one it already is, and the sign-in link is emailed to it. Coming back from Stripe signs nobody in. |
 | `api/health.js` | Open `/api/health` in a browser when something fails with no reason given. It says whether the database connects, which tables are missing, and which keys are unset, with a hint for each. It never shows a value. |
@@ -273,7 +284,12 @@ receipt, on a shelf and on a story's own page.
 2. **Resend** — verify the sending domain and set `RESEND_API_KEY` and
    `EMAIL_FROM`. Until the domain is verified, links will not arrive.
 3. **Stripe** — one product with a $6/month recurring price; set
-   `STRIPE_PRICE_ID` to the price (`price_…`), not the product. Add a webhook
+   `STRIPE_PRICE_ID` to the price (`price_…`), not the product. Set
+   `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY` as a matching pair from
+   Developers → API keys (`sk_test_`/`pk_test_` or `sk_live_`/`pk_live_`):
+   the checkout page loads Stripe's card form with the publishable one. The
+   API version is pinned in `api/_lib/stripe.js`, and the Stripe.js the
+   checkout loads is pinned to the same release. Add a webhook
    endpoint at `https://<site>/api/stripe/webhook` subscribed to
    `checkout.session.completed` and `customer.subscription.*`, and set
    `STRIPE_WEBHOOK_SECRET` from it. Turn on the Billing Portal in Stripe's

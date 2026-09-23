@@ -1,20 +1,27 @@
 /* POST /api/auth/request-link — the whole of signup and the whole of login.
  *
- * There is no separate "register" path on purpose. A first-time address gets
- * an account and a link; a returning one gets a link. The reader is never
- * asked which of the two they are, and never asked for a password.
+ * There is no separate "register" path on purpose, and the reader is never
+ * asked which of the two they are, or for a password.
+ *
+ *   - A new address is signed in on the spot. It gets an account and a
+ *     session, and no email: there is nothing in a brand-new account for a
+ *     stranger to take, so making somebody go to their inbox first buys
+ *     nothing. verify.js closes the one gap this leaves — see there.
+ *   - An address we already know gets a link, as it always has. Signing in
+ *     whoever typed a known address would hand them that reader's account.
  *
  * Accepts JSON (from the scripts on /, /7stories and /login) and
  * form-encoded (from the same forms when the script did not run). It answers
- * in kind: JSON to JSON, a redirect back to the page for a real form post.
+ * in kind: JSON to JSON, a redirect for a real form post.
  */
 
 const { userForEmail } = require("../_lib/users");
-const { issueLoginToken, LINK_MINUTES, sweep } = require("../_lib/session");
+const { sql } = require("../_lib/db");
+const { issueLoginToken, startSession, LINK_MINUTES, sweep } = require("../_lib/session");
 const { sendLoginLink } = require("../_lib/email");
 const {
   SITE_URL, json, methodNotAllowed, readBody, wantsHTML, redirect,
-  clientIP, normaliseEmail
+  clientIP, normaliseEmail, sameOrigin
 } = require("../_lib/http");
 
 /* Only ever a path on this site, never an absolute URL a stranger supplied —
@@ -50,6 +57,17 @@ module.exports = async function handler(req, res) {
   }
 
   const user = await userForEmail(email, { firstName, childAges, source });
+
+  /* New here: straight in. Only from a page on this site, so another site's
+     form cannot sign a visitor into an account it made; anything else falls
+     through to the link, which is always safe. */
+  if (user.is_new && sameOrigin(req)) {
+    await startSession(res, user.id, req.headers["user-agent"]);
+    await sql`update users set last_seen_at = now() where id = ${user.id}`;
+    const to = next || "/account#welcome";
+    if (html) return redirect(res, to);
+    return json(res, 200, { ok: true, email, signedIn: true, next: to, isNew: true });
+  }
 
   const token = await issueLoginToken(user.id, { redirectTo: next, ip: clientIP(req) });
   if (!token) {
