@@ -225,6 +225,9 @@ Stripe and the free/paid gate fit together, and `LESSONS-LEARNED.md` before
 changing how pages or assets are linked.
 
 New histories for dads are written to `docs/history-for-dads.md`, with
-`docs/histories/golden-hind.md` as the reference piece. That standard
-replaced the brief voice in the header of `data/content.js` on 2026-09-23.
-The `history-for-dads` skill runs it when the owner uploads a source PDF.
+`docs/histories/golden-hind.md` as the reference piece; those two are the
+only rules. The older brief voice they replaced on 2026-09-23 was taken out
+of `data/content.js`; the flat-`body` briefs written to it stay as they are.
+The `history-for-dads` skill runs the standard when the owner uploads a
+source PDF, and knows how to enter an approved piece into `BRIEFS` when
+asked.

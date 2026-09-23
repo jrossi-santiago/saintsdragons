@@ -14,10 +14,12 @@ const FORM_ENDPOINT = "https://formspree.io/f/xqpaqzne";
    with the whole archive, and boot() at the foot of this file fills them in
    before the first frame is drawn. Nothing above that point may read them.
 
-   A locked brief or tale arrives with everything except its `body`, and a
+   A locked brief or tale arrives with everything except its text, and a
    locked card without its question, why-ours line and prayer. So the test
    for "may I print this" is the presence of the words, never a flag: see
-   `isOpen` below, and api/_lib/content.js for the other half of the deal. */
+   `briefHasText` below, and api/_lib/content.js for the other half of the
+   deal. A brief's words are a flat `body` in the older shape and `opening`
+   plus `sections` in the one written to docs/history-for-dads.md. */
 let CARDS = [], BRIEFS = {}, TALES = {}, TODAY = {};
 let ERAS = [], KINDS = [], THEMES = [], VIRTUES = [], AGE_BANDS = {};
 
@@ -26,6 +28,7 @@ let ME = null;
 
 const isPaid = () => !!ME && ME.plan === "paid";
 const isOpen = item => !!item && !item.locked;
+const briefHasText = b => !!b && !!(b.body || b.opening || b.sections);
 
 const PAGES = {
   about: {
@@ -43,9 +46,9 @@ const PAGES = {
 
         <h3>What this is not</h3>
         <ul>
-          <li><strong>Not fun facts.</strong> Every piece is about how a thing actually worked, why it came out the way it did, and what it cost somebody.</li>
+          <li><strong>Not trivia.</strong> Every piece is about how a thing actually worked, why it came out the way it did, and what it cost somebody. The odd details go in side notes at the end, for when you have a minute more.</li>
           <li><strong>Not a course.</strong> Nobody is testing you. You get to learn things because they are good.</li>
-          <li><strong>Not a sermon.</strong> The history is history: named sources, dates, and an honest line about what the evidence can carry. Where a story has a virtue in it, the story carries it. We don't stop to explain the lesson, and neither should you.</li>
+          <li><strong>Not a sermon.</strong> The history is history: named sources, dates, and an honest line about what the evidence can carry. Where a story has a virtue in it, the story carries it. We don't stop to explain the lesson. You get one question to ask them at dinner, and it comes out of the story, not out of a moral.</li>
           <li><strong>Not a feed.</strong> Nothing to scroll. Read today's and you're done.</li>
         </ul>
 
@@ -347,7 +350,7 @@ function renderHome(query = "") {
      actually printed, or the receipt adds up to minutes nobody can read. */
   const todayOpen = !!(todayList && todayList.length && todayList[0].text);
 
-  const totalMin = (todayOpen ? 1 : 0) + (brief && brief.body ? Number(brief.minutes) || 0 : 0) + (tale.body ? Number(tale.minutes) || 0 : 0);
+  const totalMin = (todayOpen ? 1 : 0) + (briefHasText(brief) ? Number(brief.minutes) || 0 : 0) + (tale.body ? Number(tale.minutes) || 0 : 0);
 
   main.innerHTML = `
     <div class="content">
@@ -411,7 +414,7 @@ function renderHome(query = "") {
 
           <div class="rcpt-tally">
             ${todayOpen ? `<div class="row"><span>Today in history</span><span>1 min</span></div>` : ""}
-            ${brief && brief.body ? `<div class="row"><span>History for you</span><span>${brief.minutes} min</span></div>` : ""}
+            ${briefHasText(brief) ? `<div class="row"><span>History for you</span><span>${brief.minutes} min</span></div>` : ""}
             ${tale.body ? `<div class="row"><span>Bedtime story</span><span>${esc(tale.minutes)} min</span></div>` : ""}
             <div class="row grand"><span>Total</span><span>~${totalMin} min</span></div>
           </div>
@@ -477,7 +480,8 @@ function renderHome(query = "") {
 function renderSearch(query) {
   const q = query.toLowerCase();
   const briefHits = Object.entries(BRIEFS).filter(([, b]) =>
-    (b.title + " " + b.hook + " " + b.era + " " + b.kind).toLowerCase().includes(q));
+    (b.title + " " + b.hook + " " + b.era + " " + b.kind + " " + (b.dek || "") + " " + briefSearchText(b))
+      .toLowerCase().includes(q));
   const taleHits = Object.entries(TALES).filter(([, t]) =>
     (t.title + " " + (t.theme || "") + " " + t.virtue + " " + t.origin + " " + (t.source || "")).toLowerCase().includes(q));
   const hits = briefHits.length + taleHits.length;
@@ -623,20 +627,64 @@ function renderBedtime() {
 
 /* --------------------------------------------------------- detail pages */
 
+/* The words of a new-format brief (see the note above BRIEFS in
+   data/content.js), for search. Only an open brief has them; a locked one
+   arrives without, so this is empty and search sees what it always saw. The
+   older briefs' flat body is not searched, as before. */
+function briefSearchText(b) {
+  if (!b.sections) return "";
+  return [b.opening, b.kidsQuestion,
+    ...b.sections.flatMap(s => [s.heading, ...s.body]),
+    ...(b.sideNotes || []).flatMap(n => [n.lead, n.text])].join(" ");
+}
+
+/* Escaped text with *ship names* in italics — the one bit of markup the
+   history standard uses. New-format briefs only; the older ones never had it. */
+function inline(text) {
+  return esc(text).replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
+}
+
+/* The shape written to docs/history-for-dads.md: an opening with no header,
+   headed sections, the question for the kids closing the last one, then
+   the side notes as optional reading. */
+function briefSectionsHTML(b) {
+  const last = b.sections.length - 1;
+  return `<div class="post-body brief-body">
+      <p>${inline(b.opening)}</p>
+      ${b.sections.map((s, i) => `
+      <section class="brief-section">
+        <h3>${inline(s.heading)}</h3>
+        ${s.body.map(p => `<p>${inline(p)}</p>`).join("")}
+        ${i === last && b.kidsQuestion ? `<p class="kids-q"><strong>A question for the kids:</strong> ${inline(b.kidsQuestion)}</p>` : ""}
+      </section>`).join("")}
+    </div>
+    ${b.sideNotes && b.sideNotes.length ? `<aside class="side-notes" aria-labelledby="sideNotesHead">
+      <h3 id="sideNotesHead">Side notes</h3>
+      <ul>${b.sideNotes.map(n => `<li><strong>${inline(n.lead)}</strong> ${inline(n.text)}</li>`).join("")}</ul>
+    </aside>` : ""}`;
+}
+
 function renderBrief(slug) {
   const b = BRIEFS[slug];
   if (!b) return renderMissing("That page isn't here.", "history", "History for dads");
   const tale = TALES[b.tale];
+
+  /* An open new-format brief starts on its own opening, which does the hook's
+     job; printing both would say the same thing twice. Locked, the hook is
+     all there is, so it stays. */
+  const opened = !!b.sections;
 
   main.innerHTML = `
     <div class="content">
       ${backLink("history", "History for dads")}
       <header class="page-head">
         <h2>${esc(b.title)}</h2>
+        ${b.dek ? `<p class="brief-dek">${esc(b.dek).replace(/(\d)\u2013(\d)/g, "$1\u2060\u2013\u2060$2")}</p>` : ""}
         <p>${esc(b.era)} · ${esc(b.kind)} · ${b.minutes} min</p>
       </header>
-      <p class="lede">${esc(b.hook)}</p>
-      ${b.body
+      ${opened ? "" : `<p class="lede">${esc(b.hook)}</p>`}
+      ${opened ? briefSectionsHTML(b)
+        : b.body
         ? `<div class="post-body">${b.body.map(p => `<p>${esc(p)}</p>`).join("")}</div>`
         : lockPanel("This one is in the archive.",
             `${b.minutes} minutes, and it is one of every history written so far \u2014 all of them yours on Every day, with a new one each morning.`)}

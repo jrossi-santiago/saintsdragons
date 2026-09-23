@@ -89,7 +89,54 @@ for (const [slug, b] of Object.entries(BRIEFS)) {
   const where = `BRIEFS["${slug}"]`;
   requireText(where, b, "title");
   requireText(where, b, "hook");
-  if (!isBody(b.body)) err(where, "body must be a non-empty array of strings");
+
+  /* Two shapes (see the note above BRIEFS in content.js). A brief carrying
+     any of the sectioned fields is written to docs/history-for-dads.md and
+     is checked against it; anything else is an older brief with a flat body. */
+  const sectioned = ["sections", "opening", "kidsQuestion", "sideNotes"].some(k => b[k] !== undefined);
+  if (sectioned) {
+    if (b.body !== undefined) err(where, "has both body and the sectioned fields — pick one shape");
+    if (b.dek !== undefined && !isText(b.dek)) err(where, "dek is present but empty");
+    requireText(where, b, "opening");
+    requireText(where, b, "kidsQuestion");
+    if (!Array.isArray(b.sections) || b.sections.length === 0) {
+      err(where, "sections must be a non-empty array of { heading, body }");
+    } else {
+      b.sections.forEach((s, i) => {
+        const at = `sections[${i}]`;
+        if (!s || !isText(s.heading)) err(where, `${at} has no heading`);
+        if (!s || !isBody(s.body)) err(where, `${at}${s && isText(s.heading) ? ` ("${s.heading}")` : ""} has no paragraphs`);
+      });
+    }
+
+    /* The standard's numbers. Worth a look, never a failure: the piece is
+       the owner's call, and a long one still renders. */
+    const words = t => (isText(t) ? t.trim().split(/\s+/).length : 0);
+    let main = words(b.title) + words(b.dek) + words(b.opening) +
+      words("A question for the kids:") + words(b.kidsQuestion);
+    if (Array.isArray(b.sections)) {
+      for (const s of b.sections) {
+        if (!s) continue;
+        main += words(s.heading);
+        if (Array.isArray(s.body)) for (const p of s.body) main += words(p);
+      }
+    }
+    if (main < 650 || main > 900) warn(where, `main piece is ${main} words — the standard is 650 to 900 (docs/history-for-dads.md)`);
+
+    if (b.sideNotes === undefined) {
+      warn(where, "has no side notes — the standard asks for 6 to 8");
+    } else if (!Array.isArray(b.sideNotes)) {
+      err(where, "sideNotes must be an array of { lead, text }");
+    } else {
+      b.sideNotes.forEach((n, i) => {
+        if (!n || !isText(n.lead) || !isText(n.text)) err(where, `sideNotes[${i}] needs both a lead and a text`);
+      });
+      const n = b.sideNotes.length;
+      if (n < 6 || n > 8) warn(where, `${n} side note${n === 1 ? "" : "s"} — the standard is 6 to 8`);
+    }
+  } else if (!isBody(b.body)) {
+    err(where, "body must be a non-empty array of strings");
+  }
   if (!minutes(b.minutes)) err(where, `minutes is not a positive number (${JSON.stringify(b.minutes)})`);
   if (!ERAS.includes(b.era)) err(where, `era ${JSON.stringify(b.era)} is not in ERAS — ${list(ERAS)}`);
   if (!KINDS.includes(b.kind)) err(where, `kind ${JSON.stringify(b.kind)} is not in KINDS — ${list(KINDS)}`);

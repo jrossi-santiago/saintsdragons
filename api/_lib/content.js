@@ -33,11 +33,17 @@
  * ------------------------------------------------------------ how it locks
  *
  * A locked brief or tale keeps its title, hook, era, age, virtue and
- * provenance and loses its `body`. That is on purpose. The shelves stay
+ * provenance and loses its text. That is on purpose. The shelves stay
  * full, search keeps working, and the thing a reader is being asked to pay
  * for is visible rather than hidden — the lock is an invitation, not a
- * blank wall. The `body` array is the only thing withheld, along with a
- * locked card's question, why-ours line and prayer.
+ * blank wall. The text is the only thing withheld, along with a locked
+ * card's question, why-ours line and prayer.
+ *
+ * A brief's text is `body` in the older shape and, in the shape written to
+ * docs/history-for-dads.md, `opening`, `sections`, `kidsQuestion` and
+ * `sideNotes`. BRIEF_TEXT names all of them; a new field that carries paid
+ * words has to be added there, or it ships to every free reader. The dek
+ * stays, like the title: it is the who, what and when, not the piece.
  */
 
 const fs = require("fs");
@@ -94,6 +100,8 @@ function freeCardDates(cards) {
   return new Set(first.values());
 }
 
+const BRIEF_TEXT = ["body", "opening", "sections", "kidsQuestion", "sideNotes"];
+
 function omit(obj, keys) {
   const out = {};
   for (const [k, v] of Object.entries(obj)) if (!keys.includes(k)) out[k] = v;
@@ -128,7 +136,7 @@ function payloadFor({ paid, now = new Date() } = {}) {
   for (const [slug, brief] of Object.entries(BRIEFS)) {
     briefs[slug] = openBriefs.has(slug)
       ? brief
-      : { ...omit(brief, ["body"]), locked: true };
+      : { ...omit(brief, BRIEF_TEXT), locked: true };
   }
 
   const tales = {};

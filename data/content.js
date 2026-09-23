@@ -1,62 +1,27 @@
 /* Saints & Dragons — nightly content.
  *
  * Seed content. Every card, brief, tale and date entry below is real history,
- * written to the voice rules, and is meant to be edited or replaced as the
- * real schedule fills in. The shapes are what app.js renders against:
+ * and is meant to be edited or replaced as the real schedule fills in. The
+ * shapes are what app.js renders against:
  *
  *   CARDS   one per night, newest last. Points at a brief and a tale.
- *   BRIEFS  the long read for the dad, three to five minutes. Keyed by slug.
+ *   BRIEFS  the history for the dad. Keyed by slug. Two shapes; see the note
+ *           above BRIEFS.
  *   TALES   the read-aloud. Keyed by slug.
  *   TODAY   one entry per calendar date, keyed "MM-DD".
  *
- * Religion is subject matter, not register. Saints, councils, heresies and
- * feasts are history, and they get written like any other history: as
- * mechanism, in the explainer voice below. What stays out is the devotional
- * register — no preaching, no piety, and no miracle asserted as fact when the
- * evidence for it is a hagiographer writing three centuries later. Name the
- * source, say when it was written, and let the reader weigh it. The only two
- * places the site speaks in a religious voice are the "Before lights out"
- * prayer or verse and the one-line "Why this is ours".
+ * ------------------------------------------------ writing a new history
  *
- * ---------------------------------------------------------------- voice
+ * Follow docs/history-for-dads.md, with docs/histories/golden-hind.md as the
+ * reference piece. Those are the only rules; nothing in this file is.
  *
- * Superseded for new histories on 2026-09-23 by docs/history-for-dads.md
- * (reference: docs/histories/golden-hind.md). The briefs below were written
- * to the rules in this section and stay as they are.
+ * The briefs already here with a flat `body` were written to an older voice
+ * (the "military explainer", with Hastings as its reference), whose rules
+ * lived in this header until 2026-09-23. They stay as they are, on purpose.
+ * Don't "fix" them toward the new standard, and don't write new ones to the
+ * old rules. The old rules are in git at commit 358a053, in this file.
  *
- * The BRIEFS are written for a competent adult reader, in one voice: the
- * military explainer. Every brief is organised around how the thing
- * physically worked and why that produced the result it did. The reader
- * should finish knowing a mechanism, not having been told a story.
- *
- * Grammar first, because this is where two earlier rewrites failed:
- *
- *   - Put a person or a concrete thing in the subject slot. Harold,
- *     William, his fleet, the shields, a horse. Never an abstract noun:
- *     not "the lasting consequence was the replacement of a ruling class"
- *     but "then he gave England to his own men".
- *   - Active verbs doing real work. If a sentence's main verb is is, was
- *     or were, look for the verb hiding inside one of its nouns.
- *   - No agentless passives. William burned the north; devastation did not
- *     happen to it.
- *
- * Then:
- *
- *   - Explain the mechanism before the outcome, so the outcome reads as a
- *     consequence rather than an event.
- *   - State uncertainty as a property of the evidence, and say whose side
- *     each source was on.
- *   - Third person. Complete sentences. No "you", no fragments used as
- *     dramatic beats, no building to a reveal, no closing kicker. The last
- *     paragraph carries the heaviest consequence, not the neatest line.
- *   - Don't dramatize what a participant felt or knew unless a source says
- *     so.
- *
- * Roughly 20-22 words per sentence. The Battle of Hastings brief is the
- * reference implementation; read it before writing a new one.
- *
- * The TALES are read-aloud stories for children and are governed by none
- * of the above.
+ * The TALES are read-aloud stories for children and are governed by neither.
  */
 
 /* Chronological, and the shelf draws them in this order. Two were added after
@@ -99,6 +64,27 @@ const AGE_BANDS = {
 const VIRTUES = ["Courage", "Obedience", "Mercy", "Honesty", "Humility", "Perseverance", "Forgiveness", "Faithfulness"];
 
 /* ---------------------------------------------------------------- briefs */
+
+/* Two shapes, and the renderer takes either.
+
+   The briefs written before 2026-09-23 carry a flat `body`: an array of
+   paragraphs. They stay that way. Do not convert them.
+
+   A history written to docs/history-for-dads.md carries its parts instead:
+
+     dek            the bold who/what/when line under the title
+     opening        the paragraph with no header
+     sections       [{ heading, body: [paragraphs] }], in the standard's order,
+                    ending with "For the dinner table"
+     kidsQuestion   printed after "A question for the kids:", closing the last
+                    section, so it is stored exactly as the piece has it
+     sideNotes      [{ lead, text }], 6 to 8; lead is the bold lead-in
+
+   Both shapes keep title, hook, era, kind, minutes and (optionally) tale and
+   stillWithUs, which is all the shelf, the receipt, search and the filters
+   read. `*word*` in a new-format brief prints in italics (ship names).
+   A locked brief loses body, opening, sections, kidsQuestion and sideNotes;
+   see api/_lib/content.js. The dek stays, like the title. */
 
 const BRIEFS = {
   "lepanto": {
@@ -259,6 +245,69 @@ const BRIEFS = {
       "He also aimed at the top of each kingdom rather than the bottom. A kin-group followed its king, so baptising a king's household brought a territory with it, and the daughters of noble families who took vows gave him permanent households in places he could not otherwise stay. It was the only method the political structure allowed. There were no towns to preach in.",
       "Christianity everywhere else in the west travelled on Roman administration. A bishop sat in a city, dioceses were drawn over Roman provinces, and the church inherited a filing system that already worked. Ireland had no cities to put a bishop in, so within two generations the church there reorganised itself around monasteries and their abbots, mapped onto the kin-groups that actually held the country together.",
       "That shape turned out to travel. Irish monasteries sent men back out for the next three centuries — Columba to Iona, Columbanus into Gaul and northern Italy — founding houses and copying manuscripts through the decades when the Roman schools on the continent had stopped. The church built without Roman infrastructure outlasted the one built on it."
+    ]
+  },
+
+  "golden-hind": {
+    title: "The Pirate the Queen Knighted",
+    dek: "Francis Drake sails around the world, 1577–1580",
+    era: "Kings and gunpowder",
+    kind: "A person",
+    minutes: 5,
+    hook: "One small English ship sailed all the way around the world, and on the way robbed Spain's Pacific treasure fleet of the biggest haul anyone had ever taken. The Queen came aboard to knight her captain. Spain called him a pirate.",
+    opening: "An English sea captain took a ship about 100 feet long around the entire planet. On the way he robbed Spain's Pacific treasure fleet, and he came home so rich that his investors made 47 times their money. The Queen paid off her whole national debt with her share.",
+    sections: [
+      {
+        heading: "Why he did it",
+        body: [
+          "It was part business, part revenge and part cold war. In 1494 the Pope had divided the non-European world between Spain and Portugal, leaving England to watch Spain ship silver out of the Americas by the ton. Drake also had a personal grudge. In 1568 the Spanish had attacked his cousin's fleet in Mexico during a truce, and Drake barely escaped. That fleet was trading slaves, which is worth saying plainly.",
+          "Queen Elizabeth, a Protestant, was heading toward war with Catholic Spain, and she backed Drake quietly. On paper he was leading a trade expedition. In private she told him she'd \"gladly be revenged on the King of Spain.\" If he got caught, he was a pirate. If he won, he was hers."
+        ]
+      },
+      {
+        heading: "How he did it",
+        body: [
+          "He left Plymouth in December 1577 with five small ships and about 164 men. In Argentina he beheaded his co-commander, Thomas Doughty, for mutiny. Then he told the crew that from now on, gentlemen would \"haul and draw with the mariner.\" Everyone pulls a rope.",
+          "Storms after the Strait of Magellan broke up the fleet until only his flagship was left. He had just renamed her from the *Pelican* to the *Golden Hind*, after the crest of his patron. The storms also pushed him far enough south to see where South America ends. That stretch of water is still called the Drake Passage.",
+          "In the Pacific he raided his way up the coasts of Chile and Peru, where no enemy had ever shown up. Then he caught the treasure galleon nicknamed *Cacafuego*, roughly \"Fire-Crapper.\" She carried 26 tons of silver and half a ton of gold, the biggest haul anyone had ever taken.",
+          "Every Spanish ship in the Pacific was hunting him, so he didn't go back the way he came. He sailed north, landed in California in 1579 and claimed it for England. Then he crossed the Pacific, loaded six tons of valuable cloves in the Spice Islands, rounded Africa and reached Plymouth in September 1580 with 56 men. His first question on reaching England was reportedly whether the Queen was still alive. If she wasn't, he'd likely hang as a pirate."
+        ]
+      },
+      {
+        heading: "The rest of the story",
+        body: [
+          "Elizabeth came aboard the *Golden Hind* to knight him, and she had the French ambassador do it, which made France share responsibility for honoring Spain's worst enemy. In 1587 Drake raided the harbor at Cádiz and burned dozens of ships being built to invade England. He called it \"singeing the King of Spain's beard.\" When that invasion, the Spanish Armada, finally came in 1588, he was second-in-command of the fleet that beat it. The Spanish called him *El Draque*, the Dragon. He died of dysentery off Panama in 1596 and was buried at sea in a lead coffin that's never been found."
+        ]
+      },
+      {
+        heading: "Where it fits",
+        body: [
+          "Magellan's crew had gone around the world 60 years earlier, but Magellan died on the way. Drake was the first captain to lead a voyage around the world and live to bring it home, and his voyage came right before England's big turning points: the Armada in 1588, the East India Company in 1600 and Jamestown in 1607. It's the moment England stopped being a small island everyone else ignored and started acting like a sea power."
+        ]
+      },
+      {
+        heading: "Why it matters today",
+        body: [
+          "It's part of the reason you speak English. England's rise at sea, which eventually put English speakers in North America, India and Australia, starts here. It also started a financial habit. Some of the Queen's profit went into a trading venture, and the economist John Maynard Keynes traced the beginning of Britain's overseas investment empire to Drake's loot. And it shows how history depends on who tells it: to England, Drake is a national hero, and to Spain he was a pirate. Both are true."
+        ]
+      },
+      {
+        heading: "For the dinner table",
+        body: [
+          "Drake's Bay and Sir Francis Drake Boulevard near San Francisco are named after him. A chair made from the ship's timbers sits in Oxford's library, and a full-size replica you can walk aboard is docked in London."
+        ]
+      }
+    ],
+    kidsQuestion: "if you'd been at sea for three years and your life depended on whether one person back home was still alive, what would you ask first?",
+    sideNotes: [
+      { lead: "The tree in Panama.", text: "Drake first saw the Pacific in 1573 from the top of a tree in the Panama jungle, and he vowed to sail an English ship on it. He got there with help from the Cimarrons, escaped African slaves who knew the land and hated Spain as much as he did." },
+      { lead: "The name change may have been an apology.", text: "The executed Doughty was a friend of Sir Christopher Hatton, the patron the *Golden Hind* was named after. Many historians suspect Drake picked the new name partly to smooth that over." },
+      { lead: "Stuck on a reef.", text: "On the way home the ship ran aground in Indonesia. The crew threw three tons of cloves and eight cannons overboard, and the next day the wind shifted and floated her off." },
+      { lead: "Maybe the first museum ship.", text: "After the voyage the *Golden Hind* stayed on public display in London for about 70 years, until she rotted away." },
+      { lead: "The game of bowls.", text: "The legend says Drake heard the Armada had been sighted and insisted on finishing his game before sailing out. It's almost certainly made up, and he'd have loved that it stuck." },
+      { lead: "The fake brass plate.", text: "In 1936 a brass plate \"left by Drake\" turned up in California and was treated as real for 40 years. It turned out to be a hoax that began as a joke among history professors." },
+      { lead: "The replica went to California.", text: "The London replica sailed to San Francisco in 1975, close to where Drake had landed four centuries earlier." },
+      { lead: "Drake's Drum.", text: "His drum is kept at his old house in Devon. Legend says it will beat by itself when England is in danger, and people claimed to hear it during both World Wars." }
     ]
   }
 };
