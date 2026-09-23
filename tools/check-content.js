@@ -31,7 +31,7 @@ const root = path.resolve(__dirname, "..");
    deliberately broken copy. Normal runs take no arguments. */
 const contentPath = process.argv[2]
   ? path.resolve(process.cwd(), process.argv[2])
-  : path.join(root, "content.js");
+  : path.join(root, "data", "content.js");
 
 const errors = [];
 const warnings = [];

@@ -32,7 +32,7 @@ both dropped on purpose — don't bring them back.)
 
 **Outward words.** Readers see *history* and *bedtime story*. "Brief",
 "card", "shelf", "pairing", "band" and "night" (for a day's edition) are
-code names only — fine in `content.js`, comments and URL slugs (`#brief/…`
+code names only — fine in `data/content.js`, comments and URL slugs (`#brief/…`
 stays, so old links keep working), never in visible text.
 
 `History for dads · Tales for bedtime` stays as the short lockup — the
@@ -40,7 +40,13 @@ sidebar, the receipt header, the banners. It is a subset of the line above,
 not a competing claim, and it is baked into rendered PNGs, so changing it
 means re-rendering `assets/social/`.
 
-Static site: plain HTML, CSS, and vanilla JavaScript. No build step, no dependencies.
+Static site: plain HTML, CSS, and vanilla JavaScript. No build step.
+
+Since accounts arrived there is also a small API — nine serverless functions
+under `api/`, deployed on Vercel, reading a Neon Postgres. The pages are still
+plain files with no build step; the API is the only part with dependencies
+(`stripe`, `resend`, `@neondatabase/serverless`). See **Accounts, money and
+the gate** below.
 
 ## Structure
 
@@ -51,17 +57,26 @@ Static site: plain HTML, CSS, and vanilla JavaScript. No build step, no dependen
   link goes to `/account`.
 - `account/` — the actual app, for people who've "signed up":
   - `index.html` — page shell: sidebar (profile, bio, socials, theme toggle,
-    search, page nav) and main content area. Loads `/content.js` and
-    `/app.js` by absolute path, same reasoning as `7stories/` below — it
-    lives in a subdirectory and must not depend on a relative path to assets
-    one level up.
+    search, page nav) and main content area. Loads `/app.js` by absolute
+    path, same reasoning as `7stories/` below — it lives in a subdirectory
+    and must not depend on a relative path to assets one level up. It does
+    not load the content: `app.js` fetches that from `/api/session`.
 - `styles.css` — design tokens for dark/light themes, layout, and components
   — shared by `account/index.html`, `7stories/index.html`, and read (for
   tokens only) by the root `index.html`.
 - `app.js` — hash routing, all page renderers, search, theme persistence,
   mobile sidebar. Only loaded by `account/index.html`.
-- `content.js` — the nightly content: `CARDS`, `BRIEFS`, `TALES`, `TODAY`.
-  Loaded before `app.js`. This is the only file you edit to add a night.
+- `data/content.js` — the nightly content: `CARDS`, `BRIEFS`, `TALES`,
+  `TODAY`. Still the only file you edit to add a night. It sits in `data/`
+  rather than the site root because it is no longer served to the browser:
+  it holds the archive the paid plan sells, so the server reads it and sends
+  each reader only what their plan entitles them to. See **Accounts, money
+  and the gate**.
+- `api/` — the serverless functions: magic-link login, the session and
+  content payload, onboarding, Stripe checkout and its webhook.
+- `login/index.html` — the one login page. Self-contained for the same
+  bare-path reason as `7stories/`.
+- `db/schema.sql` — the whole database, re-runnable.
 - `assets/` — the brand mark. See "The logo" below.
 - `stories/` — standalone full-story pages the receipt's "Read the rest"
   links point to (e.g. `stories/the-lion-and-the-mouse.html`). Each one is a
@@ -78,13 +93,28 @@ linked.
 ## Running locally
 
 The root `index.html` (the marketing page) can be opened directly as a file.
-`account/index.html` cannot — it loads `/content.js`, `/app.js` and
-`/styles.css` by absolute path, which only resolves against a served site
-root, not `file://`. Serve the whole thing instead:
+`account/index.html` cannot — it loads `/app.js` and `/styles.css` by
+absolute path, which only resolves against a served site root, not `file://`,
+and it boots from `/api/session`, which needs the API and a database. So:
 
 ```sh
-python3 -m http.server 8000
+npm install
+cp .env.example .env          # fill in at least DATABASE_URL
+psql "$DATABASE_URL" -f db/schema.sql
+npm run dev                   # http://localhost:8000
 ```
+
+`npm run dev` is `tools/dev-server.js`: the static site and the API on one
+port, matching production in the two ways that have bitten this repo before —
+a bare path serves its directory's `index.html` without redirecting, and
+`data/`, `api/` and `node_modules/` are never served.
+
+`python3 -m http.server 8000` still serves `/` and `/7stories` for a quick
+look at the marketing pages, but `/account` will not load against it.
+
+With no `RESEND_API_KEY`, login links are printed to the dev server's log
+instead of emailed — that is how you log in locally. Copy the link from the
+terminal and open it.
 
 Note: `http.server` redirects `/7stories` and `/account` to their
 trailing-slash form, which most production hosts do not do. To test a page
@@ -96,7 +126,7 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
 - **Profile photo** — `.avatar` in `styles.css` currently shows the dragon mark. Replace the `background` with an `<img>` inside `.avatar` in `account/index.html` when there's a real photo.
 - **Pages** — the `About` and `Contact` pages are the only ones left in the `PAGES` object in `app.js`; nav links live in `account/index.html`. Everything else on the site is nightly content — see below.
 - **Social links** — the three `<a href="#">` entries in `.socials`.
-- **The marketing home (`index.html`)** — headline, pricing, and the "product shot" receipt preview in the hero are all hand-written copy, not pulled from `content.js`. Update them by hand when the pitch or price changes.
+- **The marketing home (`index.html`)** — headline, pricing, and the "product shot" receipt preview in the hero are all hand-written copy, not pulled from `data/content.js`. Update them by hand when the pitch or price changes.
   - **Page order.** Hero (headline "Be the dad with stories worth passing
     on.", then the format line "A true story for you. A bedtime story for
     them.") → *What you get* (real screenshots) → *How one day goes* → *Why
@@ -120,27 +150,119 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
   icon — never tick an item in the right-hand column in place.
 - **Campaign page** — all visible copy in `7stories/index.html` is sample text. The form fields are first name, children's age ranges (multi-select: 0–2, 3–5, 6–9, 10+) and email; all are required.
 - **Landing-page signup (`#start`)** — the only thing on `/` that collects
-  anything. First name and email, posting to the same Formspree endpoint as JSON
-  with `source: "/#start"`. The endpoint is the form's `action` attribute and the
-  inline script reads it from there, same as `/7stories`, so there is one place
-  to change it. The form ships as real markup with a real `action`, so it still
-  posts if the script never runs (see rule 2 in `LESSONS-LEARNED.md`). A failed
-  POST is reported to the reader rather than swallowed — same reasoning as the
-  Contact form: there is no download to fall back on. **Nothing sends an email.**
-  Addresses land in the Formspree inbox and the first receipt goes out by
-  whatever means you send it.
-- **Signup collection** — the form posts to Formspree (`https://formspree.io/f/xqpaqzne`, set as the form's `action`) as JSON: `firstName`, `email`, `childAges`, `source`. Submissions are collected there; no email is sent to the reader. To change endpoints, edit the `action` attribute — `stories.js` reads it from the form. If the POST fails, the download is still unlocked so a network error never blocks a reader.
-- **Contact form** — posts to the same Formspree endpoint as the campaign page,
-  as JSON: `name`, `email`, `message`, `source`. The endpoint is `FORM_ENDPOINT`
-  at the top of `app.js`; change it in that one place. Unlike `/7stories`, a
-  failed POST here is reported to the reader rather than swallowed — there is no
-  download to fall back on, so silently thanking someone for a message that went
-  nowhere would be a lie. Both surfaces send a `source` field, so submissions are
-  distinguishable in one Formspree inbox.
+  anything. First name and email, posting JSON to `/api/auth/request-link`
+  with `source: "/#start"`. That endpoint makes the account if the address is
+  new and emails a link either way, so this form is signup and login at once.
+  The endpoint is the form's `action` and the inline script reads it from
+  there, so there is one place to change it. The form ships as real markup
+  with a real `action`, so it still posts if the script never runs (rule 2 in
+  `LESSONS-LEARNED.md`); a real form post lands on `/login` with the address
+  echoed back. A failed POST is reported to the reader rather than swallowed
+  — same reasoning as the Contact form: there is no download to fall back on.
+- **Campaign signup (`/7stories`)** — posts the same JSON plus `childAges`
+  (an array of the stored bands), so the gate both delivers the PDF and puts
+  the reader in the funnel with their children's ages already answered. If
+  the POST fails the download is still unlocked, so a network error never
+  blocks a reader.
+- **Contact form** — the last thing still on Formspree, and the right place
+  for it: a message is not a signup and does not want an account. Posts JSON:
+  `name`, `email`, `message`, `source`. The endpoint is `FORM_ENDPOINT` at the
+  top of `app.js`; change it in that one place. A failed POST here is reported
+  to the reader rather than swallowed — there is no download to fall back on,
+  so silently thanking someone for a message that went nowhere would be a lie.
+
+## Accounts, money and the gate
+
+Three ideas, and everything else follows from them.
+
+**One door.** `POST /api/auth/request-link` is signup and login at once. A
+first-time address gets an account and an emailed link; a returning one gets
+a link. Nobody is asked which of the two they are, and there is no password
+anywhere in the system. The landing page's `#start` form, `/7stories` and
+`/login` all post to that one endpoint, each with its own `source` so the
+three surfaces stay apart in the `users` table.
+
+The link goes to `GET /api/auth/verify`, which spends the token (single use,
+twenty minutes, enforced by the database rather than in node), starts a
+session, and sends a first-time reader to `#welcome` and everybody else to
+`#home`. Tokens and session cookies are 32 random bytes; the database only
+ever holds their SHA-256, so a dump of it cannot be replayed as a login.
+
+**The webhook is the only thing that grants access.** Not Checkout's success
+page — the reader can close it, and a card can fail a month later with
+nobody on the site. `POST /api/stripe/webhook` verifies Stripe's signature
+against the raw bytes, drops duplicates through `stripe_events`, and upserts
+the subscription. A reader is on the paid plan when they hold a subscription
+that Stripe calls `active`, `trialing` or `past_due` — `past_due` on purpose,
+because locking a father out of tonight's story over a retry that may
+succeed in an hour is the wrong trade.
+
+**The gate is on the server, not in the page.** `/account` no longer loads
+`content.js`; it boots from `GET /api/session`, which answers with the
+reader, their plan, and the content that plan entitles them to. A free
+reader's payload physically does not contain the paid stories.
+
+What is free:
+
+- **the first card of each ISO week**, and everything it points at;
+- **today's** entry in Today in history, but not the rest of the calendar.
+
+First-of-week rather than newest-of-week is deliberate and worth keeping: it
+never takes anything back. The first card of a week is the first card of
+that week forever, so a story a free reader opened on Monday is still theirs
+on Friday. The first attempt keyed on the newest card of the week and
+re-locked Monday's story the moment Wednesday's arrived.
+
+Because tonight's card is usually not the free one, `#home` shows a free
+reader the most recent day they *do* have, with a line above it saying what
+tonight's was and offering the plan. Meeting the product is the argument for
+paying for it; a wall is not.
+
+A locked brief or tale keeps its title, hook, era, age, virtue and
+provenance and loses only its `body` (a locked card also loses its question,
+why-ours line and prayer). So the shelves stay full, search keeps working,
+and what a reader is being asked to pay for is visible. `lockPanel` in
+`app.js` is the one place the ask is worded, so it reads the same on the
+receipt, on a shelf and on a story's own page.
+
+### Where each piece lives
+
+| File | What it does |
+| --- | --- |
+| `api/_lib/db.js` | The only place SQL leaves the codebase. A tagged template that turns interpolations into placeholders — there is no escaping helper, on purpose. Picks the Neon HTTP driver for a `*.neon.tech` URL and node-postgres for anything else, which is how local development works. |
+| `api/_lib/session.js` | Magic-link tokens, sessions, and the one query that answers "who is this and what are they entitled to". |
+| `api/_lib/content.js` | Loads `data/content.js` with `vm`, the same way `tools/check-content.js` does, and decides what a given reader may have. The free/paid rules above are all in here. |
+| `api/_lib/email.js` | The only thing that sends mail. Resend behind one function; with no API key it prints the link to the log rather than swallowing it. |
+| `api/_lib/stripe.js` | One configured client; creates a Stripe customer once per reader and reuses it. |
+| `api/session.js` | What `/account` boots from: reader, plan, content. `401` means "not signed in" and is not an error. |
+| `api/profile.js` | The two onboarding answers, and any later edit of them. |
+| `api/billing/checkout.js`, `api/billing/portal.js` | Hand the reader to Stripe. No card detail ever touches this site; cancelling and invoices live in Stripe's portal, which is how "cancel any time" is kept. |
+| `db/schema.sql` | Every table, re-runnable. |
+
+### Setting it up
+
+1. **Neon** — a project and a database, then `psql "$DATABASE_URL" -f
+   db/schema.sql`. Use the pooled connection string.
+2. **Resend** — verify the sending domain and set `RESEND_API_KEY` and
+   `EMAIL_FROM`. Until the domain is verified, links will not arrive.
+3. **Stripe** — one product with a $6/month recurring price; set
+   `STRIPE_PRICE_ID` to the price (`price_…`), not the product. Add a webhook
+   endpoint at `https://<site>/api/stripe/webhook` subscribed to
+   `checkout.session.completed` and `customer.subscription.*`, and set
+   `STRIPE_WEBHOOK_SECRET` from it. Turn on the Billing Portal in Stripe's
+   settings or `/api/billing/portal` will fail. Test mode first: `stripe
+   listen --forward-to localhost:8000/api/stripe/webhook` gives a local
+   signing secret.
+4. **Vercel** — set every name in `.env.example` in project settings,
+   including `SITE_URL` (no trailing slash). Login links and Stripe's return
+   URLs are built from it, so a wrong value sends readers to the wrong place.
+
+The price appears in three places that must agree: Stripe's price object,
+the plans section of `index.html`, and `lockPanel` in `app.js`.
 
 ## The pages
 
-`/` is a static pitch for the product; it never touches `content.js` or
+`/` is a static pitch for the product; it never touches `data/content.js` or
 `app.js`. Everything below lives at `/account`, one hash route on that page,
 so nothing here depends on a relative path to its own assets.
 
@@ -158,7 +280,7 @@ The sidebar search box searches across `BRIEFS` and `TALES` (title, hook,
 era/kind, theme, virtue, provenance) and swaps the receipt view for a results shelf while
 there's a query; clearing it goes back to tonight's receipt.
 
-To add a night, edit `content.js`:
+To add a night, edit `data/content.js`:
 
 1. Add the brief to `BRIEFS` and its paired tale to `TALES` (a tale names its
    brief with `brief:`, and a brief names its tale with `tale:`).
@@ -174,7 +296,7 @@ To add a night, edit `content.js`:
 node tools/check-content.js
 ```
 
-The only test this site has. It reads `content.js` and verifies the things
+The only test this site has. It reads `data/content.js` and verifies the things
 that break silently: every card points at a brief and a tale that exist, every
 pairing reciprocates (the brief names the tale *and* the tale names the brief),
 every era, kind, theme, virtue and age band is in its taxonomy, no card is missing its
@@ -182,7 +304,7 @@ question, why-ours line or prayer, dates are real and in order, a series adds
 up to the number of nights it claims, and every slug in `TODAY` resolves.
 
 No dependencies, and none are wanted — it uses `vm` from the standard library
-to evaluate `content.js` the way a browser does, then walks what it defined.
+to evaluate `data/content.js` the way a browser does, then walks what it defined.
 
 **Errors fail the run (exit 1). Warnings never do.** Warnings are things worth
 a look that are not broken: a brief on the shelf that no card ever sent, a
@@ -191,7 +313,7 @@ a look that are not broken: a brief on the shelf that no card ever sent, a
 fault — the shelves only draw a chip once something is filed under it — it is
 the roadmap, and the warning list is what has not been written yet.
 
-Run it after editing `content.js` and before merging, alongside the
+Run it after editing `data/content.js` and before merging, alongside the
 `node --check` step in `CLAUDE.md`.
 
 Tales without a brief are fine — they show on the bedtime shelf and simply have
@@ -201,7 +323,7 @@ multi-night tale sets `night: { n, of }` and a shared `series` key.
 ### Age on a tale
 
 A tale's `age` is a **bucket id, not a number of years**, and it is never
-printed. `AGE_BANDS` in `content.js` turns it into the label every surface
+printed. `AGE_BANDS` in `data/content.js` turns it into the label every surface
 shows:
 
 ```js
@@ -270,7 +392,7 @@ as a note to self and appears on the shelf the night the first one lands.
 
 ### Chips draw themselves
 
-`ERAS`, `KINDS`, `THEMES` and `VIRTUES` stay whole in `content.js` — they are
+`ERAS`, `KINDS`, `THEMES` and `VIRTUES` stay whole in `data/content.js` — they are
 the plan. The shelves draw a chip only for the entries something is actually
 filed under, so a reader never clicks a filter and gets an empty shelf, and a
 chip appears by itself the night the first brief or tale lands in it. The

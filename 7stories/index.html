@@ -216,7 +216,7 @@
             </ul>
           </div>
 
-          <form class="gate-form card" id="gateForm" method="POST" action="https://formspree.io/f/xqpaqzne" novalidate>
+          <form class="gate-form card" id="gateForm" method="POST" action="/api/auth/request-link" novalidate>
             <h3>Read them now — free</h3>
             <p class="form-note">Fill this in and the download appears right below.</p>
 
@@ -288,7 +288,9 @@ const delivery = document.getElementById("delivery");
 const form = document.getElementById("gateForm");
 const submitBtn = document.getElementById("submitBtn");
 
-/* Formspree endpoint — collects the signups; it does not email the reader. */
+/* The same endpoint the landing page and /login post to: it makes the
+   account if this address is new, and emails a link in. The PDF is not held
+   behind any of that — see the catch below. */
 const FORM_ENDPOINT = form.action;
 
 /* ---------- multi-select (ages) ---------- */
@@ -374,20 +376,21 @@ form.addEventListener("submit", async e => {
       body: JSON.stringify({
         firstName,
         email,
-        childAges: ages.join(", "),
+        childAges: ages,          /* an array: these are the stored bands */
         source: "/7stories"
       })
     });
   } catch (err) {
     /* Never hold the download hostage to a failed network call. */
-    console.warn("7stories signup did not reach Formspree", err);
+    console.warn("7stories signup did not go through", err);
   }
 
   submitBtn.disabled = false;
   submitBtn.innerHTML = label;
 
   document.getElementById("welcome").textContent =
-    `Thanks, ${firstName}. One story for every night of the week, ready to read or print.`;
+    `Thanks, ${firstName}. One story for every night of the week, ready to read ` +
+    `or print — and there is a link to your account on its way to ${email}.`;
   gate.hidden = true;
   delivery.hidden = false;
   window.scrollTo(0, 0);

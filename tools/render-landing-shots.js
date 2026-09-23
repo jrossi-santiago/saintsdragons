@@ -3,11 +3,17 @@
    "What you get" section, from the real /account pages, so the pitch shows
    the product as it actually is rather than a drawing of it.
 
-   The screenshots bake in whatever content.js serves today, so re-run this
-   when the day on #home or the featured tale changes:
+   The screenshots bake in whatever data/content.js serves today, so re-run
+   this when the day on #home or the featured tale changes:
 
-     python3 -m http.server 8000 &
-     node tools/render-landing-shots.js
+     npm run dev &
+     SESSION=<a sd_session cookie> node tools/render-landing-shots.js
+
+   /account needs a session now, and the shots should show the paid product,
+   which is what the landing page is selling. Get the cookie by logging in
+   locally as a reader who has a subscription row, then read it out of the
+   browser's dev tools. Without SESSION the pages redirect to /login and the
+   shots come out wrong — the script says so rather than writing them.
 
    Needs Playwright (preinstalled in the web sandbox; locally
    `npm i -g playwright`). Nothing on the site loads it — this is a tool,
@@ -22,6 +28,7 @@ catch (e) {
 }
 
 const BASE = process.env.BASE || "http://localhost:8000";
+const SESSION = process.env.SESSION || "";
 const OUT = path.join(__dirname, "..", "assets", "landing");
 
 /* [file stem, route, viewport, scroll-to selector or null] */
@@ -37,8 +44,16 @@ const SHOTS = [
     for (const [stem, route, viewport] of SHOTS) {
       const ctx = await browser.newContext({ viewport, deviceScaleFactor: 2 });
       await ctx.addInitScript(t => { try { localStorage.setItem("sd-theme", t); } catch (e) {} }, theme);
+      if (SESSION) {
+        await ctx.addCookies([{ name: "sd_session", value: SESSION,
+                                domain: new URL(BASE).hostname, path: "/" }]);
+      }
       const page = await ctx.newPage();
       await page.goto(BASE + route, { waitUntil: "networkidle" });
+      if (page.url().includes("/login")) {
+        throw new Error("that session is not valid — /account sent us to /login. " +
+                        "Set SESSION to a logged-in reader's sd_session cookie.");
+      }
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(400);
       const file = path.join(OUT, `${stem}-${theme}.jpg`);

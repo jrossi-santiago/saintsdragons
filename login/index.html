@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Log in | Saints &amp; Dragons</title>
+<meta name="description" content="A link to your Saints &amp; Dragons account, sent to your email. No password to remember." />
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles.css" />
+<link rel="icon" href="/assets/dragon-mark.svg" type="image/svg+xml">
+<link rel="alternate icon" href="/assets/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<!-- Self-contained, and inlined on purpose: this page is reachable both as
+     /login and /login/, and at the bare path a relative <script src="…">
+     resolves against the site root and 404s, leaving a blank page. Same
+     reasoning as /7stories — see LESSONS-LEARNED.md. -->
+<style>
+  body{ background: var(--bg); color: var(--text); font-family: var(--sans); margin:0; min-height:100vh;
+        display:grid; place-items:center; padding:32px 20px; }
+  .box{ width:100%; max-width:420px; }
+  .mark{ width:56px; height:56px; margin:0 auto 20px;
+         background:url("/assets/dragon-dark.svg") no-repeat 50% / contain; }
+  :root[data-theme="light"] .mark{ background-image:url("/assets/dragon-light.svg"); }
+  h1{ font-family: var(--serif); font-size:1.7rem; font-weight:400; text-align:center; margin:0 0 8px; }
+  .lede{ color: var(--text-dim); text-align:center; margin:0 0 28px; line-height:1.55; }
+  label{ display:block; font-size:.86rem; font-weight:600; color:var(--text-dim); margin:0 0 7px; }
+  input[type=email]{ width:100%; box-sizing:border-box; font:inherit; color:var(--text);
+        background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:13px 14px; }
+  input[type=email]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  button{ width:100%; margin-top:14px; font:inherit; font-weight:700; color:#1a1208;
+        background:var(--accent); border:none; border-radius:999px; padding:13px 20px; cursor:pointer; }
+  button[disabled]{ opacity:.6; cursor:default; }
+  .note{ font-size:.88rem; color:var(--text-faint); line-height:1.55; margin:18px 0 0; text-align:center; }
+  .note a{ color:var(--accent); }
+  .msg{ margin:18px 0 0; padding:14px 16px; border:1px solid var(--line); border-radius:10px;
+        background:var(--surface); line-height:1.55; font-size:.94rem; }
+  .msg:empty{ display:none; }
+  .msg.is-bad{ border-color:#7d3b25; }
+  .foot{ margin-top:26px; text-align:center; font-size:.85rem; color:var(--text-faint); }
+  .foot a{ color:var(--text-dim); }
+</style>
+</head>
+<body>
+<main class="box">
+  <div class="mark" aria-hidden="true"></div>
+  <h1>Saints &amp; Dragons</h1>
+  <p class="lede">Put in your email and we will send you a link. There is no password to remember.</p>
+
+  <!-- Ships as a real form with a real action, so it still posts if the
+       script below never runs. The script only upgrades it. -->
+  <form id="loginForm" method="POST" action="/api/auth/request-link">
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required autofocus />
+    <input type="hidden" name="next" id="next" value="" />
+    <input type="hidden" name="source" value="/login" />
+    <button type="submit">Send me a link</button>
+  </form>
+
+  <p class="msg" id="msg" role="status" aria-live="polite"></p>
+
+  <p class="note">New here? The same box works &mdash; it makes the account and sends you in.</p>
+  <p class="foot"><a href="/">&larr; Saints &amp; Dragons</a></p>
+</main>
+
+<script>
+  var root = document.documentElement;
+  try { var t = localStorage.getItem('sd-theme'); if (t) root.setAttribute('data-theme', t); } catch (e) {}
+
+  var params = new URLSearchParams(location.search);
+  var msg = document.getElementById('msg');
+  var form = document.getElementById('loginForm');
+
+  /* Only ever a path on this site. A full URL here would turn the login link
+     in somebody's inbox into an open redirect. */
+  var next = params.get('next') || '';
+  if (next.charAt(0) === '/' && next.charAt(1) !== '/') document.getElementById('next').value = next;
+
+  function say(text, bad) {
+    msg.textContent = text;
+    msg.className = 'msg' + (bad ? ' is-bad' : '');
+  }
+
+  var ERRORS = {
+    expired: 'That link had already been used, or it was more than twenty minutes old. Ask for another and it will work.',
+    email:   'That email address did not look right. Try it again.',
+    toomany: 'We have already sent several links to that address. Check your inbox, including spam, before asking for another.',
+    send:    'We could not send the email just then. Try again in a moment.'
+  };
+
+  if (params.get('error')) say(ERRORS[params.get('error')] || 'Something went wrong. Try again.', true);
+  if (params.get('sent')) say('Check ' + params.get('sent') + ' — the link is on its way. It works once, and lasts twenty minutes.');
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var btn = form.querySelector('button');
+    var email = form.email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { say(ERRORS.email, true); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    say('');
+
+    fetch(form.action, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email: email, next: document.getElementById('next').value, source: '/login' })
+    }).then(function (res) {
+      return res.json().then(function (body) { return { ok: res.ok, body: body }; });
+    }).then(function (r) {
+      if (!r.ok) throw new Error(r.body && r.body.message || 'that did not work');
+      say('Check ' + email + ' — the link is on its way. It works once, and lasts twenty minutes.');
+      form.reset();
+      btn.textContent = 'Send another';
+    }).catch(function (err) {
+      /* Never swallowed: there is nothing else on this page to fall back on,
+         and a reader told "check your email" for mail that was never sent
+         will simply sit and wait. */
+      say(String(err.message || err), true);
+      btn.textContent = 'Send me a link';
+    }).then(function () { btn.disabled = false; });
+  });
+</script>
+</body>
+</html>
