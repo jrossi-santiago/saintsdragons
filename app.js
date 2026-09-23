@@ -697,13 +697,13 @@ function renderWelcome() {
           <input type="text" name="firstName" value="${esc(name)}" autocomplete="given-name" placeholder="Tom" /></label>
 
         <fieldset class="field">
-          <span>How old are they?</span>
+          <span>Age range of story listeners?</span>
           <div class="chips">${AGE_CHOICES.map(([id, label]) => `
             <label class="chip chip-check${chosen.has(id) ? " is-on" : ""}">
               <input type="checkbox" name="childAges" value="${id}"${chosen.has(id) ? " checked" : ""} />
               ${esc(label)}
             </label>`).join("")}</div>
-          <p class="filter-note">Pick as many as you have. It sets which bedtime stories we put in front of you first.</p>
+          <p class="filter-note">Pick as many as fit. It tailors the stories you will see.</p>
         </fieldset>
 
         <button class="btn" type="submit">Take me to tonight's</button>
