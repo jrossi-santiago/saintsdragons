@@ -727,6 +727,20 @@ function briefSectionsHTML(b) {
     </aside>` : ""}`;
 }
 
+/* A history can carry one picture, printed between the meta line and the
+   opening: a portrait, a painting of the battle, a map. It is kept on a
+   locked brief too, like the title and the dek: it shows what the piece is
+   about without giving any of it away. The file lives in
+   /assets/histories/, and the credit says who made it and on what terms. */
+function briefImageHTML(b) {
+  const img = b.image;
+  if (!img || !img.src) return "";
+  return `<figure class="brief-figure">
+        <img src="${esc(img.src)}" alt="${esc(img.alt || "")}" loading="lazy" decoding="async">
+        ${img.credit ? `<figcaption>${esc(img.credit)}</figcaption>` : ""}
+      </figure>`;
+}
+
 function renderBrief(slug) {
   const b = BRIEFS[slug];
   if (!b) return renderMissing("That page isn't here.", "history", "History for Dads");
@@ -744,6 +758,7 @@ function renderBrief(slug) {
         ${b.dek ? `<p class="brief-dek">${esc(b.dek).replace(/(\d)\u2013(\d)/g, "$1\u2060\u2013\u2060$2")}</p>` : ""}
         <p>${esc(b.era)} · ${esc(b.kind)} · ${b.minutes} min</p>
       </header>
+      ${briefImageHTML(b)}
       ${opened ? "" : `<p class="lede">${esc(b.hook)}</p>`}
       ${opened ? briefSectionsHTML(b)
         : b.body

@@ -81,6 +81,11 @@ const VIRTUES = ["Courage", "Obedience", "Mercy", "Honesty", "Humility", "Persev
                     section, so it is stored exactly as the piece has it
      sideNotes      [{ lead, text }], 6 to 8; lead is the bold lead-in
 
+   Either shape may carry `image: { src, alt, credit }`, one picture printed
+   under the meta line on the brief's page: src is "/assets/histories/
+   <slug>.jpg", alt says what is in it, credit says who made it and its
+   licence ("Marcus Gheeraerts the Younger, 1591. Public domain.").
+
    Both shapes keep title, hook, era, kind, minutes and (optionally) tale and
    stillWithUs, which is all the shelf, the receipt, search and the filters
    read. `*word*` in a new-format brief prints in italics (ship names).
