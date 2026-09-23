@@ -92,7 +92,8 @@
     expired: 'That link had already been used, or it was more than twenty minutes old. Ask for another and it will work.',
     email:   'That email address did not look right. Try it again.',
     toomany: 'We have already sent several links to that address. Check your inbox, including spam, before asking for another.',
-    send:    'We could not send the email just then. Try again in a moment.'
+    send:    'We could not send the email just then. Try again in a moment.',
+    taken:   'That address has its own account now, so yours was not moved to it. Sign in below, and pick another address from Your account.'
   };
 
   if (params.get('error')) say(ERRORS[params.get('error')] || 'Something went wrong. Try again.', true);

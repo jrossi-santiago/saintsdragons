@@ -975,3 +975,12 @@ fieldset.field > span {
 .co-done .co-submit-inline { width: auto; }
 .co-fine a { border-bottom: 1px solid var(--line); }
 .co-fine a:hover { color: var(--text); border-color: var(--text); }
+
+/* "Not right? Change it." — moving the account to another address, by link */
+.co-fine .co-linkish { font-size: inherit; color: inherit; }
+.email-change { max-width: 26rem; margin: 12px auto 0; text-align: left; }
+.email-change .co-promo-row { margin-top: 0; }
+.email-change .co-promo-row input { text-transform: none; letter-spacing: 0; }
+.co-done .email-change .btn { margin-top: 0; }
+.account-facts .email-change { flex-basis: 100%; margin: 6px 0 0; }
+.account-facts dd .co-linkish { margin-left: 12px; font-size: .85rem; }

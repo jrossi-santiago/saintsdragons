@@ -7,7 +7,33 @@
 
 const { sql } = require("../_lib/db");
 const { consumeLoginToken, startSession } = require("../_lib/session");
+const { stripe } = require("../_lib/stripe");
 const { redirect, methodNotAllowed } = require("../_lib/http");
+
+/* A link from "Change it" (api/account/email.js): opening it proves the new
+   address, so the account moves there and counts as proved. It proves
+   nothing about the old address, so the first-proof sign-out below is not
+   for this; the reader who asked is the one signed in, and stays so.
+   False when somebody else has taken the address since the link was sent. */
+async function moveTo(userId, email) {
+  let moved;
+  try {
+    moved = await sql.one`
+      update users set email = ${email}, email_verified_at = now()
+       where id = ${userId}
+      returning stripe_customer_id`;
+  } catch (e) {
+    if (e.code === "23505") return false;   /* unique: that address is an account now */
+    throw e;
+  }
+  /* Receipts come from Stripe, from the address on the customer. The
+     account has moved either way; a failure here is logged, not shown. */
+  if (moved && moved.stripe_customer_id) {
+    await stripe().customers.update(moved.stripe_customer_id, { email })
+      .catch(e => console.error(`verify: Stripe customer email not updated for ${userId}:`, e.message));
+  }
+  return true;
+}
 
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") return methodNotAllowed(res, ["GET"]);
@@ -20,6 +46,12 @@ module.exports = async function handler(req, res) {
     /* Expired, already used, or never real — all the same to the reader,
        and all fixed the same way: ask for another. */
     return redirect(res, "/login?error=expired", 302);
+  }
+
+  if (row.new_email) {
+    if (!(await moveTo(row.user_id, row.new_email))) return redirect(res, "/login?error=taken", 302);
+    await startSession(res, row.user_id, req.headers["user-agent"]);
+    return redirect(res, row.redirect_to || "/account#account", 302);
   }
 
   /* The first link this address has ever used is the first proof that the

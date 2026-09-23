@@ -795,7 +795,7 @@ function renderAccount() {
       </header>
 
       <dl class="account-facts">
-        <div><dt>Email</dt><dd>${esc(ME.email)}</dd></div>
+        <div><dt>Email</dt><dd>${esc(ME.email)}<button class="co-linkish" type="button" id="accountEmailChange">Change</button></dd><div id="accountEmailSlot" class="email-slot"></div></div>
         <div><dt>Name</dt><dd>${esc(ME.firstName || "\u2014")}</dd></div>
         <div><dt>Children</dt><dd>${ages.length ? esc(ageRangeLabels(ages)) : "\u2014"}</dd></div>
         <div><dt>Member since</dt><dd>${esc(longDate(String(ME.memberSince).slice(0, 10)))}</dd></div>
@@ -818,6 +818,12 @@ function renderAccount() {
     </div>`;
 
   const status = document.getElementById("accountStatus");
+  wireEmailChange(document.getElementById("accountEmailChange"), document.getElementById("accountEmailSlot"));
+  if (emailJustChanged) {
+    emailJustChanged = false;
+    document.getElementById("accountEmailSlot").innerHTML =
+      `<p class="co-msg" role="status">Done. Your address is now ${esc(ME.email)}, and receipts go there too.</p>`;
+  }
 
   document.getElementById("portalBtn")?.addEventListener("click", async ev => {
     ev.target.disabled = true;
@@ -874,6 +880,8 @@ let stripeJs = null;                      /* the one <script> load */
 let checkoutRun = 0;                      /* bumped per render; a stale start stops */
 let liveCheckout = null;                  /* for re-theming while the page is open */
 let checkoutReturned = false;             /* set by boot() on the way back from Stripe */
+let checkoutSessionId = null;
+let emailJustChanged = false;             /* set by boot(); #account says so once */             /* the cs_… Stripe put on the way back, if any */
 let STRIPE_KEY = null;                    /* publishable, from /api/session */
 
 /* Loaded only when a reader opens #checkout, never on every page: nobody
@@ -1072,8 +1080,9 @@ function offerHostedCheckout(readerMessage) {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ hosted: true })
       });
+      const body = await res.json().catch(() => ({}));
+      if (res.status === 409 && body.error === "payment_processing") return showCheckoutWaiting(body.sessionId);
       if (res.status === 409) return location.reload();
-      const body = await res.json();
       if (!res.ok || !body.url) throw new Error(body.message || "HTTP " + res.status);
       location.href = body.url;
     } catch (e) {
@@ -1115,6 +1124,9 @@ async function startCheckout(run) {
       /* Already paying: the server refuses a second subscription, and a
          reload shows them what they already have. */
       const leave = (why, go) => { go(); const e = new Error(why); e.leaving = true; throw e; };
+      if (res.status === 409 && body.error === "payment_processing") {
+        leave("already paid, waiting", () => showCheckoutWaiting(body.sessionId));
+      }
       if (res.status === 409) leave("already subscribed", () => location.reload());
       /* The server fell back to Stripe's hosted page (see checkout.js). */
       if (res.ok && body.url) leave("sent to the hosted page", () => { location.href = body.url; });
@@ -1259,26 +1271,69 @@ async function startCheckout(run) {
   drawTotals(checkout.session());
 }
 
-/* Back from Stripe, paid, and waiting on the webhook to say so. Ask the
-   session every two seconds rather than guess; the page redraws as "you're
-   in" the moment the plan changes, from the same payload every other page
-   uses. */
+/* A checkout already paid that the webhook has not caught up with (the
+   server said so with a 409 rather than start a second one). */
+function showCheckoutWaiting(sessionId) {
+  checkoutReturned = true;
+  checkoutSessionId = sessionId || checkoutSessionId;
+  renderCheckout();
+}
+
+/* Back from Stripe, and waiting on the webhook to open the plan. Two
+   questions every two seconds: Stripe, through our checkout-status, about
+   how the payment went (so the page does not say "paid" before it is, and
+   can say so when it did not finish), and /api/session about the plan,
+   which only the webhook changes. The page redraws as "you're in" the
+   moment the plan does, from the same payload every other page uses. */
 function drawCheckoutWaiting(run) {
   main.innerHTML = `
     <div class="content">
       <section class="co co-done co-wait" role="status" aria-live="polite">
         <div class="co-spin" aria-hidden="true"></div>
-        <h2>Paid. Opening the door&hellip;</h2>
-        <p>Stripe has your payment. We&rsquo;re just waiting for it to tell us so &mdash; usually a few seconds.</p>
+        <h2 id="coWaitHead">One moment&hellip;</h2>
+        <p id="coWaitText">Checking with Stripe that your payment went through.</p>
         <p class="co-fine" id="coWaitNote">You can leave this page. It will be open when you come back.</p>
       </section>
     </div>`;
 
+  const sid = checkoutSessionId;
+  let known = sid ? null : "complete";     /* no id: nothing to ask, so just wait */
   let tries = 0;
+
+  const say = (head, text) => {
+    document.getElementById("coWaitHead").innerHTML = head;
+    document.getElementById("coWaitText").innerHTML = text;
+  };
+
+  /* Stripe has the session open again or let it lapse: the payment did not
+     finish (a bank's check abandoned, a redirect closed). Nothing to wait
+     for, so say so and go back to the same session's form. */
+  const unfinished = () => {
+    main.innerHTML = `
+      <div class="content">
+        <section class="co co-done" role="status" aria-live="polite">
+          <p class="co-kicker">Every day</p>
+          <h2>That payment did not finish.</h2>
+          <p>Nothing was taken. Your card form is where you left it.</p>
+          <button class="btn co-submit co-submit-inline" type="button" id="coAgain">Back to the card form</button>
+        </section>
+      </div>`;
+    document.getElementById("coAgain").addEventListener("click", () => {
+      checkoutReturned = false;
+      checkoutSessionId = null;
+      renderCheckout();
+    });
+  };
+
   const tick = async () => {
     if (run !== checkoutRun) return;
-    const data = await fetch("/api/session", { headers: { Accept: "application/json" } })
-      .then(r => (r.ok ? r.json() : null)).catch(() => null);
+    const [data, status] = await Promise.all([
+      fetch("/api/session", { headers: { Accept: "application/json" } })
+        .then(r => (r.ok ? r.json() : null)).catch(() => null),
+      known === "complete" ? null
+        : fetch("/api/billing/checkout-status?session_id=" + encodeURIComponent(sid), { headers: { Accept: "application/json" } })
+            .then(r => (r.ok ? r.json() : null)).catch(() => null)
+    ]);
     if (run !== checkoutRun) return;
     if (data && data.user.plan === "paid") {
       /* The whole payload changes with the plan, so take all of it. */
@@ -1286,7 +1341,16 @@ function drawCheckoutWaiting(run) {
       ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS } = data.content);
       applyAgePreference();
       checkoutReturned = false;
+      checkoutSessionId = null;
       return drawCheckoutDone({ justPaid: true });
+    }
+    if (status && status.status === "complete" && known !== "complete") {
+      known = "complete";
+      say("Paid. Opening the door&hellip;",
+        "Stripe has your payment. We&rsquo;re just waiting for it to tell us so &mdash; usually a few seconds.");
+    } else if (status && (status.status === "open" || status.status === "expired")) {
+      checkoutReturned = false;
+      return unfinished();
     }
     if (++tries === 15) {
       const note = document.getElementById("coWaitNote");
@@ -1312,10 +1376,65 @@ function drawCheckoutDone({ justPaid }) {
           ? "Tonight&rsquo;s history and bedtime story are open, and so is every one before them."
           : "You&rsquo;re on Every day, so there is nothing to pay. Tonight&rsquo;s is waiting."}</p>
         <a class="btn co-submit co-submit-inline" href="#home">Read tonight&rsquo;s</a>
-        <p class="co-fine">${justPaid ? `A receipt is on its way to ${esc(ME.email)}.<br>` : ""}
+        <p class="co-fine">${justPaid ? `Receipts go to ${esc(ME.email)}. Not right? <button class="co-linkish" type="button" id="coChangeEmail">Change it.</button><br>` : ""}
           Cards, invoices and cancelling live under <a href="#account">Your account</a>.</p>
+        <div id="coChangeSlot"></div>
       </section>
     </div>`;
+  wireEmailChange(document.getElementById("coChangeEmail"), document.getElementById("coChangeSlot"));
+}
+
+/* "Not right? Change it." New readers are signed straight in without
+   proving their address, so a typo can pay and never see a receipt. The
+   address only changes when the link sent to the new one is opened (see
+   api/account/email.js): until then the account, and Stripe, keep the old. */
+function wireEmailChange(button, slot) {
+  if (!button || !slot) return;
+  button.addEventListener("click", () => {
+    button.disabled = true;
+    slot.innerHTML = `
+      <form class="email-change" novalidate>
+        <div class="co-promo-row">
+          <input type="email" name="email" aria-label="New email address" placeholder="Your right address" autocomplete="email" required />
+          <button class="btn btn-quiet" type="submit">Send a link</button>
+        </div>
+        <p class="co-msg" role="status" aria-live="polite" hidden></p>
+      </form>`;
+    const form = slot.querySelector("form");
+    const input = form.querySelector("input");
+    const msg = form.querySelector(".co-msg");
+    const send = form.querySelector("button");
+    input.focus();
+
+    form.addEventListener("submit", async ev => {
+      ev.preventDefault();
+      const email = input.value.trim();
+      if (!email) return input.focus();
+      send.disabled = true;
+      msg.hidden = true;
+      let body = {};
+      let ok = false;
+      try {
+        const res = await fetch("/api/account/email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ email })
+        });
+        body = await res.json().catch(() => ({}));
+        ok = res.ok;
+      } catch (e) { /* said below */ }
+      send.disabled = false;
+      if (!ok) {
+        msg.textContent = body.message || "That did not go through. Try again in a moment.";
+        msg.classList.add("is-bad");
+        input.classList.add("is-bad");
+        msg.hidden = false;
+        return;
+      }
+      slot.innerHTML = `<p class="co-msg">We&rsquo;ve sent a link to <strong>${esc(body.email)}</strong>.
+        Open it and your account moves there. Until then, everything still goes to ${esc(ME.email)}.</p>`;
+    });
+  });
 }
 
 function renderMissing(msg, hash, label) {
@@ -1496,7 +1615,16 @@ async function boot() {
   const checkout = params.get("checkout");
   if (checkout) {
     history.replaceState(null, "", location.pathname + location.hash);
-    if (checkout === "done" && !isPaid()) checkoutReturned = true;
+    if (checkout === "done" && !isPaid()) {
+      checkoutReturned = true;
+      checkoutSessionId = params.get("session_id");
+    }
+  }
+
+  /* Back from the link that moved the account to another address. */
+  if (params.get("email") === "changed") {
+    history.replaceState(null, "", location.pathname + location.hash);
+    emailJustChanged = true;
   }
 
   /* ?upgrade=1 is the old way in from the paid plan on the landing page,
