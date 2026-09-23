@@ -269,9 +269,14 @@ receipt, on a shelf and on a story's own page.
    settings or `/api/billing/portal` will fail. Test mode first: `stripe
    listen --forward-to localhost:8000/api/stripe/webhook` gives a local
    signing secret.
-4. **Vercel** — set every name in `.env.example` in project settings,
-   including `SITE_URL` (no trailing slash). Login links and Stripe's return
-   URLs are built from it, so a wrong value sends readers to the wrong place.
+4. **Vercel** — set every name in `.env.example` in project settings.
+   `SITE_URL` goes on **Production only**, with no trailing slash: preview
+   deployments fall back to their own `VERCEL_URL`, so a login link made
+   while testing a branch opens that branch rather than the live site.
+   Scope the Stripe keys the same way — live keys on Production, test keys
+   on Preview and Development — and remember a webhook endpoint points at
+   exactly one URL, so upgrades complete on production and not on a
+   preview.
 
 The price appears in three places that must agree: Stripe's price object,
 the plans section of `index.html`, and `lockPanel` in `app.js`.
