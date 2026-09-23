@@ -15,7 +15,7 @@ function unquote(value) {
   return String(value || "").trim().replace(/^(["'])(.*)\1$/, "$2").trim();
 }
 
-const FROM = unquote(process.env.EMAIL_FROM) || "Saints & Dragons <hello@saintsanddragons.com>";
+const FROM = unquote(process.env.EMAIL_FROM) || "Saints & Dragons <hello@send.saintsdragons.com>";
 const REPLY_TO = process.env.EMAIL_REPLY_TO || null;
 
 function esc(s) {
@@ -100,7 +100,7 @@ async function checkSending() {
 
   if (!key) return { ...report, ok: false, hint: "RESEND_API_KEY is not set — links go to the log, not to readers" };
   if (!domain || !/^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(address)) {
-    return { ...report, ok: false, hint: 'EMAIL_FROM is not a usable from line — it should look like Saints & Dragons <hello@saintsanddragons.com>' };
+    return { ...report, ok: false, hint: 'EMAIL_FROM is not a usable from line — it should look like Saints & Dragons <hello@send.saintsdragons.com>' };
   }
   if (domain === "resend.dev") {
     return { ...report, ok: false, hint: "resend.dev only delivers to the Resend account's own address — verify your domain and send from it" };
