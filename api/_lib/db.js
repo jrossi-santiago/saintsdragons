@@ -29,6 +29,12 @@
  *     named prepared statements, which is fine — everything here goes
  *     through the unnamed extended-protocol path that `pool.query(text,
  *     values)` uses.
+ *   - **Supabase's certificate is signed by Supabase's own CA**, not a
+ *     public one, so Node refuses it out of the box with
+ *     SELF_SIGNED_CERT_IN_CHAIN. Download the CA from the dashboard
+ *     (Database settings -> SSL Configuration -> Download certificate)
+ *     and put the file's contents in DATABASE_CA_CERT. Verification stays
+ *     on; it just knows which CA to trust.
  *
  * The pool is deliberately tiny. Each warm function instance keeps its own,
  * so a large `max` here multiplies by however many instances Vercel has
@@ -45,11 +51,10 @@ function getPool() {
 
   const { Pool } = require("pg");
   pool = new Pool({
-    connectionString,
     max: 2,
     idleTimeoutMillis: 10000,
     connectionTimeoutMillis: 10000,
-    ...sslFor(connectionString)
+    ...tlsFor(connectionString)
   });
 
   /* A pooled connection can die between requests — a deploy, an idle
@@ -60,17 +65,44 @@ function getPool() {
   return pool;
 }
 
-/* TLS, decided from the host rather than left to whoever pasted the URL.
-   Supabase's certificates chain to a public CA, so verification stays on —
-   this never disables it, it only decides whether to ask for it. A URL that
-   already says `sslmode=` is left alone, because then somebody has said
-   what they want. */
-function sslFor(connectionString) {
-  if (/[?&]sslmode=/.test(connectionString)) return {};
+/* TLS, decided here rather than left to whoever pasted the URL. It never
+   turns verification off; it only decides what to verify against.
+
+   With DATABASE_CA_CERT set, that CA is the one trusted, and any ssl*
+   parameters are taken off the URL first — node-postgres lets the URL
+   override the options object, and its sslmode=require now means full
+   verification against the public CAs, which would put the failure straight
+   back. Without it, a URL that already says `sslmode=` is left alone, and
+   otherwise a remote host gets TLS and a local one does not. */
+const SSL_PARAMS = ["sslmode", "sslrootcert", "sslcert", "sslkey"];
+
+function tlsFor(connectionString) {
+  const ca = caCert();
+  if (ca) {
+    const url = new URL(connectionString);
+    SSL_PARAMS.forEach(p => url.searchParams.delete(p));
+    return { connectionString: url.toString(), ssl: { ca } };
+  }
+
+  if (/[?&]sslmode=/.test(connectionString)) return { connectionString };
   let host = "";
   try { host = new URL(connectionString).hostname; } catch (e) {}
   const local = host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "";
-  return { ssl: local ? false : true };
+  return { connectionString, ssl: local ? false : true };
+}
+
+/* The PEM as pasted. Some dashboards flatten a multi-line value into one
+   line with literal \n in it, so those are turned back into newlines. */
+function caCert() {
+  const raw = process.env.DATABASE_CA_CERT;
+  if (!raw || !raw.trim()) return null;
+  const pem = raw.replace(/\\n/g, "\n").trim();
+  if (!pem.includes("-----BEGIN CERTIFICATE-----")) {
+    const e = new Error("DATABASE_CA_CERT is set but is not a PEM certificate — paste the whole .crt file, BEGIN and END lines included");
+    e.code = "BAD_CA_CERT";
+    throw e;
+  }
+  return pem;
 }
 
 /* Tagged template → { text, values }. `sql.raw` is deliberately absent. */
