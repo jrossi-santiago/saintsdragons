@@ -703,7 +703,7 @@ function renderWelcome() {
               <input type="checkbox" name="childAges" value="${id}"${chosen.has(id) ? " checked" : ""} />
               ${esc(label)}
             </label>`).join("")}</div>
-          <p class="filter-note">Pick as many as fit. It tailors the stories you will see.</p>
+          <p class="filter-note">Pick as many as fits. It tailors the stories you will see.</p>
         </fieldset>
 
         <button class="btn" type="submit">Take me to tonight's</button>
