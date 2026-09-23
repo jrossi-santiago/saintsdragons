@@ -22,6 +22,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/xqpaqzne";
    plus `sections` in the one written to docs/history-for-dads.md. */
 let CARDS = [], BRIEFS = {}, TALES = {}, TODAY = {};
 let ERAS = [], KINDS = [], THEMES = [], VIRTUES = [], AGE_BANDS = {};
+let SEVEN = [];
 
 /* The signed-in reader. Null only before boot() has answered. */
 let ME = null;
@@ -255,7 +256,7 @@ function lockPanel(heading, line, { small = false } = {}) {
     <p class="lock-kicker">Every day &middot; $6 a month</p>
     <h3>${esc(heading)}</h3>
     <p>${esc(line)}</p>
-    <button class="btn" type="button" data-upgrade>Get every day</button>
+    <button class="btn" type="button" data-upgrade>Start full access</button>
     <p class="lock-note">Cancel any time. Your free story every week stays free.</p>
   </aside>`;
 }
@@ -358,7 +359,7 @@ function renderHome(query = "") {
         <p><strong>Tonight&rsquo;s is for Every day members.</strong>
         ${esc(heldTitle(held))} went out on ${esc(longDate(held.date))}.
         Here is your free one for this week.</p>
-        <button class="btn btn-quiet" type="button" data-upgrade>Get every day &mdash; $6/month</button>
+        <button class="btn btn-quiet" type="button" data-upgrade>Start full access &mdash; $6/month</button>
       </aside>` : ""}
       <div class="receipt-wrap">
         <div class="rcpt-controls">
@@ -369,7 +370,7 @@ function renderHome(query = "") {
         <div class="receipt">
           <div class="rcpt-brand">
             <div class="rcpt-wordmark">SAINTS <span class="amp">&amp;</span> DRAGONS</div>
-            <div class="rcpt-tagline">History for dads &middot; Tales for bedtime</div>
+            <div class="rcpt-tagline">History for Dads &middot; Tales for bedtime</div>
             <div class="rcpt-dateline">${esc(receiptDate(card.date))}</div>
           </div>
 
@@ -490,7 +491,7 @@ function renderSearch(query) {
     <div class="content">
       <header class="page-head">
         <h2>Search</h2>
-        <p>${hits} match${hits === 1 ? "" : "es"} for “${esc(query)}” across History for dads and Bedtime stories.</p>
+        <p>${hits} match${hits === 1 ? "" : "es"} for “${esc(query)}” across History for Dads and Bedtime stories.</p>
       </header>
       ${hits ? `<div class="shelf">
         ${briefHits.map(([slug, b]) => briefCardHTML(slug, b)).join("")}
@@ -666,7 +667,7 @@ function briefSectionsHTML(b) {
 
 function renderBrief(slug) {
   const b = BRIEFS[slug];
-  if (!b) return renderMissing("That page isn't here.", "history", "History for dads");
+  if (!b) return renderMissing("That page isn't here.", "history", "History for Dads");
   const tale = TALES[b.tale];
 
   /* An open new-format brief starts on its own opening, which does the hook's
@@ -676,7 +677,7 @@ function renderBrief(slug) {
 
   main.innerHTML = `
     <div class="content">
-      ${backLink("history", "History for dads")}
+      ${backLink("history", "History for Dads")}
       <header class="page-head">
         <h2>${esc(b.title)}</h2>
         ${b.dek ? `<p class="brief-dek">${esc(b.dek).replace(/(\d)\u2013(\d)/g, "$1\u2060\u2013\u2060$2")}</p>` : ""}
@@ -720,6 +721,41 @@ function renderTale(slug) {
     </div>`;
 }
 
+/* ----------------------------------------------------- the seven stories */
+
+/* The seven free stories, all of them, in full, for every reader: this is
+   what the free sign-up promises, so nothing here is ever locked. Printing
+   is the browser's own print of this page; the print rules in styles.css
+   drop the chrome and start each story on a fresh sheet. */
+function renderSeven() {
+  const stories = SEVEN.filter(s => s && s.title);
+  main.innerHTML = `
+    <div class="content seven">
+      <header class="page-head">
+        <h2>7 Bedtime Stories</h2>
+        <p>Seven stories to read out loud &mdash; one for every night of the week. Free, and yours to keep.</p>
+      </header>
+      <div class="seven-actions">
+        <button class="btn" type="button" id="sevenPrint"><svg class="ic"><use href="#i-print"/></svg> Print all seven</button>
+      </div>
+      ${stories.length ? `<ol class="seven-contents">${stories.map((s, i) =>
+        `<li><a href="#seven" data-seven="${i + 1}">${esc(s.title)}</a></li>`).join("")}</ol>` : ""}
+      ${stories.map((s, i) => `
+        <article class="seven-story" id="seven-${i + 1}">
+          <p class="seven-night">Night ${i + 1}</p>
+          <h3>${esc(s.title)}</h3>
+          <div class="tale-body">${(s.paragraphs || []).map(p => `<p>${esc(p)}</p>`).join("")}</div>
+        </article>`).join("")}
+    </div>`;
+
+  document.getElementById("sevenPrint").addEventListener("click", () => window.print());
+  /* The contents jump without touching the hash, which is the route. */
+  main.querySelectorAll("[data-seven]").forEach(a => a.addEventListener("click", ev => {
+    ev.preventDefault();
+    document.getElementById("seven-" + a.dataset.seven).scrollIntoView({ behavior: "smooth" });
+  }));
+}
+
 /* ------------------------------------------------- the reader's own pages */
 
 const AGE_CHOICES = [
@@ -733,12 +769,16 @@ const AGE_CHOICES = [
 function renderWelcome() {
   const name = ME && ME.firstName ? ME.firstName : "";
   const chosen = new Set((ME && ME.childAges) || []);
+  /* A first answer leads on to the seven free stories the sign-up promised;
+     coming back to change an answer ("Change your name…" on #account)
+     leads home, as it always has. */
+  const firstTime = !(ME && ME.onboarded);
 
   main.innerHTML = `
     <div class="content">
       <header class="page-head">
         <h2>${name ? `Hello, ${esc(name)}.` : "You're in."}</h2>
-        <p>Two questions, then tonight's story.</p>
+        <p>${firstTime ? "Two questions, then your seven free bedtime stories." : "Two questions, then tonight's story."}</p>
       </header>
       <form class="prose" id="welcomeForm">
         <label class="field"><span>What should we call you?</span>
@@ -754,7 +794,7 @@ function renderWelcome() {
           <p class="filter-note">Pick as many as fits. It tailors the stories you will see.</p>
         </fieldset>
 
-        <button class="btn" type="submit">Take me to tonight's</button>
+        <button class="btn" type="submit">${firstTime ? "Take me to the stories" : "Take me to tonight's"}</button>
         <p class="filter-note" id="welcomeStatus" role="status" aria-live="polite"></p>
       </form>
     </div>`;
@@ -788,10 +828,12 @@ function renderWelcome() {
       /* Their answer is worth something immediately, not on some later
          visit: the shelf opens on the youngest band they told us about. */
       applyAgePreference();
-      location.hash = "#home";
+      location.hash = firstTime ? "#seven" : "#home";
     } catch (err) {
       console.warn("profile did not save", err);
-      status.textContent = "That did not save. Try again in a moment \u2014 you can also skip it and read tonight's.";
+      status.textContent = firstTime
+        ? "That did not save. Try again in a moment \u2014 or skip it: your seven stories are in the menu."
+        : "That did not save. Try again in a moment \u2014 you can also skip it and read tonight's.";
       btn.disabled = false;
     }
   });
@@ -1388,7 +1430,7 @@ function drawCheckoutWaiting(run) {
     if (data && data.user.plan === "paid") {
       /* The whole payload changes with the plan, so take all of it. */
       ME = data.user;
-      ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS } = data.content);
+      ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, SEVEN = [] } = data.content);
       applyAgePreference();
       checkoutReturned = false;
       checkoutSessionId = null;
@@ -1413,7 +1455,7 @@ function drawCheckoutWaiting(run) {
 }
 
 /* "You're in", or, for a reader who was already paying and followed a
-   "Get every day" link anyway, the same page saying so — never a second
+   "Start full access" link anyway, the same page saying so — never a second
    card form. The server refuses a second subscription too (409). */
 function drawCheckoutDone({ justPaid }) {
   main.innerHTML = `
@@ -1495,7 +1537,7 @@ function renderMissing(msg, hash, label) {
 
 /* per-page title and meta description, from the copy doc */
 const META = {
-  home:    ["Saints & Dragons | History for dads, tales for bedtime",
+  home:    ["Saints & Dragons | History for Dads, tales for bedtime",
             "Dads learning things worth knowing & passing them on to their kids. History, faith and virtue, handed down rather than explained."],
   history: ["History for Dads | Saints & Dragons",
             "Short history on how things actually worked \u2014 battles, builders, saints and Romans, each with a bedtime story on the same idea."],
@@ -1505,7 +1547,8 @@ const META = {
             "Fairy tales, legends and true stories retold for reading aloud, for ages 4 to 9. Knights, dragons, castles and the sea."],
   welcome: ["Welcome | Saints & Dragons", "Two questions, then tonight's story."],
   account: ["Your account | Saints & Dragons", "Your plan, your details, and how to leave."],
-  checkout: ["Every day | Saints & Dragons", "A new history and a new bedtime story every day, for $6 a month."]
+  checkout: ["Every day | Saints & Dragons", "A new history and a new bedtime story every day, for $6 a month."],
+  seven:   ["7 Bedtime Stories | Saints & Dragons", "Seven bedtime stories to read aloud or print, free."]
 };
 
 const DEFAULT_META = [document.title,
@@ -1529,7 +1572,7 @@ const NAV_OWNER = { brief: "#history", tale: "#bedtime", today: "#today",
                     welcome: "#account", checkout: "#account" };
 
 /* routes printed on receipt paper, so they match the card on #home */
-const PAPER_ROUTES = new Set(["history", "today", "bedtime", "brief", "tale"]);
+const PAPER_ROUTES = new Set(["history", "today", "bedtime", "brief", "tale", "seven"]);
 
 function route() {
   const raw = (location.hash || "#home").slice(1);
@@ -1553,6 +1596,7 @@ function route() {
   else if (key === "welcome") renderWelcome();
   else if (key === "account") renderAccount();
   else if (key === "checkout") renderCheckout();
+  else if (key === "seven") renderSeven();
   else if (key === "home" || !PAGES[key]) renderHome(searchInput.value);
   else renderPage(key);
 
@@ -1610,7 +1654,7 @@ toggle.addEventListener("click", () => {
 });
 scrim.addEventListener("click", closeSidebar);
 
-/* every "get every day" button on every page, delegated for the same reason
+/* every "start full access" button on every page, delegated for the same reason
    the chips are: these panels are re-rendered on each route. They open the
    checkout page; nothing is asked of Stripe until it draws. */
 main.addEventListener("click", ev => {
@@ -1651,7 +1695,7 @@ async function boot() {
   }
 
   ME = data.user;
-  ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS } = data.content);
+  ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, SEVEN = [] } = data.content);
   STRIPE_KEY = data.stripe && data.stripe.publishableKey || null;
   applyAgePreference();
 
@@ -1686,7 +1730,10 @@ async function boot() {
     history.replaceState(null, "", location.pathname + "#checkout");
   }
 
-  if (!ME.onboarded && !location.hash) location.hash = "#welcome";
+  /* The two questions come first. A new reader sent straight to #seven
+     (the old /7stories links do that) is asked them on the way, and
+     renderWelcome then takes a first-timer on to the seven stories. */
+  if (!ME.onboarded && (!location.hash || location.hash === "#seven")) location.hash = "#welcome";
 
   window.addEventListener("hashchange", route);
   route();

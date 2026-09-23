@@ -1016,3 +1016,35 @@ fieldset.field > span {
 .co-done .email-change .btn { margin-top: 0; }
 .account-facts .email-change { flex-basis: 100%; margin: 6px 0 0; }
 .account-facts dd .co-linkish { margin-left: 12px; font-size: .85rem; }
+
+/* ---------- #seven: the seven free stories, in full ---------- */
+.seven-actions { margin: 0 0 26px; }
+.seven-actions .ic { stroke-width: 2; }
+.seven-contents {
+  margin: 0 0 40px; padding: 0 0 0 1.4em;
+  color: var(--text-dim); line-height: 1.9;
+}
+.seven-contents a { border-bottom: 1px solid var(--line); }
+.seven-contents a:hover { color: var(--text); border-color: var(--text); }
+.seven-story { padding: 34px 0 0; margin: 0 0 34px; border-top: 1px solid var(--line); scroll-margin-top: 24px; }
+.seven-night {
+  margin: 0 0 6px;
+  font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--accent);
+}
+.seven-story h3 { margin: 0 0 18px; font-family: var(--serif); font-size: 1.6rem; font-weight: 600; line-height: 1.2; }
+
+/* "Print all seven": the stories and nothing else, each on its own sheet,
+   black on white whatever the theme. */
+@media print {
+  .sidebar, .scrim, .mobile-toggle, .seven-actions, .seven-contents { display: none !important; }
+  html, body, .main, .main.is-paper { background: #fff !important; background-image: none !important; color: #111 !important; }
+  .layout { display: block; }
+  .main { display: block; padding: 0; }
+  .content { max-width: none; }
+  .seven .page-head p, .seven .tale-body p { color: #222 !important; }
+  .seven-story { border: 0; padding-top: 0; }
+  .seven-story + .seven-story { break-before: page; }
+  .seven-night { color: #555; }
+  .seven-story h3 { color: #111; }
+}

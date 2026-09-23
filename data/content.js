@@ -9,6 +9,7 @@
  *           above BRIEFS.
  *   TALES   the read-aloud. Keyed by slug.
  *   TODAY   one entry per calendar date, keyed "MM-DD".
+ *   SEVEN   the seven free stories, printed in full on #seven for everyone.
  *
  * ------------------------------------------------ writing a new history
  *
@@ -767,6 +768,27 @@ const TALES = {
 
 /* ----------------------------------------------------------------- cards */
 /* Newest last. Two a week. */
+
+/* The seven free stories: the whole of them, to every reader, free or paid.
+   The free sign-up promises them, and #seven in the account prints them in
+   full with a button to print the lot. They are not tales from TALES on
+   purpose — those are the archive the paid plan sells.
+
+   SAMPLE TEXT. Every entry below is a placeholder until the real seven are
+   written; replace `title` and `paragraphs` in place and nothing else needs
+   to change. One entry per night, Monday first. */
+const SEVEN = [
+  { title: "Sample story one", paragraphs: [
+    "Sample text. The first of the seven free stories goes here, a paragraph at a time.",
+    "Every night the little lantern on the garden wall watched the house go dark, one window at a time, and every night it decided it was not tired at all."
+  ] },
+  { title: "Sample story two", paragraphs: ["Sample text. The second story goes here."] },
+  { title: "Sample story three", paragraphs: ["Sample text. The third story goes here."] },
+  { title: "Sample story four", paragraphs: ["Sample text. The fourth story goes here."] },
+  { title: "Sample story five", paragraphs: ["Sample text. The fifth story goes here."] },
+  { title: "Sample story six", paragraphs: ["Sample text. The sixth story goes here."] },
+  { title: "Sample story seven", paragraphs: ["Sample text. The seventh story goes here."] }
+];
 
 const CARDS = [
   {

@@ -90,7 +90,7 @@
 
   /* ---------- signup ---------- */
   /* The topbar is sticky, so an anchor jump would tuck the heading under it. */
-  #start{ scroll-margin-top: 90px; }
+  #start, #pricing{ scroll-margin-top: 90px; }
   .lp-start{ max-width: 620px; text-align: center; }
   .lp-start .lp-h2{ max-width: none; margin-left: auto; margin-right: auto; }
   .lp-start .lp-lede{ margin-left: auto; margin-right: auto; }
@@ -122,6 +122,30 @@
     margin: 10px auto 0; max-width: 460px;
     font-size: .86rem; line-height: 1.6; color: var(--text-faint);
   }
+
+  /* ---------- free sign-up pop-up ---------- */
+  /* The Free plan's "Start free" opens this: name and email, then a word
+     that the account exists and a way in. A <dialog>, so focus, Escape and
+     the backdrop come from the browser. */
+  .lp-modal{
+    width: min(440px, calc(100vw - 32px)); max-height: calc(100vh - 32px);
+    padding: 34px 30px 28px; border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--surface); color: var(--text);
+    box-shadow: 0 40px 80px -30px rgba(0,0,0,.7);
+  }
+  .lp-modal::backdrop{ background: rgba(8,6,4,.62); }
+  .lp-modal h2{ font-family: var(--serif); font-size: 1.7rem; font-weight: 600; line-height: 1.2; margin: 0 0 8px; }
+  .lp-modal p{ margin: 0; font-size: .97rem; line-height: 1.6; color: var(--text-dim); }
+  .lp-modal .lp-signup{ grid-template-columns: 1fr; margin: 22px 0 0; max-width: none; }
+  .lp-modal .lp-signup button{ grid-column: auto; }
+  .lp-modal .lp-signup-status{ margin: 12px 0 0; max-width: none; min-height: 0; }
+  .lp-modal-done .lp-cta{ width: 100%; justify-content: center; padding: 15px; margin-top: 24px; }
+  .lp-modal-close{
+    position: absolute; top: 12px; right: 12px; width: 34px; height: 34px;
+    display: grid; place-items: center; border: 0; border-radius: 50%;
+    background: transparent; color: var(--text-faint); font-size: 1.4rem; line-height: 1; cursor: pointer;
+  }
+  .lp-modal-close:hover{ color: var(--text); background: var(--line-soft); }
 
   /* ---------- hero ---------- */
   .lp-hero{
@@ -409,13 +433,13 @@
       <svg class="ic-moon" width="16" height="16"><use href="#i-moon"/></svg>
     </button>
     <a class="lp-link-btn" href="/login">Log in</a>
-    <a class="lp-cta" href="#start">Start free</a>
+    <a class="lp-cta" href="#pricing">Start free</a>
   </div>
 </header>
 
 <section class="lp-hero">
   <div class="lp-reveal">
-    <p class="lp-eyebrow">History for dads &middot; Tales for bedtime</p>
+    <p class="lp-eyebrow">History for Dads &middot; Tales for bedtime</p>
     <h1 class="lp-h1">Be the dad with <em>stories</em> worth passing on.</h1>
     <p class="lp-h1-sub">A true story for <em>you</em>. A bedtime story for <em>them</em>.</p>
     <p class="lp-sub">Every day, one piece of real history for you to read, and a bedtime story on the same idea for your kids. Under 10 minutes of reading.</p>
@@ -432,7 +456,7 @@
       <div class="lp-shot-paper">
         <div class="lp-shot-brand">
           <div class="lp-shot-word">SAINTS <span class="amp">&amp;</span> DRAGONS</div>
-          <div class="lp-shot-tag">History for dads &middot; Tales for bedtime</div>
+          <div class="lp-shot-tag">History for Dads &middot; Tales for bedtime</div>
           <div class="lp-shot-date">Monday &middot; September 21</div>
         </div>
         <div class="lp-shot-slot-label"><span class="no">01</span> History for You</div>
@@ -629,9 +653,11 @@
         <p class="lp-price-note">No card needed</p>
         <ul class="lp-ticks">
           <li><svg><use href="#i-check"/></svg> One history and one bedtime story every week</li>
-          <li><svg><use href="#i-check"/></svg> <span><a href="/7stories">7 bedtime stories</a> as a free PDF</span></li>
+          <li><svg><use href="#i-check"/></svg> 7 bedtime stories to read in full, or print</li>
         </ul>
-        <a class="lp-cta is-ghost" href="#start">Start free</a>
+        <!-- Opens the sign-up pop-up below. Without the script it is still a
+             link to the #start form, which does the same thing. -->
+        <a class="lp-cta is-ghost" href="#start" data-free-signup>Start free</a>
       </div>
       <div class="lp-pricing-card is-featured">
         <h3 class="lp-plan-name">Every day</h3>
@@ -646,7 +672,7 @@
         <!-- The checkout is a page in the account. Signed out, /account
              sends the reader to /login with this as where to go next; a new
              address is signed straight in and lands on it. No script. -->
-        <a class="lp-cta" href="/account#checkout">Get every day</a>
+        <a class="lp-cta" href="/account#checkout">Start full access</a>
       </div>
     </div>
   </div>
@@ -680,6 +706,32 @@
   </div>
 </section>
 
+<dialog class="lp-modal" id="freeModal" aria-labelledby="freeTitle">
+  <button class="lp-modal-close" type="button" data-close aria-label="Close">&times;</button>
+  <div id="freeAsk">
+    <h2 id="freeTitle">Start free</h2>
+    <p>Your first name and email. No card needed.</p>
+    <form class="lp-signup" id="freeForm" method="POST" action="/api/auth/request-link" novalidate>
+      <input type="hidden" name="source" value="/#free" />
+      <div class="lp-field">
+        <label for="frName">First name</label>
+        <input id="frName" name="firstName" type="text" autocomplete="given-name" placeholder="Tom" required>
+      </div>
+      <div class="lp-field">
+        <label for="frEmail">Email</label>
+        <input id="frEmail" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+      </div>
+      <button class="lp-cta" type="submit">Create my free account</button>
+    </form>
+    <p class="lp-signup-status" id="freeStatus" role="status" aria-live="polite"></p>
+  </div>
+  <div class="lp-modal-done" id="freeDone" hidden>
+    <h2 id="freeDoneTitle" tabindex="-1"></h2>
+    <p id="freeDoneText"></p>
+    <a class="lp-cta" id="freeDoneGo" href="/account#welcome">Log in</a>
+  </div>
+</dialog>
+
 <footer class="lp-footer">
   <span>© <span id="year"></span> Saints &amp; Dragons</span>
   <span><a href="/account#about">About</a> &middot; <a href="/login">Already a member? Log in</a></span>
@@ -701,6 +753,96 @@
   requestAnimationFrame(function(){
     document.querySelectorAll('.lp-reveal').forEach(function(el){ el.classList.add('is-in'); });
   });
+
+  /* The Free plan's pop-up. The same endpoint as the #start form below,
+     with its own source so the two stay apart in the users table. A new
+     address comes back signed in: the pop-up says the free account exists
+     and "Log in" goes to the two welcome questions, which lead on to the
+     seven stories. A known address is emailed a link, and the pop-up says
+     that instead: signing in whoever typed it would hand them the account. */
+  (function(){
+    var modal = document.getElementById('freeModal');
+    if (!modal || typeof modal.showModal !== 'function') return;  /* the link to #start still works */
+    var form = document.getElementById('freeForm');
+    var status = document.getElementById('freeStatus');
+    var btn = form.querySelector('button[type=submit]');
+    var ask = document.getElementById('freeAsk');
+    var done = document.getElementById('freeDone');
+
+    function field(input){ return input.closest('.lp-field'); }
+
+    function open(ev){
+      ev.preventDefault();
+      ask.hidden = false; done.hidden = true;
+      status.textContent = ''; status.classList.remove('is-bad');
+      modal.showModal();
+      form.firstName.focus();
+    }
+    document.querySelectorAll('[data-free-signup]').forEach(function(a){ a.addEventListener('click', open); });
+    modal.querySelector('[data-close]').addEventListener('click', function(){ modal.close(); });
+    /* a click on the backdrop lands on the dialog itself */
+    modal.addEventListener('click', function(ev){ if (ev.target === modal) modal.close(); });
+
+    function finish(title, text, go){
+      document.getElementById('freeDoneTitle').textContent = title;
+      document.getElementById('freeDoneText').textContent = text;
+      var link = document.getElementById('freeDoneGo');
+      link.style.display = go ? '' : 'none';   /* .lp-cta's display beats [hidden] */
+      if (go) link.href = go;
+      ask.hidden = true; done.hidden = false;
+      (go ? link : document.getElementById('freeDoneTitle')).focus();
+    }
+
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      var firstName = form.firstName.value.trim();
+      var email = form.email.value.trim();
+      var ok = true;
+
+      [form.firstName, form.email].forEach(function(i){ field(i).classList.remove('is-invalid'); });
+      status.classList.remove('is-bad');
+      if (!firstName) { field(form.firstName).classList.add('is-invalid'); ok = false; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { field(form.email).classList.add('is-invalid'); ok = false; }
+      if (!ok) {
+        status.textContent = 'Please put in a first name and an email that will reach you.';
+        status.classList.add('is-bad');
+        form.querySelector('.lp-field.is-invalid input').focus();
+        return;
+      }
+
+      btn.disabled = true;
+      var label = btn.innerHTML;
+      btn.textContent = 'Creating your account\u2026';
+      status.textContent = '';
+
+      fetch(form.action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ firstName: firstName, email: email, source: '/#free' })
+      }).then(function(res){
+        return res.json().then(function(body){ return { ok: res.ok, body: body }; });
+      }).then(function(r){
+        if (!r.ok) throw new Error(r.body && r.body.message || 'HTTP error');
+        form.reset();
+        if (r.body.signedIn) {
+          finish('You\u2019ve created a free account.',
+            'Welcome, ' + firstName + '. Log in to answer two quick questions, and your seven free bedtime stories are waiting.',
+            r.body.next || '/account#welcome');
+        } else {
+          finish('You already have an account.',
+            'We\u2019ve sent a link to ' + email + ' to log you in. It works once and lasts twenty minutes.',
+            null);
+        }
+      }).catch(function(err){
+        console.warn('free signup did not go through', err);
+        status.textContent = 'That did not send. Your details are still in the boxes \u2014 please try again in a moment.';
+        status.classList.add('is-bad');
+      }).then(function(){
+        btn.disabled = false;
+        btn.innerHTML = label;
+      });
+    });
+  })();
 
   /* Signup, which is also login: /api/auth/request-link signs a new address
      straight in and emails a known one a link, so nobody is ever asked
