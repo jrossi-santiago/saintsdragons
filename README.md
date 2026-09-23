@@ -376,8 +376,10 @@ To add a night, edit `data/content.js`:
    paired tale into `TALES` (a tale names its brief with `brief:`, and a
    brief names its tale with `tale:`).
 2. Add a `CARDS` entry with the date, both slugs, the question, the why-ours
-   line and the prayer. Cards are newest last, and the page shows the most
-   recent one that is not in the future.
+   line and the prayer. Cards are newest last. A card dated ahead is
+   queued: it goes live at 12:01am US Eastern on its date, and until then
+   nobody is sent it, its brief or tale, or its date's Today in history
+   entry (see "What is out" in `api/_lib/content.js`).
 3. Optionally add a `TODAY` entry keyed `"MM-DD"`, 100 to 150 words. A date with
    no entry shows the nearest one that has been written.
 

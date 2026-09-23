@@ -60,6 +60,10 @@ try {
 
 const { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY, SEVEN } = data;
 
+/* The same clock the API releases nights on, so the schedule printed at the
+   end cannot disagree with what readers are sent. */
+const { todayISO } = require("../api/_lib/content.js");
+
 /* The bands a tale can be filed in. Read from content.js rather than repeated
    here, so adding a band is one edit in one file. */
 const AGES = Object.keys(AGE_BANDS).map(Number);
@@ -362,6 +366,17 @@ function report() {
   const counts =
     `${Object.keys(BRIEFS).length} briefs, ${Object.keys(TALES).length} tales, ` +
     `${CARDS.length} cards, ${Object.keys(TODAY).length} dates in TODAY`;
+
+  /* The release schedule, on the site's own clock (12:01am Eastern). The
+     batch process in .claude/skills/card-batch reads this to see what a
+     merge will queue. */
+  const today = todayISO();
+  const live = CARDS.filter(c => c.date <= today);
+  const queued = CARDS.filter(c => c.date > today);
+  console.log(`\nSchedule (today is ${today}, US Eastern)\n`);
+  console.log(`  Live:    ${live.length} night${live.length === 1 ? "" : "s"}` +
+              (live.length ? `, newest ${live[live.length - 1].date}` : ""));
+  console.log(`  Queued:  ${queued.length ? queued.map(c => c.date).join(", ") : "nothing — the newest night is the last one written"}`);
 
   console.log("");
   if (errors.length) {

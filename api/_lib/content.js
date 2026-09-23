@@ -82,14 +82,77 @@ function isoWeek(iso) {
   return d.getUTCFullYear() + "-W" + String(week).padStart(2, "0");
 }
 
+/* ---------------------------------------------------------- what is out
+
+   Nights are written in batches and dated ahead. A card goes live at 12:01am
+   US Eastern on its date, for every reader at once, wherever they are: a
+   reader in California gets it at 9:01pm the night before, which is still
+   bedtime. Until then the card is not in anybody's payload, and neither is
+   the brief or tale that only it sends, nor the Today-in-history entry
+   written for its date. Not locked but absent: a locked item keeps its title
+   and hook on the shelf, and a night that has not happened yet should not be
+   on the shelf at all, or in search, or in the page source.
+
+   Nothing runs at midnight. Each request works out what day it is and
+   filters, so a batch goes out in one deploy and releases itself.
+
+   PREVIEW_DATE (YYYY-MM-DD) pretends it is that day, so a queued batch can
+   be looked at locally before it ships. It is ignored on Vercel, where a
+   stray value would publish the whole queue. */
+const RELEASE = { timeZone: "America/New_York", minutesPastMidnight: 1 };
+
+const DAY_IN_ZONE = new Intl.DateTimeFormat("en-CA", {
+  timeZone: RELEASE.timeZone, year: "numeric", month: "2-digit", day: "2-digit"
+});
+
 function todayISO(now = new Date()) {
-  return now.toISOString().slice(0, 10);
+  const preview = process.env.PREVIEW_DATE;
+  if (preview && !process.env.VERCEL && /^\d{4}-\d{2}-\d{2}$/.test(preview)) return preview;
+  /* The day it was a minute ago is the day that has been released: at
+     12:00:30 it is still yesterday's card, at 12:01 it is today's. */
+  return DAY_IN_ZONE.format(new Date(now.getTime() - RELEASE.minutesPastMidnight * 60000));
+}
+
+/* The content as it stands on `day`. Briefs and tales that no card sends
+   (the Drake piece, the second night of a story told on one card) are not
+   scheduled and stay. A released item that points at a held one loses the
+   pointer rather than linking to a page that is not there yet. */
+function released({ BRIEFS, TALES, CARDS, TODAY }, day) {
+  const cards = CARDS.filter(c => c.date <= day);
+  const queued = CARDS.filter(c => c.date > day);
+  if (!queued.length) return { BRIEFS, TALES, CARDS, TODAY };
+
+  const liveBriefs = new Set(cards.map(c => c.brief));
+  const liveTales = new Set(cards.map(c => c.tale));
+  const heldBriefs = new Set(queued.map(c => c.brief).filter(s => s && !liveBriefs.has(s)));
+  const heldTales = new Set(queued.map(c => c.tale).filter(s => s && !liveTales.has(s)));
+  const heldDays = new Set(queued.map(c => c.date.slice(5)));
+  for (const c of cards) heldDays.delete(c.date.slice(5));
+
+  const unlink = (item, key, held) =>
+    item && held.has(item[key]) ? omit(item, [key]) : item;
+
+  const briefs = {};
+  for (const [slug, b] of Object.entries(BRIEFS)) {
+    if (!heldBriefs.has(slug)) briefs[slug] = unlink(b, "tale", heldTales);
+  }
+  const tales = {};
+  for (const [slug, t] of Object.entries(TALES)) {
+    if (!heldTales.has(slug)) tales[slug] = unlink(t, "brief", heldBriefs);
+  }
+  const today = {};
+  for (const [key, entries] of Object.entries(TODAY)) {
+    if (heldDays.has(key)) continue;
+    today[key] = entries.map(e => unlink(unlink(e, "brief", heldBriefs), "tale", heldTales));
+  }
+  return { BRIEFS: briefs, TALES: tales, CARDS: cards, TODAY: today };
 }
 
 /* The dates a free reader gets: the first card of each ISO week. Future
-   weeks are included — a card dated next Monday simply is not drawn by the
-   app until it arrives, and leaving it out here would make the set depend
-   on what day the request landed on, which is the drift this avoids. */
+   weeks are included, although a card dated next Monday is not sent to
+   anyone until it is released (see `released`): leaving it out here would
+   make the set depend on what day the request landed on, which is the
+   drift this avoids. */
 function freeCardDates(cards) {
   const first = new Map();
   for (const card of cards) {
@@ -109,19 +172,25 @@ function omit(obj, keys) {
 }
 
 /* Builds the payload the app boots from. `paid` short-circuits every rule
-   below, so a paying reader's payload is the file itself. */
+   below, so a paying reader's payload is everything released so far. */
 function payloadFor({ paid, now = new Date() } = {}) {
-  const { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY, SEVEN } = load();
+  const all = load();
+  const { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, SEVEN } = all;
   /* SEVEN rides with the taxonomy because it is the same for every reader:
      the seven free stories are what the free sign-up promises, in full. */
   const taxonomy = { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, SEVEN };
   const today = todayISO(now);
+  const { BRIEFS, TALES, CARDS, TODAY } = released(all, today);
 
+  /* `today` goes to the app too, so #home and the free Today-in-history
+     date turn over on this clock and not on the reader's. */
   if (paid) {
-    return { ...taxonomy, BRIEFS, TALES, CARDS, TODAY, locked: false };
+    return { ...taxonomy, BRIEFS, TALES, CARDS, TODAY, today, locked: false };
   }
 
-  const free = freeCardDates(CARDS);
+  /* Worked out on every card, queued ones included, so a week's free card
+     does not depend on what has been released yet. */
+  const free = freeCardDates(all.CARDS);
   const openBriefs = new Set();
   const openTales = new Set();
 
@@ -160,7 +229,7 @@ function payloadFor({ paid, now = new Date() } = {}) {
       : entries.map(e => ({ ...omit(e, ["text"]), locked: true }));
   }
 
-  return { ...taxonomy, BRIEFS: briefs, TALES: tales, CARDS: cards, TODAY: today_, locked: true };
+  return { ...taxonomy, BRIEFS: briefs, TALES: tales, CARDS: cards, TODAY: today_, today, locked: true };
 }
 
-module.exports = { payloadFor, load, isoWeek, freeCardDates, todayISO };
+module.exports = { payloadFor, load, released, isoWeek, freeCardDates, todayISO, RELEASE };

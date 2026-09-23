@@ -97,20 +97,15 @@ Draft any blank field, and mark it as yours when you report back:
 
 ## Release dates
 
-Each card is meant to go live at **12:01am US Eastern** on its release date,
-and the whole batch is meant to ship in one merge.
+Each card goes live at **12:01am US Eastern** on its release date, and the
+whole batch ships in one merge. `todayISO` and `released` in
+`api/_lib/content.js` do this on every request. A card dated after today
+is left out of every reader's payload, and so is the brief and tale only
+it sends and the Today in History entry keyed to its date. Nothing runs
+at midnight, and no second deploy is needed.
 
-**Check this before shipping a batch:** does `api/_lib/content.js` withhold
-cards dated after today in Eastern time, along with any brief and tale
-used only by those cards? Search it for `America/New_York`.
-
-- **If it does,** ship the batch.
-- **If it doesn't** (that server-side release gate was proposed on
-  2026-09-23 but not built then), future-dated briefs and tales show on
-  the shelves, in search and in the page source straight away, and the
-  receipt flips at each reader's local midnight. Tell the owner, and
-  either build the gate first or ship only the nights whose date has
-  arrived.
+`npm run check` ends with the schedule, what is live and what is queued,
+on the same clock. Read it before merging a batch.
 
 ## Before merging
 
@@ -120,9 +115,10 @@ Follow **Before you merge** in `CLAUDE.md`, plus these checks:
    and side-note counts outside the standard show up there.
 2. Screenshot each new night's receipt on `#home`, as a free reader and as
    a paid one. Also screenshot its `#brief/<slug>`, `#tale/<slug>` and
-   `#today/MM-DD` pages. A future-dated card can be previewed by running
-   the dev server with a faked clock, or by temporarily dating it today
-   locally. Never commit the temporary date.
+   `#today/MM-DD` pages. To see a queued night, start the dev server with
+   `PREVIEW_DATE=YYYY-MM-DD` set to its date (see `.env.example`). Turn
+   through the nights with ‹ › on `#home` to check that each one sits in
+   the right order.
 3. Show the owner the screenshots and every drafted field. Merge only
    after they say to ship it.
 
