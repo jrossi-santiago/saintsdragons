@@ -996,7 +996,7 @@ async function boot() {
   try {
     const res = await fetch("/api/session", { headers: { Accept: "application/json" } });
     if (res.status === 401) {
-      const next = location.pathname + location.hash;
+      const next = location.pathname + location.search + location.hash;
       location.replace("/login/?next=" + encodeURIComponent(next));
       return;
     }
@@ -1035,6 +1035,21 @@ async function boot() {
           .then(r => (r.ok ? r.json() : null)).catch(() => null);
         if (again && again.user.plan === "paid") location.reload();
       }, 2500);
+    }
+  }
+
+  /* Arriving from the paid plan on the landing page, by way of the login
+     link: they already chose to pay, so open Stripe rather than making them
+     find the button again. A reader who is already paying just lands. */
+  if (params.get("upgrade")) {
+    history.replaceState(null, "", location.pathname + location.hash);
+    if (!isPaid()) {
+      try {
+        await goToStripe("/api/billing/checkout");
+        return;
+      } catch (err) {
+        console.warn("checkout did not open", err);
+      }
     }
   }
 
