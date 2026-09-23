@@ -341,7 +341,7 @@ so nothing here depends on a relative path to its own assets.
 
 | Route | Page |
 | --- | --- |
-| `#home` | **Tonight's receipt** — the actual product: today in history, a brief for you, and a tale, pulled live from `CARDS`/`BRIEFS`/`TALES`/`TODAY` and printed in the receipt format. Below it, "Earlier nights": the five previous cards as miniature torn-off receipts, cut off with a fade, scrolling horizontally, with a link to the full archive. `#tonight` is kept as a redirect for old links, but is not a real page. |
+| `#home` | **Tonight's receipt** — the actual product: today in history, a brief for you, and a tale, pulled live from `CARDS`/`BRIEFS`/`TALES`/`TODAY` and printed in the receipt format. Every earlier night is the same full receipt, one turn back: ‹ and › under the receipt, a sideways swipe, or the arrow keys. `#home/YYYY-MM-DD` is a given night, so Back works and a night can be shared. A night a free reader does not have is drawn with its titles and hooks and the lock panel under it. (This replaced a strip of miniature torn-off receipts on 2026-09-23.) `#tonight` is kept as a redirect for old links, but is not a real page. |
 | `#history` | History for dads — the brief shelf, filtered by era and kind |
 | `#today` | Today in history — opens on today's date. `#today/MM-DD` opens a specific one |
 | `#bedtime` | Bedtime stories — the tale shelf, filtered by age band, by theme and by virtue |

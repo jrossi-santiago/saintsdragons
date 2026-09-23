@@ -172,12 +172,13 @@ function firstSentence(text) {
   return s;
 }
 
-/* "2026-09-17" -> "Thu \u00b7 September 17" (the mini receipts' dateline) */
-function miniDate(iso) {
+/* "2026-09-17" -> "Thu \u00b7 Sep 17" (the pager's dates under the receipt,
+   short enough that both fit side by side on a phone) */
+function pagerDate(iso) {
   const [y, m, d] = iso.split("-").map(Number);
   const dt = new Date(y, m - 1, d);
   const day = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][dt.getDay()];
-  return `${day} \u00b7 ${MONTHS[m - 1]} ${d}`;
+  return `${day} \u00b7 ${MONTHS[m - 1].slice(0, 3)} ${d}`;
 }
 
 /* "09-21" -> "September 21" */
@@ -337,16 +338,17 @@ function taleCardHTML(slug, t) {
 }
 
 /* ------------------------------------------------------------- Home */
-/* Home is Tonight: the card is not behind a click. */
+/* Home is Tonight: the card is not behind a click. Every earlier night is
+   the same receipt, one turn back: ‹ and ›, a swipe, or the arrow keys.
+   Each has its own address, #home/YYYY-MM-DD, so Back works and a night
+   can be shared. Plain #home is tonight. */
 
-function renderHome(query = "") {
-  const q = query.trim();
-  if (q) return renderSearch(q);
-
-  const { card, held } = homeCard();
+/* One receipt, for any night. Tonight and every earlier night are drawn by
+   this and nothing else, so they cannot drift apart the way the live card
+   once drifted from its mockup (see CLAUDE.md, Design references). */
+function receiptHTML(card) {
   const brief = card.brief ? BRIEFS[card.brief] : null;
   const tale = TALES[card.tale];
-  const earlier = CARDS.filter(c => c.date < card.date).slice(-5).reverse();
 
   /* Today in history follows the receipt's own date, not the clock, so the
      dateline and the entry under it can never be two different days. */
@@ -360,24 +362,12 @@ function renderHome(query = "") {
 
   const totalMin = (todayOpen ? 1 : 0) + (briefHasText(brief) ? Number(brief.minutes) || 0 : 0) + (tale.body ? Number(tale.minutes) || 0 : 0);
 
-  main.innerHTML = `
-    <div class="content">
-      ${held ? `<aside class="held">
-        <p><strong>Tonight&rsquo;s is for Every day members.</strong>
-        ${esc(heldTitle(held))} went out on ${esc(longDate(held.date))}.
-        Here is your free one for this week.</p>
-        <button class="btn btn-quiet" type="button" data-upgrade>Start full access &mdash; $6/month</button>
-      </aside>` : ""}
-      <div class="receipt-wrap">
-        <div class="rcpt-controls">
-          <button id="rcptSmaller" aria-label="Smaller text" title="Smaller text">A-</button>
-          <button id="rcptBigger" aria-label="Bigger text" title="Bigger text">A+</button>
-        </div>
+  return `
         <div class="rcpt-tear"></div>
         <div class="receipt">
           <div class="rcpt-brand">
             <div class="rcpt-wordmark">SAINTS <span class="amp">&amp;</span> DRAGONS</div>
-            <div class="rcpt-tagline">History for Dads &middot; Tales for bedtime</div>
+            <div class="rcpt-tagline">History for dads &middot; Tales for bedtime</div>
             <div class="rcpt-dateline">${esc(receiptDate(card.date))}</div>
           </div>
 
@@ -405,7 +395,7 @@ function renderHome(query = "") {
             <h3 class="rcpt-story-title">${esc(brief.title)}</h3>
             <p>${esc(brief.hook)}</p>
             ${brief.stillWithUs ? `<p>${esc(brief.stillWithUs)}</p>` : ""}
-            <a class="rcpt-more" href="#brief/${card.brief}">Read the full article &rarr;</a>` :
+            <a class="rcpt-more" href="#brief/${card.brief}">${briefHasText(brief) ? "Read the full article" : "See what&rsquo;s in it"} &rarr;</a>` :
             `<p>No history today.</p>`}
           </section>
 
@@ -417,56 +407,83 @@ function renderHome(query = "") {
             <p class="rcpt-dek">About ${esc(tale.minutes)} minutes &middot; ${esc(ageText(tale))}${tale.night ? ` &middot; part ${tale.night.n} of ${tale.night.of}` : ""}</p>
             ${tale.origin ? `<p class="rcpt-origin">${esc(tale.origin)}</p>` : ""}
             ${tale.body ? `<p class="rcpt-excerpt">&ldquo;${esc(tale.body[0])}&rdquo;</p>` : ""}
-            <a class="rcpt-more" href="#tale/${card.tale}">Read the rest &rarr;</a>
+            <a class="rcpt-more" href="#tale/${card.tale}">${tale.body ? "Read the rest" : "See what&rsquo;s in it"} &rarr;</a>
           </section>
 
-          <div class="rcpt-tally">
+          ${totalMin ? `<div class="rcpt-tally">
             ${todayOpen ? `<div class="row"><span>Today in history</span><span>1 min</span></div>` : ""}
             ${briefHasText(brief) ? `<div class="row"><span>History for you</span><span>${brief.minutes} min</span></div>` : ""}
             ${tale.body ? `<div class="row"><span>Bedtime story</span><span>${esc(tale.minutes)} min</span></div>` : ""}
             <div class="row grand"><span>Total</span><span>~${totalMin} min</span></div>
-          </div>
+          </div>` : ""}
 
           <div class="rcpt-foot">
             <p>One for you. One for them.</p>
           </div>
         </div>
-        <div class="rcpt-tear is-bottom"></div>
+        <div class="rcpt-tear is-bottom"></div>`;
+}
+
+/* Which way the last turn went, so the next receipt slides in from the
+   side the reader pushed it. Reset after each draw; a plain visit to #home
+   just appears. */
+let rcptTurn = "";
+
+function renderHome(query = "", date = "") {
+  const q = query.trim();
+  if (q) return renderSearch(q);
+
+  const { card: home, held } = homeCard();
+  /* An address for a night that is not out (or not a night) is just #home. */
+  const card = (date && CARDS.find(c => c.date === date)) || home;
+  const at = CARDS.indexOf(card);
+  const older = CARDS[at - 1];
+  const newer = CARDS[at + 1];
+  const isHome = card === home;
+
+  /* For a free reader tonight is often held back and #home opens on their
+     free night instead, so "tonight" is not always the newest receipt: the
+     held one is one turn to the right, drawn locked. */
+  const hrefFor = c => c === home ? "#home" : "#home/" + c.date;
+  const turn = rcptTurn;
+  rcptTurn = "";
+
+  main.innerHTML = `
+    <div class="content">
+      ${held && isHome ? `<aside class="held">
+        <p><strong>Tonight&rsquo;s is for Every day members.</strong>
+        ${esc(heldTitle(held))} went out on ${esc(longDate(held.date))}.
+        Here is your free one for this week.</p>
+        <button class="btn btn-quiet" type="button" data-upgrade>Start full access &mdash; $6/month</button>
+      </aside>` : ""}
+      <div class="receipt-wrap${turn ? " is-turning-" + turn : ""}">
+        <div class="rcpt-controls">
+          <button id="rcptSmaller" aria-label="Smaller text" title="Smaller text">A-</button>
+          <button id="rcptBigger" aria-label="Bigger text" title="Bigger text">A+</button>
+        </div>
+        ${receiptHTML(card)}
       </div>
 
-      <section class="rcpt-archive">
-        <h3>Past days</h3>
-        <p class="rcpt-archive-note">Missed one? It&rsquo;s all still here.</p>
+      ${card.locked ? `<div class="rcpt-lock">${lockPanel(
+        `${heldTitle(card)} is for Every day members.`,
+        "Every night's history and bedtime story, in full, and every night before it.",
+        { small: true })}</div>` : ""}
 
-        <div class="mini-strip">
-          ${earlier.map(c => {
-            const b = c.brief ? BRIEFS[c.brief] : null;
-            const t = TALES[c.tale];
-            const md = c.date.slice(5);
-            const day = TODAY[md];
-            return `<a class="mini" href="#${c.brief ? "brief/" + c.brief : "tale/" + c.tale}">
-              <span class="mini-tear"></span>
-              <span class="mini-paper">
-                <span class="mini-wordmark">SAINTS <i class="amp">&amp;</i> DRAGONS</span>
-                <span class="mini-date">${esc(miniDate(c.date))}</span>
-                <span class="mini-dots">&middot; &middot; &middot; &middot; &middot; &middot;</span>
-                ${day && day.length && day[0].text ? `<span class="mini-slot"><i class="no">01</i> Today in history</span>
-                <span class="mini-title">${esc(day[0].year)} &mdash; ${esc(firstSentence(day[0].text))}</span>` : ""}
-                <span class="mini-slot"><i class="no">02</i> History for you</span>
-                <span class="mini-title">${esc(b ? b.title : "\u2014")}</span>
-                ${b ? `<span class="mini-text">${esc(b.hook)}</span>` : ""}
-                <span class="mini-slot"><i class="no">03</i> Bedtime story</span>
-                <span class="mini-title">${esc(t.title)}</span>
-                ${t.body ? `<span class="mini-text is-excerpt">&ldquo;${esc(t.body[0])}&rdquo;</span>`
-                         : `<span class="mini-text is-excerpt">${esc(t.origin || "")}</span>`}
-              </span>
-              <span class="mini-fade"></span>
-            </a>`;
-          }).join("")}
-        </div>
+      <nav class="rcpt-pager" aria-label="Earlier and later nights">
+        ${older ? `<a class="rcpt-turn is-older" href="${hrefFor(older)}" data-turn="older" rel="prev">
+          <span class="rcpt-turn-arrow" aria-hidden="true">&lsaquo;</span>
+          <span><span class="rcpt-turn-label">Earlier</span>${esc(pagerDate(older.date))}</span>
+        </a>` : `<span class="rcpt-turn is-older is-end">The first night</span>`}
+        ${newer ? `<a class="rcpt-turn is-newer" href="${hrefFor(newer)}" data-turn="newer" rel="next">
+          <span><span class="rcpt-turn-label">Later</span>${esc(pagerDate(newer.date))}</span>
+          <span class="rcpt-turn-arrow" aria-hidden="true">&rsaquo;</span>
+        </a>` : `<span class="rcpt-turn is-newer is-end">The newest night</span>`}
+      </nav>
 
-        <a class="rcpt-archive-link" href="#history">Browse all the history &rarr;</a>
-      </section>
+      <p class="rcpt-pager-hint">${isHome
+        ? "Missed one? Turn back through every night with &lsaquo; and &rsaquo;, or swipe."
+        : `<a class="rcpt-pager-now" href="#home">Back to tonight</a>`}</p>
+      <p class="rcpt-archive"><a class="rcpt-archive-link" href="#history">Browse all the history &rarr;</a></p>
     </div>`;
 
   let scale = 1;
@@ -483,7 +500,47 @@ function renderHome(query = "") {
   }
   document.getElementById("rcptBigger").addEventListener("click", () => setScale(scale + 0.1));
   document.getElementById("rcptSmaller").addEventListener("click", () => setScale(scale - 0.1));
+
+  /* A swipe across the paper turns it. Earlier nights sit to the left, so
+     dragging the paper right brings the night before, and left the night
+     after. Only a clearly sideways swipe counts, so scrolling down a long
+     receipt never turns it by accident. */
+  let x0 = null, y0 = null;
+  wrap.addEventListener("touchstart", ev => {
+    const t = ev.touches[0];
+    x0 = t.clientX; y0 = t.clientY;
+  }, { passive: true });
+  wrap.addEventListener("touchend", ev => {
+    if (x0 === null) return;
+    const t = ev.changedTouches[0];
+    const dx = t.clientX - x0, dy = t.clientY - y0;
+    x0 = y0 = null;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    turnReceipt(dx > 0 ? "older" : "newer");
+  }, { passive: true });
 }
+
+/* Follows the pager's own link, so a swipe, a key and a click all land on
+   the same address. Does nothing at either end. */
+function turnReceipt(dir) {
+  const link = main.querySelector(`.rcpt-turn[data-turn="${dir}"]`);
+  if (!link) return;
+  rcptTurn = dir;
+  location.hash = link.getAttribute("href");
+}
+
+main.addEventListener("click", ev => {
+  const link = ev.target.closest(".rcpt-turn[data-turn]");
+  if (link) rcptTurn = link.dataset.turn;
+});
+
+document.addEventListener("keydown", ev => {
+  if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
+  if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+  if (ev.target.closest && ev.target.closest("input, textarea, select, [contenteditable]")) return;
+  if (!main.querySelector(".rcpt-pager")) return;
+  turnReceipt(ev.key === "ArrowLeft" ? "older" : "newer");
+});
 
 function renderSearch(query) {
   const q = query.toLowerCase();
@@ -1604,7 +1661,7 @@ function route() {
   else if (key === "account") renderAccount();
   else if (key === "checkout") renderCheckout();
   else if (key === "seven") renderSeven();
-  else if (key === "home" || !PAGES[key]) renderHome(searchInput.value);
+  else if (key === "home" || !PAGES[key]) renderHome(searchInput.value, key === "home" ? param : "");
   else renderPage(key);
 
   main.scrollTo?.(0, 0);
