@@ -63,7 +63,7 @@ function load() {
   vm.createContext(sandbox);
   vm.runInContext(
     src + ";globalThis.__content = " +
-      "{ ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY };",
+      "{ ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY, SEVEN };",
     sandbox,
     { filename: "data/content.js" }
   );
@@ -111,8 +111,10 @@ function omit(obj, keys) {
 /* Builds the payload the app boots from. `paid` short-circuits every rule
    below, so a paying reader's payload is the file itself. */
 function payloadFor({ paid, now = new Date() } = {}) {
-  const { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY } = load();
-  const taxonomy = { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS };
+  const { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY, SEVEN } = load();
+  /* SEVEN rides with the taxonomy because it is the same for every reader:
+     the seven free stories are what the free sign-up promises, in full. */
+  const taxonomy = { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, SEVEN };
   const today = todayISO(now);
 
   if (paid) {

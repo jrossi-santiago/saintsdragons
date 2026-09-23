@@ -65,7 +65,7 @@ ${url}
 The link works once and lasts ${minutes} minutes. ${aside}
 
 Saints & Dragons
-History for dads. Tales for bedtime.`;
+History for Dads. Tales for bedtime.`;
 
   const html =
 `<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#221c15;max-width:480px">
@@ -107,7 +107,7 @@ ${url}
 The link works once and lasts ${minutes} minutes. ${aside}
 
 Saints & Dragons
-History for dads. Tales for bedtime.`;
+History for Dads. Tales for bedtime.`;
 
   const html =
 `<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#221c15;max-width:480px">

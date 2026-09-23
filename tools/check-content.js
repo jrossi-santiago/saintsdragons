@@ -47,7 +47,7 @@ try {
   const sandbox = {};
   vm.createContext(sandbox);
   vm.runInContext(
-    src + ";globalThis.__content = { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY };",
+    src + ";globalThis.__content = { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY, SEVEN };",
     sandbox,
     { filename: "content.js" }
   );
@@ -58,7 +58,7 @@ try {
   process.exit(1);
 }
 
-const { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY } = data;
+const { ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, BRIEFS, TALES, CARDS, TODAY, SEVEN } = data;
 
 /* The bands a tale can be filed in. Read from content.js rather than repeated
    here, so adding a band is one edit in one file. */
@@ -296,6 +296,20 @@ for (const [key, entries] of Object.entries(TODAY)) {
     /* null is a deliberate "there isn't one"; a slug has to be real. */
     if (e.brief != null && !BRIEFS[e.brief]) err(at, `brief "${e.brief}" is not in BRIEFS`);
     if (e.tale != null && !TALES[e.tale]) err(at, `tale "${e.tale}" is not in TALES`);
+  });
+}
+
+/* ------------------------------------------------------------------ SEVEN */
+
+/* The free sign-up promises seven stories, and #seven prints every one. */
+if (!Array.isArray(SEVEN) || SEVEN.length !== 7) {
+  err("SEVEN", `must be a list of exactly 7 stories, has ${Array.isArray(SEVEN) ? SEVEN.length : "none"}`);
+} else {
+  SEVEN.forEach((s, i) => {
+    const where = `SEVEN[${i}]`;
+    if (!s.title || typeof s.title !== "string") err(where, "has no title");
+    if (!Array.isArray(s.paragraphs) || !s.paragraphs.length) err(where, "has no paragraphs");
+    else if (s.paragraphs.some(p => /^Sample text\./.test(p))) warn(where, "is still sample text");
   });
 }
 

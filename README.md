@@ -26,8 +26,8 @@ idea he reads to them that night, plus today in history. The receipt is how
 `/account` *draws* it, not what it is called. `/` sells it; `/account` is it.
 
 **Cadence and plans.** Paid: a new history and bedtime story every day, 7 of
-each a week. Free: one of each a week. Separately, `/7stories` is a free
-7-story PDF lead magnet. The only time claim anywhere in outward copy is
+each a week. Free: one of each a week, plus seven free bedtime stories
+printed in full at `#seven` in the account (`SEVEN` in `data/content.js`). The only time claim anywhere in outward copy is
 "under 10 minutes" of reading for the dad; there is no "nightly" and no
 "twice a week". (The "Nightly Receipt" name and the twice-a-week claim were
 both dropped on purpose — don't bring them back.)
@@ -68,8 +68,8 @@ API. Logins are the magic links described below, and every query goes through
     and must not depend on a relative path to assets one level up. It does
     not load the content: `app.js` fetches that from `/api/session`.
 - `styles.css` — design tokens for dark/light themes, layout, and components
-  — shared by `account/index.html`, `7stories/index.html`, and read (for
-  tokens only) by the root `index.html`.
+  — used by `account/index.html`, and read (for tokens only) by the root
+  `index.html`.
 - `app.js` — hash routing, all page renderers, search, theme persistence,
   mobile sidebar. Only loaded by `account/index.html`.
 - `data/content.js` — the nightly content: `CARDS`, `BRIEFS`, `TALES`,
@@ -93,9 +93,12 @@ API. Logins are the magic links described below, and every query goes through
   (`?state=ready|promo|promo-bad|paying|declined|waiting|done&theme=light`).
   Keep it while the live checkout is built from it — see *Design references*
   in `CLAUDE.md`.
-- `7stories/` — the email-gated campaign page served at `/7stories`:
-  - `index.html` — self-contained: same sidebar shell, email gate, download panel, with its CSS and JS inlined. Inlined on purpose — the page is reachable both as `/7stories` and `/7stories/`, and at the bare path a relative `<script src="stories.js">` would resolve against the site root and 404, leaving a blank page. Its nav links to the app use the absolute `/account#...` form for the same reason.
-  - `7-bedtime-stories.pdf` — placeholder PDF. Overwrite this file with the real one; no code change needed.
+- `7stories/index.html` — only a redirect to `/account#seven`, so old links
+  to the campaign page keep working. The email gate and the placeholder PDF
+  it used to hand out were retired on 2026-09-23: the seven stories are now
+  printed in full inside the account, with a "Print all seven" button, and
+  the landing page's Free plan is the way in. The redirect uses absolute
+  URLs only, for the bare-path reason in `LESSONS-LEARNED.md`.
 
 See `CLAUDE.md` for how changes get to `main` and what to check before
 merging, and `LESSONS-LEARNED.md` before changing how pages or assets are
@@ -159,7 +162,18 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
   one uses a hollow dot (`#i-dot`) and is explicitly unshipped, which the note
   underneath says out loud. When something ships, move it across and change its
   icon — never tick an item in the right-hand column in place.
-- **Campaign page** — all visible copy in `7stories/index.html` is sample text. The form fields are first name, children's age ranges (multi-select: 0–2, 3–5, 6–9, 10+) and email; all are required.
+- **The seven free stories (`#seven`)** — `SEVEN` in `data/content.js` is
+  sample text until the real seven are written: replace each `title` and
+  `paragraphs` in place. `tools/check-content.js` insists on exactly seven
+  and warns while any is still sample text. They go to every reader, free or
+  paid, so never point `SEVEN` at a tale from `TALES`.
+- **Free plan pop-up** — the Free card's "Start free" on `/` opens a
+  `<dialog>` asking for first name and email (`source: "/#free"`). A new
+  address is signed in on the spot and the pop-up says the free account is
+  made, with a "Log in" button to `/account#welcome`; the two welcome
+  questions then lead a first-timer to `#seven`. A known address is emailed
+  a link and the pop-up says so. The nav's "Start free" goes to `#pricing`,
+  so both plans are in view before anyone picks.
 - **Landing-page signup (`#start`)** — the only thing on `/` that collects
   anything. First name and email, posting JSON to `/api/auth/request-link`
   with `source: "/#start"`. That endpoint makes the account if the address is
@@ -170,11 +184,6 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
   `LESSONS-LEARNED.md`); a real form post lands on `/login` with the address
   echoed back. A failed POST is reported to the reader rather than swallowed
   — same reasoning as the Contact form: there is no download to fall back on.
-- **Campaign signup (`/7stories`)** — posts the same JSON plus `childAges`
-  (an array of the stored bands), so the gate both delivers the PDF and puts
-  the reader in the funnel with their children's ages already answered. If
-  the POST fails the download is still unlocked, so a network error never
-  blocks a reader.
 - **Contact form** — the last thing still on Formspree, and the right place
   for it: a message is not a signup and does not want an account. Posts JSON:
   `name`, `email`, `message`, `source`. The endpoint is `FORM_ENDPOINT` at the
@@ -188,9 +197,10 @@ Three ideas, and everything else follows from them.
 
 **One door.** `POST /api/auth/request-link` is signup and login at once, and
 nobody is asked which of the two they are. There is no password anywhere in
-the system. The landing page's `#start` form, `/7stories` and `/login` all
-post to that one endpoint, each with its own `source` so the three surfaces
-stay apart in the `users` table.
+the system. The landing page's Free pop-up and `#start` form and `/login`
+all post to that one endpoint, each with its own `source` so the surfaces
+stay apart in the `users` table. (`/7stories` did too, with `childAges`,
+until 2026-09-23.)
 
 - **A new address is signed in on the spot** — an account, a session, and
   no email. A brand-new account holds nothing a stranger could take, so an
