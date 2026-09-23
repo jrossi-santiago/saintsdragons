@@ -836,3 +836,142 @@ fieldset.field > span {
 }
 .account-facts dd { margin: 0; color: var(--text); font-size: 1rem; }
 .entry-text.is-held { color: var(--text-faint); font-style: italic; }
+
+/* ---------- #checkout ----------
+   Built from mockups/checkout.html, which stays the design reference. */
+
+.co { max-width: 560px; margin: 0 auto; }
+.co [hidden], .co[hidden] { display: none !important; }
+
+.co-kicker {
+  margin: 0 0 10px;
+  font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
+  font-weight: 700; color: var(--accent);
+}
+.co-head { margin-bottom: 26px; }
+.co-head h2 {
+  margin: 0 0 8px;
+  font-family: var(--serif); font-size: 2.15rem; font-weight: 600;
+  letter-spacing: -0.015em; line-height: 1.15;
+}
+.co-head p { margin: 0; color: var(--text-dim); }
+
+/* the plan */
+.co-plan {
+  padding: 24px 26px 20px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.co-plan-top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.co-plan-name { margin: 0; font-family: var(--serif); font-size: 1.4rem; font-weight: 600; }
+.co-price { margin: 0; font-family: var(--serif); font-size: 1.4rem; white-space: nowrap; }
+.co-price small { font-family: var(--sans); font-size: .85rem; color: var(--text-dim); }
+
+.co-includes { list-style: none; margin: 16px 0 18px; padding: 0; }
+.co-includes li {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 7px 0; color: var(--text-dim); font-size: .97rem; line-height: 1.5;
+}
+.co-includes .ic { width: 16px; height: 16px; margin-top: 4px; color: var(--accent); stroke-width: 2.4; }
+.co-includes strong { color: var(--text); font-weight: 600; }
+
+/* the tally — Space Mono, a nod to the receipt */
+.co-tally { margin: 0; padding: 14px 0 0; border-top: 1px dashed var(--line); font-family: "Space Mono", ui-monospace, Menlo, monospace; font-size: .85rem; }
+.co-tally > div { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; color: var(--text-dim); }
+.co-tally dt, .co-tally dd { margin: 0; }
+.co-tally .is-total { color: var(--text); font-weight: 700; padding-top: 8px; }
+.co-tally .is-off dd { color: var(--accent); }
+
+.co-cancel { margin: 14px 0 0; font-size: .85rem; color: var(--text-faint); }
+
+/* promo code, behind "Have a code?" */
+.co-promo { margin: 14px 0 0; }
+.co-linkish {
+  padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: .9rem; color: var(--text-dim);
+  border-bottom: 1px solid var(--line);
+}
+.co-linkish:hover { color: var(--text); border-color: var(--text); }
+.co-promo-row { display: flex; gap: 8px; margin-top: 10px; }
+.co-promo-row input {
+  flex: 1; min-width: 0; padding: 11px 14px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: transparent; color: var(--text); font: inherit; font-size: .95rem;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.co-promo-row input::placeholder { text-transform: none; letter-spacing: 0; color: var(--text-faint); }
+.co-promo-row input.is-bad { border-color: var(--accent); }
+.co-applied {
+  display: inline-flex; align-items: center; gap: 10px; margin-top: 2px;
+  padding: 6px 8px 6px 12px; border: 1px solid var(--line); border-radius: 999px;
+  font-size: .85rem; color: var(--text);
+}
+.co-applied .co-linkish { font-size: .8rem; }
+.co-msg { margin: 8px 0 0; font-size: .87rem; color: var(--text-dim); }
+.co-msg.is-bad { color: var(--accent); }
+
+/* payment */
+.co-pay { margin-top: 30px; }
+.co-section { margin: 0 0 12px; font-family: var(--serif); font-size: 1.2rem; font-weight: 600; }
+
+/* Stripe's Express Checkout Element (Apple Pay / Google Pay) and Payment
+   Element are iframes: their look comes from the Appearance API in app.js
+   (stripeAppearance), which reads these same tokens. These rules only size
+   the holes they are mounted into. The Express block stays hidden until
+   Stripe says a wallet is actually available on this device. */
+.co-express { min-height: 46px; }
+.co-or {
+  display: flex; align-items: center; gap: 14px; margin: 18px 0;
+  font-size: .8rem; color: var(--text-faint);
+}
+.co-or::before, .co-or::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.co-card { min-height: 190px; }
+.co-loading { padding: 14px 0; font-size: .9rem; color: var(--text-faint); }
+
+.co-error {
+  margin: 18px 0 0; padding: 14px 16px;
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  border-radius: var(--radius); background: var(--surface);
+  font-size: .93rem; line-height: 1.55; color: var(--text-dim);
+}
+.co-error strong { color: var(--text); }
+
+.co-submit {
+  width: 100%; justify-content: center; margin-top: 22px; padding: 15px 20px;
+  background: var(--accent); color: #1a1208; border-color: var(--accent); font-size: 1rem;
+}
+:root[data-theme="light"] .co-submit { color: #fff; }
+.co-submit[disabled] { opacity: .7; cursor: progress; }
+.co-spin {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent;
+  animation: co-spin .7s linear infinite;
+}
+@keyframes co-spin { to { transform: rotate(360deg); } }
+
+.co-fine { margin: 14px 0 0; font-size: .82rem; line-height: 1.55; color: var(--text-faint); text-align: center; }
+.co-fine .ic { width: 13px; height: 13px; vertical-align: -2px; margin-right: 4px; }
+
+/* after paying */
+.co-done { text-align: center; padding: 20px 0 0; }
+.co-done .co-mark {
+  width: 84px; height: 84px; margin: 0 auto 22px; border-radius: 50%;
+  background: var(--chip) url("/assets/dragon-dark.svg") no-repeat 50% 52% / 74%;
+  border: 1px solid var(--accent);
+}
+:root[data-theme="light"] .co-done .co-mark { background-image: url("/assets/dragon-light.svg"); }
+.co-done h2 { margin: 0 0 10px; line-height: 1.15; font-family: var(--serif); font-size: 2.4rem; font-weight: 600; letter-spacing: -.015em; }
+.co-done p { margin: 0 auto 10px; max-width: 26rem; color: var(--text-dim); }
+.co-done .btn { margin-top: 18px; }
+.co-done .co-kicker { color: var(--accent); margin-bottom: 10px; }
+.co-done .co-fine { margin-top: 26px; }
+.co-wait .co-spin { width: 28px; height: 28px; margin: 0 auto 22px; color: var(--accent); border-width: 3px; }
+
+@media (max-width: 900px) {
+  .co-head h2 { font-size: 1.75rem; }
+  .co-plan { padding: 20px 18px 18px; }
+}
+.co-done .co-submit-inline { width: auto; }
+.co-fine a { border-bottom: 1px solid var(--line); }
+.co-fine a:hover { color: var(--text); border-color: var(--text); }

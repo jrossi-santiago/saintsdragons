@@ -322,7 +322,12 @@ so nothing here depends on a relative path to its own assets.
 | `#bedtime` | Bedtime stories — the tale shelf, filtered by age band, by theme and by virtue |
 
 Two more routes are reachable but deliberately not in the nav: `#brief/<slug>`
-and `#tale/<slug>`, the detail pages.
+and `#tale/<slug>`, the detail pages. So is `#checkout`, the on-site checkout
+for Every day, drawn from `mockups/checkout.html`: Stripe's card form mounted
+on our page (Checkout Sessions, custom UI mode, Stripe.js pinned to basil to
+match the API version). After paying, Stripe returns the reader to
+`/account?checkout=done…#checkout`, which says "opening the door" and asks
+`/api/session` until the webhook has granted the plan, then "You're in".
 
 The sidebar search box searches across `BRIEFS` and `TALES` (title, hook,
 era/kind, theme, virtue, provenance) and swaps the receipt view for a results shelf while
