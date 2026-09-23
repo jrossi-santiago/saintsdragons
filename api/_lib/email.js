@@ -35,11 +35,18 @@ async function send({ to, subject, html, text }) {
 /* The voice here is the site's: plain words, no exclamation marks, and it
    says what it is for. "Handed down rather than explained" applies to email
    too — this is a door being held open, not a welcome sequence. */
-function loginEmail({ url, firstName, minutes, isNew }) {
+function loginEmail({ url, firstName, minutes, isNew, paid = false }) {
   const hello = firstName ? `${firstName},` : "Hello,";
-  const line = isNew
-    ? "Here is the way in. It is the same link every time — no password to keep."
-    : "Here is your way back in.";
+  /* paid: sent by the webhook after a checkout made while signed out, so it
+     is the receipt's companion as much as a login link. */
+  const line = paid
+    ? "Thank you. You are on Every day now, and this link signs you in to it. After this, the box on the site sends a new one whenever you need it — no password to keep."
+    : isNew
+      ? "Here is the way in. It is the same link every time — no password to keep."
+      : "Here is your way back in.";
+  const aside = paid
+    ? "If you did not pay for this, reply and tell us."
+    : "If you did not ask for it, nothing has happened to your account and you can ignore this.";
 
   const text =
 `${hello}
@@ -48,8 +55,7 @@ ${line}
 
 ${url}
 
-The link works once and lasts ${minutes} minutes. If you did not ask for it,
-nothing has happened to your account and you can ignore this.
+The link works once and lasts ${minutes} minutes. ${aside}
 
 Saints & Dragons
 History for dads. Tales for bedtime.`;
@@ -61,17 +67,19 @@ History for dads. Tales for bedtime.`;
   <p style="margin:28px 0">
     <a href="${esc(url)}" style="display:inline-block;background:#e5825a;color:#1a1208;font-weight:700;text-decoration:none;padding:13px 24px;border-radius:999px">Open Saints &amp; Dragons</a>
   </p>
-  <p style="font-size:14px;color:#6b6257">The link works once and lasts ${minutes} minutes. If you did not ask for it, nothing has happened to your account and you can ignore this.</p>
+  <p style="font-size:14px;color:#6b6257">The link works once and lasts ${minutes} minutes. ${esc(aside)}</p>
   <p style="font-size:14px;color:#6b6257">Or paste this in: <br><span style="word-break:break-all">${esc(url)}</span></p>
   <hr style="border:none;border-top:1px solid #e3ddcf;margin:24px 0">
   <p style="font-size:13px;color:#6b6257">Saints &amp; Dragons — history for dads, tales for bedtime.<br>${esc(SITE_URL)}</p>
 </div>`;
 
-  return { subject: isNew ? "Your way in to Saints & Dragons" : "Your Saints & Dragons link", html, text };
+  const subject = paid ? "You are on Every day — your way in"
+    : isNew ? "Your way in to Saints & Dragons" : "Your Saints & Dragons link";
+  return { subject, html, text };
 }
 
-async function sendLoginLink({ to, url, firstName, minutes, isNew }) {
-  return send({ to, ...loginEmail({ url, firstName, minutes, isNew }) });
+async function sendLoginLink({ to, url, firstName, minutes, isNew, paid = false }) {
+  return send({ to, ...loginEmail({ url, firstName, minutes, isNew, paid }) });
 }
 
 module.exports = { send, sendLoginLink, loginEmail };

@@ -19,7 +19,10 @@
 
 const { sql } = require("../_lib/db");
 const { stripe } = require("../_lib/stripe");
-const { rawBody, json, methodNotAllowed } = require("../_lib/http");
+const { userForEmail } = require("../_lib/users");
+const { issueLoginToken, LINK_MINUTES } = require("../_lib/session");
+const { sendLoginLink } = require("../_lib/email");
+const { SITE_URL, rawBody, json, methodNotAllowed, normaliseEmail } = require("../_lib/http");
 
 function seconds(value) {
   return value ? new Date(value * 1000).toISOString() : null;
@@ -57,6 +60,49 @@ async function saveSubscription(sub, fallbackUserId) {
   await sql`
     update users set stripe_customer_id = ${sub.customer}
      where id = ${userId} and stripe_customer_id is null`;
+}
+
+/* A checkout paid for by somebody who was not signed in (see
+   api/billing/checkout.js). The email they gave Stripe is the account: an
+   address we know gets its subscription, a new one gets made. The user id
+   goes onto the subscription's metadata so every later event about it finds
+   the reader without guessing, and the Stripe customer goes onto the user so
+   the billing portal opens on the one that is paying.
+
+   Then the way in goes to that address. It is the only way in: the payer is
+   never signed in by coming back from Stripe, because Stripe does not prove
+   an address belongs to whoever typed it. A failed send does not fail the
+   event — the subscription is what matters here, and the same address on
+   /login gets another link. */
+async function claimCheckout(s, sub) {
+  const email = normaliseEmail(s.customer_details?.email);
+  if (!email) {
+    console.error(`stripe: checkout ${s.id} has no usable email to make an account from`);
+    return null;
+  }
+  const firstName = String(s.customer_details?.name || "").trim().split(/\s+/)[0].slice(0, 80) || null;
+  const user = await userForEmail(email, { firstName, source: "/checkout" });
+
+  await sql`update users set stripe_customer_id = ${s.customer} where id = ${user.id}`;
+  await stripe().subscriptions.update(sub.id, { metadata: { ...sub.metadata, user_id: user.id } });
+
+  try {
+    const token = await issueLoginToken(user.id);
+    if (token) {
+      await sendLoginLink({
+        to: email,
+        url: `${SITE_URL}/api/auth/verify?token=${encodeURIComponent(token)}`,
+        firstName: user.first_name,
+        minutes: LINK_MINUTES,
+        isNew: user.is_new,
+        paid: true
+      });
+    }
+  } catch (e) {
+    console.error(`stripe: login link after checkout ${s.id} did not send:`, e.message);
+  }
+
+  return user.id;
 }
 
 /* Vercel would otherwise parse the body and throw the bytes away; this turns
@@ -99,7 +145,8 @@ async function handler(req, res) {
         const s = event.data.object;
         if (s.mode === "subscription" && s.subscription) {
           const sub = await stripe().subscriptions.retrieve(s.subscription);
-          await saveSubscription(sub, s.client_reference_id || null);
+          const userId = s.client_reference_id || (await claimCheckout(s, sub));
+          await saveSubscription(sub, userId);
         }
         break;
       }

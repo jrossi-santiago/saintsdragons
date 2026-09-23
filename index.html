@@ -643,11 +643,10 @@
           <li><svg><use href="#i-check"/></svg> Browse by era, age and theme</li>
           <li><svg><use href="#i-check"/></svg> Cancel any time</li>
         </ul>
-        <!-- Straight to Stripe for a reader who is already signed in. Anyone
-             else has to have an account first (checkout is tied to one), so
-             this link takes them through the magic link and /account opens
-             Stripe the moment they land. The script below only skips that
-             detour when it can. -->
+        <!-- Straight to Stripe, signed in or not: the script below asks
+             /api/billing/checkout for the URL. The href is only for when the
+             script cannot run — it signs the reader in first and /account
+             opens Stripe the moment they land. -->
         <a class="lp-cta" id="upgradeCta" href="/login?next=%2Faccount%3Fupgrade%3D1%23account">Get every day</a>
       </div>
     </div>
@@ -704,10 +703,10 @@
     document.querySelectorAll('.lp-reveal').forEach(function(el){ el.classList.add('is-in'); });
   });
 
-  /* The paid plan. Signed in, /api/billing/checkout answers with a Stripe
-     URL and the reader goes straight there; already paying, their account
-     page; signed out (401) or anything else, the link's own href, which
-     signs them in and opens checkout on the way back. */
+  /* The paid plan. /api/billing/checkout answers with a Stripe URL whether
+     or not the reader is signed in — signed out, Stripe asks for the email
+     and that address becomes the account. Already paying, their account
+     page. Anything else, the link's own href. */
   (function(){
     var cta = document.getElementById('upgradeCta');
     cta.addEventListener('click', function(ev){
