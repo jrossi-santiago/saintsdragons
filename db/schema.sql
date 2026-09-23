@@ -101,6 +101,13 @@ create table if not exists subscriptions (
 
 create index if not exists subscriptions_user on subscriptions (user_id);
 
+-- Paid access by hand, with no money involved: for testing the paid view, or
+-- for giving a reader the site on the house. Flip it in Supabase's table
+-- editor and reload. Nothing but a person writes it; Stripe never reads or
+-- touches it, and it never takes access away from a reader who is paying.
+-- false only means free for an account with no live subscription.
+alter table users add column if not exists comp_access boolean not null default false;
+
 -- The reader's open Checkout Session, so leaving #checkout halfway and coming
 -- back picks up the same one (with any code already applied) instead of
 -- starting another. Written by api/billing/checkout.js; Stripe's own record

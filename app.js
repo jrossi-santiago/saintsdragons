@@ -918,7 +918,8 @@ function ageRangeLabels(ids) {
 function planLine() {
   if (!ME) return "";
   if (ME.plan !== "paid") return "Free \u2014 one history and one bedtime story a week.";
-  const sub = ME.subscription || {};
+  if (!ME.subscription) return "Every day \u2014 complimentary, nothing to pay.";
+  const sub = ME.subscription;
   const ends = sub.currentPeriodEnd ? longDate(String(sub.currentPeriodEnd).slice(0, 10)) : null;
   if (sub.cancelAtPeriodEnd) return `Every day, ending${ends ? ` on ${ends}` : ""}.`;
   if (sub.status === "past_due") return "Every day \u2014 your last payment did not go through. Stripe will try again; update your card to be sure.";
@@ -946,7 +947,8 @@ function renderAccount() {
           ? `<button class="co-linkish" type="button" id="portalBtn">Invoices and billing</button>` : ""}</dd></div>
       </dl>
 
-      ${paid
+      ${paid && !ME.hasBilling ? ""
+        : paid
         ? `<p class="callout"><strong>Billing.</strong> Cancelling, cards and invoices all live with Stripe.
              <button class="btn btn-quiet" type="button" id="portalBtn">Manage subscription</button></p>`
         : lockPanel("Every day, instead of once a week.",
