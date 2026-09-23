@@ -69,8 +69,9 @@
      button ran 69px past the right edge, so the primary CTA was part
      off-screen on the device most people arrive on. Two things give the
      width back, in order of what is least missed:
-       - "Log in" goes. It points at /account, which is exactly where the
-         orange button used to go, so it costs width and offers nothing.
+       - "Log in" goes. It points at /login, and the footer carries the
+         same link; a returning reader can also just put their address in
+         the signup box, which is the same endpoint and logs them in.
        - Padding and the wordmark tighten. */
   @media (max-width: 560px){
     .lp-topbar{ padding: 14px 16px; gap: 10px; }
@@ -407,7 +408,7 @@
       <svg class="ic-sun" width="16" height="16"><use href="#i-sun"/></svg>
       <svg class="ic-moon" width="16" height="16"><use href="#i-moon"/></svg>
     </button>
-    <a class="lp-link-btn" href="/account">Log in</a>
+    <a class="lp-link-btn" href="/login">Log in</a>
     <a class="lp-cta" href="#start">Start free</a>
   </div>
 </header>
@@ -655,8 +656,11 @@
     <p class="lp-lede">You'll get one history and one bedtime story free every week. No card, nothing to install.</p>
 
     <!-- Ships as a real form with a real action, so it still posts if the
-         script below never runs. The script only upgrades it. -->
-    <form class="lp-signup" id="signupForm" method="POST" action="https://formspree.io/f/xqpaqzne" novalidate>
+         script below never runs. The script only upgrades it. A real post
+         lands on /login with the address echoed back, which says the same
+         thing the script says in place. -->
+    <form class="lp-signup" id="signupForm" method="POST" action="/api/auth/request-link" novalidate>
+      <input type="hidden" name="source" value="/#start" />
       <div class="lp-field">
         <label for="suName">First name</label>
         <input id="suName" name="firstName" type="text" autocomplete="given-name" placeholder="Tom" required>
@@ -675,7 +679,7 @@
 
 <footer class="lp-footer">
   <span>© <span id="year"></span> Saints &amp; Dragons</span>
-  <span><a href="/account#about">About</a> &middot; <a href="/account">Already a member? Log in</a></span>
+  <span><a href="/account#about">About</a> &middot; <a href="/login">Already a member? Log in</a></span>
 </footer>
 
 <script>
@@ -695,12 +699,12 @@
     document.querySelectorAll('.lp-reveal').forEach(function(el){ el.classList.add('is-in'); });
   });
 
-  /* Signup. Same Formspree pattern as /7stories and the Contact form, with its
-     own `source` so the three surfaces stay apart in one inbox. The endpoint is
-     read off the form's action, as on /7stories, so there is one place to
-     change it. Failure is reported rather than swallowed: unlike /7stories
-     there is no download to fall back on, so thanking somebody for a signup
-     that went nowhere would be a lie. */
+  /* Signup, which is also login: /api/auth/request-link makes the account if
+     the address is new and emails a link either way, so nobody is ever asked
+     which of the two they are. The endpoint is read off the form's action, as
+     on /7stories, so there is one place to change it. Failure is reported
+     rather than swallowed: there is no download to fall back on here, so
+     thanking somebody for a signup that went nowhere would be a lie. */
   (function(){
     var form = document.getElementById('signupForm');
     var status = document.getElementById('signupStatus');
@@ -739,11 +743,14 @@
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ firstName: firstName, email: email, source: '/#start' })
       }).then(function(res){
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json().then(function(body){ return { ok: res.ok, body: body }; });
+      }).then(function(r){
+        if (!r.ok) throw new Error(r.body && r.body.message || 'HTTP error');
         form.reset();
-        status.textContent = 'Thanks, ' + firstName + ' \u2014 you\u2019re in. Your first free stories go to ' + email + '.';
+        status.textContent = 'Thanks, ' + firstName + ' \u2014 check ' + email +
+          ' for your way in. The link works once and lasts twenty minutes.';
       }).catch(function(err){
-        console.warn('landing signup did not reach Formspree', err);
+        console.warn('signup did not go through', err);
         status.textContent = 'That did not send. Your details are still in the boxes \u2014 please try again in a moment.';
         status.classList.add('is-bad');
       }).then(function(){

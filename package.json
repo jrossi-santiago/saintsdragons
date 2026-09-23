@@ -1,0 +1,21 @@
+{
+  "name": "saints-and-dragons",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static site plus the serverless API behind signup, magic-link login, Stripe billing and gated content.",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "node tools/dev-server.js",
+    "check": "node --check app.js && node --check data/content.js && node tools/check-content.js"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.0",
+    "resend": "^4.0.0",
+    "stripe": "^18.0.0"
+  },
+  "devDependencies": {
+    "pg": "^8.23.0"
+  }
+}
