@@ -100,3 +100,63 @@ dominates; pulled toward the body's hue with the chroma cut, so there is no cast
    saturation once the surround inverts.
 7. **When comparing colour candidates, name the axis you are judging and check
    the others separately.** A value comparison will happily pick a hue mistake.
+
+---
+
+## 2026-09-23 — a paid checkout that granted nothing and sent nothing
+
+**Symptom.** The first live checkout from the landing page went through at
+Stripe, but no account appeared and no sign-in email arrived. Asking for a
+link on `/login` said only "that did not work". Once the first fault was
+fixed, it said "We could not send the email just now".
+
+**Cause.** Three configuration faults, stacked so that each one hid the next:
+
+1. **The database refused TLS.** Supabase signs its database certificate
+   with its own CA, not a public one, so node-postgres rejected it with
+   `SELF_SIGNED_CERT_IN_CHAIN`. `db.js` assumed a public chain. Two details
+   of node-postgres made it worse: `sslmode=require` in the URL now means
+   *full verification against the public CAs*, and parameters in the URL
+   **override** the options object passed next to it.
+2. **Vercel hid the reason.** A function that throws is answered with a
+   bare 500 and no `message` field, so every page could only say "that did
+   not work".
+3. **The sending domain did not exist in Resend.** `EMAIL_FROM` said
+   `send.saintsanddragons.com`, with the brand name spelled out. The domain
+   verified in Resend is `send.saintsdragons.com`. Resend checks the exact
+   domain, and a subdomain counts as a separate domain.
+
+**Why it looked half-working.** A signed-out checkout never queries the
+database: `api/billing/checkout.js` only looks a reader up when a session
+cookie exists. So Stripe opened and took the money, and everything after it
+(the webhook, `request-link`) failed. Locally none of this showed, because
+the dev Postgres has no TLS, and with no `RESEND_API_KEY` the link is
+printed to the log instead of sent.
+
+**Fix.** `DATABASE_CA_CERT` holds Supabase's CA, and `db.js` verifies
+against it with the `ssl*` URL parameters removed. `/api/health` names each
+broken piece: the database connection as an error code plus a hint, missing
+tables, unset keys, and whether the from domain is verified in Resend. The
+default sender is `hello@send.saintsdragons.com`. Quotes around
+`EMAIL_FROM` are stripped, because Vercel keeps them literally.
+
+**Recovery.** Nothing was lost. Stripe retries a failed webhook for about
+three days, and "Resend" on the event in the Stripe dashboard replays it at
+once. The payer never has to pay again.
+
+### Rules
+
+8. **When anything fails without a reason, open `/api/health` before reading
+   code.** It answers in one page what took three rounds of guessing here.
+9. **A step that works says nothing about the steps after it.** Checkout
+   succeeding proved Stripe's keys, not the database. Trace which requests
+   actually touch each dependency before concluding what is healthy.
+10. **Never fix a certificate error by turning verification off.** Find the
+    CA that signed it and trust that CA. With node-postgres, take `sslmode`
+    off the URL whenever `ssl` is passed in code, or the URL wins.
+11. **The brand is spelled out, the sending domain is not.** Mail goes from
+    `send.saintsdragons.com`. Any new email address, domain or DNS record
+    should be checked letter by letter against what Resend lists.
+12. **Vercel stores an environment value exactly as pasted, quotes
+    included.** `.env.example` quotes values for dotenv's sake, so code that
+    reads a value with spaces in it should strip surrounding quotes.
