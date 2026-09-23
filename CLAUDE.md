@@ -166,6 +166,14 @@ when the owner turns up. Both depend on `users.email_verified_at`; until
 `db/schema.sql` has been re-run on a database, new addresses get a link like
 everybody else.
 
+**A night dated ahead is not sent to anybody until 12:01am US Eastern on
+its date**, whatever the reader's plan. That is how a batch is queued
+(`released` in `api/_lib/content.js`). A queued card's brief and tale are
+absent from the payload, not locked, so they are not on the shelves, in
+search or in the page source. Filter on the server; a client-side date
+check would hand the queue to anyone who reads the payload.
+`PREVIEW_DATE` fakes the day locally and is ignored on Vercel.
+
 When something fails in production with no reason given, open `/api/health`
 first — see `LESSONS-LEARNED.md`, 2026-09-23.
 

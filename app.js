@@ -23,6 +23,9 @@ const FORM_ENDPOINT = "https://formspree.io/f/xqpaqzne";
 let CARDS = [], BRIEFS = {}, TALES = {}, TODAY = {};
 let ERAS = [], KINDS = [], THEMES = [], VIRTUES = [], AGE_BANDS = {};
 let SEVEN = [];
+/* The day the server says it is, in the release clock's zone (12:01am
+   Eastern; see api/_lib/content.js). Null only before boot(). */
+let RELEASE_DAY = null;
 
 /* The signed-in reader. Null only before boot() has answered. */
 let ME = null;
@@ -183,7 +186,11 @@ function dayLabel(md) {
   return `${MONTHS[m - 1]} ${d}`;
 }
 
+/* "Today" is the server's release day, not the reader's clock, so the
+   receipt, the free Today-in-history date and the default #today all turn
+   over when the night is released. The clock is only a fallback. */
 function todayKey() {
+  if (RELEASE_DAY) return RELEASE_DAY.slice(5);
   const n = new Date();
   return String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0");
 }
@@ -214,7 +221,7 @@ function nearestKey(md) {
 /* today in the form CARDS uses. Built from todayKey() rather than
    re-deriving the month and day, so there is one place that pads them. */
 function todayISO() {
-  return new Date().getFullYear() + "-" + todayKey();
+  return RELEASE_DAY || new Date().getFullYear() + "-" + todayKey();
 }
 
 /* the card for tonight: the most recent one not in the future */
@@ -1430,7 +1437,7 @@ function drawCheckoutWaiting(run) {
     if (data && data.user.plan === "paid") {
       /* The whole payload changes with the plan, so take all of it. */
       ME = data.user;
-      ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, SEVEN = [] } = data.content);
+      ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, SEVEN = [], today: RELEASE_DAY = null } = data.content);
       applyAgePreference();
       checkoutReturned = false;
       checkoutSessionId = null;
@@ -1695,7 +1702,7 @@ async function boot() {
   }
 
   ME = data.user;
-  ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, SEVEN = [] } = data.content);
+  ({ CARDS, BRIEFS, TALES, TODAY, ERAS, KINDS, THEMES, VIRTUES, AGE_BANDS, SEVEN = [], today: RELEASE_DAY = null } = data.content);
   STRIPE_KEY = data.stripe && data.stripe.publishableKey || null;
   applyAgePreference();
 
