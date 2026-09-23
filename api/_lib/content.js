@@ -115,8 +115,7 @@ function todayISO(now = new Date()) {
 
 /* The content as it stands on `day`. Briefs and tales that no card sends
    (the Drake piece, the second night of a story told on one card) are not
-   scheduled and stay. A released item that points at a held one loses the
-   pointer rather than linking to a page that is not there yet. */
+   scheduled and stay. */
 function released({ BRIEFS, TALES, CARDS, TODAY }, day) {
   const cards = CARDS.filter(c => c.date <= day);
   const queued = CARDS.filter(c => c.date > day);
@@ -129,23 +128,15 @@ function released({ BRIEFS, TALES, CARDS, TODAY }, day) {
   const heldDays = new Set(queued.map(c => c.date.slice(5)));
   for (const c of cards) heldDays.delete(c.date.slice(5));
 
-  const unlink = (item, key, held) =>
-    item && held.has(item[key]) ? omit(item, [key]) : item;
+  const keep = (obj, held) =>
+    Object.fromEntries(Object.entries(obj).filter(([key]) => !held.has(key)));
 
-  const briefs = {};
-  for (const [slug, b] of Object.entries(BRIEFS)) {
-    if (!heldBriefs.has(slug)) briefs[slug] = unlink(b, "tale", heldTales);
-  }
-  const tales = {};
-  for (const [slug, t] of Object.entries(TALES)) {
-    if (!heldTales.has(slug)) tales[slug] = unlink(t, "brief", heldBriefs);
-  }
-  const today = {};
-  for (const [key, entries] of Object.entries(TODAY)) {
-    if (heldDays.has(key)) continue;
-    today[key] = entries.map(e => unlink(unlink(e, "brief", heldBriefs), "tale", heldTales));
-  }
-  return { BRIEFS: briefs, TALES: tales, CARDS: cards, TODAY: today };
+  return {
+    BRIEFS: keep(BRIEFS, heldBriefs),
+    TALES: keep(TALES, heldTales),
+    CARDS: cards,
+    TODAY: keep(TODAY, heldDays)
+  };
 }
 
 /* The dates a free reader gets: the first card of each ISO week. Future

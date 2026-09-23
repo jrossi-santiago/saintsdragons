@@ -54,7 +54,9 @@ paste finished text, name a topic, or give a link or a PDF.
 5. **Before writing anything, say back in a few lines** which nights you
    read, their dates, which pieces you will write, and anything that
    looks wrong: a date that clashes with an existing card, a fact you
-   doubt, a story that doesn't fit the history. Then do the work.
+   doubt. The three picks don't need to relate: a night shares a date
+   and a receipt, not an idea, so don't flag a story for not fitting the
+   history. Then do the work.
 
 ## What you write
 
@@ -85,9 +87,9 @@ anything ships:
 - **Tags:** use `era`, `kind`, `virtue` and `theme` only from `ERAS`,
   `KINDS`, `VIRTUES` and `THEMES`. A piece that fits none is a question
   for the owner, not a new entry.
-- **Slugs and pairing:** lowercase and hyphenated, from the title. Check
-  the slug is free. The brief names the tale (`tale:`), the tale names
-  the brief (`brief:`), and the card names both.
+- **Slugs:** lowercase and hyphenated, from the title. Check the slug is
+  free. The card names the brief and the tale; the brief and the tale do
+  not name each other. The three picks don't need to relate.
 - **Brief `minutes`:** the main piece plus the side notes, divided by
   200 and rounded (`wc -w`).
 

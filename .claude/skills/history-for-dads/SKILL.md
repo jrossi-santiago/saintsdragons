@@ -44,7 +44,7 @@ description: Write a "history for dads" piece for Saints & Dragons from an uploa
    `sideNotes`), word for word from the Markdown, with `"golden-hind"` as
    the worked example. Generate the entry from the file with a short script
    rather than retyping it. Fill `era`, `kind`, `minutes` and a `hook`, show
-   the owner the hook, and don't invent a tale or a card to pair it with.
+   the owner the hook, and don't invent a tale or a card for it.
    Then `npm run check` and every step of **Before you merge** in
    `CLAUDE.md`, including a free reader's `/api/session` carrying none of
    the piece.

@@ -404,9 +404,6 @@ a { color: inherit; text-decoration: none; }
 }
 .entry-year { margin: 0 0 8px; font-family: var(--serif); font-size: 1.15rem; font-weight: 700; }
 .entry-text { margin: 0; color: var(--text-dim); font-size: 1.02rem; }
-.entry-links { display: flex; flex-wrap: wrap; gap: 18px; margin: 16px 0 0; font-size: .93rem; }
-.entry-links a { border-bottom: 1px solid var(--line); padding-bottom: 2px; }
-.entry-links a:hover { border-color: var(--text); }
 
 .date-nav {
   display: flex; align-items: center; flex-wrap: wrap; gap: 18px;
