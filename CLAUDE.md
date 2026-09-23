@@ -111,8 +111,24 @@ push the branch straight after, as step 5 does.
    different drawings — the last one only appears when the newest card is
    not the first of its ISO week.
 
+7. **Money and mail paths without real keys.** Stripe and Resend can be
+   exercised locally by stubbing the module with a preload, which keeps
+   the real handlers, database writes and redirects in the test:
+   `node -r ./stub-stripe.js tools/dev-server.js`, where the stub replaces
+   `require("stripe")` via `Module._load` with an object whose
+   `checkout.sessions.create` returns a fake URL and whose
+   `webhooks.constructEvent` just parses the body. Then POST events at
+   `/api/stripe/webhook` yourself and route `checkout.stripe.com` to a
+   blank page in Playwright. It proves our side only. Say so, and ask
+   for one real test-mode payment before calling billing done.
+
 Report what the screenshot actually shows, including what still looks wrong.
 "Should be fine" is not a check.
+
+In the sandbox, `pkill -f <pattern>` also matches the shell running it,
+because the pattern is in that shell's own command line, and kills your
+command mid-way (exit 144). Start servers from a script and `kill` the saved
+PID instead.
 
 ## Secrets, and what may be served
 
@@ -125,6 +141,16 @@ rather than looking fine until it ships.
 
 Every key the site reads is named in `.env.example`, with nothing real in
 it. Add a name there when you add one.
+
+**Coming back from Stripe signs nobody in.** A checkout started while signed
+out makes the account from the email typed at Stripe, and the only way into
+that account is the sign-in link emailed to that address. Stripe does not
+check that an address belongs to whoever typed it, so a session handed out
+on the return trip (a `session_id` in the success URL, say) would let anyone
+pay a few dollars to take over someone else's account.
+
+When something fails in production with no reason given, open `/api/health`
+first — see `LESSONS-LEARNED.md`, 2026-09-23.
 
 The database tables carry reader emails and the session hashes that stand in
 for passwords, and Supabase publishes the `public` schema through its Data
@@ -148,6 +174,16 @@ different wording from the data:
   the receipt prints instead of the numeric `age`. The numeric `age` stays
   the filter bucket, so the shelf chips keep working. Add a field rather
   than widening a taxonomy that drives a filter UI.
+
+## Wording
+
+- **The owner's wording ships as written.** When they supply copy, use it
+  verbatim, including grammar they chose on purpose ("pick as many as
+  fits"). If something looks like a slip, ask; do not quietly correct it.
+- **Readers are parents; ask about the stories, not the children.** The
+  onboarding question is "Age range of story listeners?", not "How old are
+  they?", which read as prying. Any new question about a reader's family
+  should be phrased around what it changes on the site, and should say so.
 
 ## Design references
 
