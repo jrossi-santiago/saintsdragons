@@ -436,6 +436,9 @@ function renderHome(query = "", date = "") {
   const older = CARDS[at - 1];
   const newer = CARDS[at + 1];
   const isHome = card === home;
+  /* A free reader gets this week's card and nothing else on #home: turning
+     to any other night shows the ask instead of the receipt. */
+  const walled = !isPaid() && !isHome;
 
   /* For a free reader tonight is often held back and #home opens on their
      free night instead, so "tonight" is not always the newest receipt: the
@@ -453,14 +456,17 @@ function renderHome(query = "", date = "") {
         <button class="btn btn-quiet" type="button" data-upgrade>Start full access &mdash; $6/month</button>
       </aside>` : ""}
       <div class="receipt-wrap${turn ? " is-turning-" + turn : ""}">
+        ${walled ? lockPanel(
+          "Your free card is this week\u2019s.",
+          "If you\u2019d like full access to everything, subscribe here.") : `
         <div class="rcpt-controls">
           <button id="rcptSmaller" aria-label="Smaller text" title="Smaller text">A-</button>
           <button id="rcptBigger" aria-label="Bigger text" title="Bigger text">A+</button>
         </div>
-        ${receiptHTML(card)}
+        ${receiptHTML(card)}`}
       </div>
 
-      ${card.locked ? `<div class="rcpt-lock">${lockPanel(
+      ${card.locked && !walled ? `<div class="rcpt-lock">${lockPanel(
         `${heldTitle(card)} is for Every day members.`,
         "Every night's history and bedtime story, in full, and every night before it.",
         { small: true })}</div>` : ""}
@@ -494,8 +500,8 @@ function renderHome(query = "", date = "") {
     wrap.style.setProperty("--rcpt-scale", scale);
     try { localStorage.setItem("receipt-scale", String(scale)); } catch (e) {}
   }
-  document.getElementById("rcptBigger").addEventListener("click", () => setScale(scale + 0.1));
-  document.getElementById("rcptSmaller").addEventListener("click", () => setScale(scale - 0.1));
+  document.getElementById("rcptBigger")?.addEventListener("click", () => setScale(scale + 0.1));
+  document.getElementById("rcptSmaller")?.addEventListener("click", () => setScale(scale - 0.1));
 
   /* A swipe across the paper turns it. Earlier nights sit to the left, so
      dragging the paper right brings the night before, and left the night
