@@ -33,7 +33,7 @@ It's part of the reason you speak English. England's rise at sea, which eventual
 
 ## For the dinner table
 
-Drake's Bay and Sir Francis Drake Boulevard near San Francisco are named after him. A chair made from the ship's timbers sits in Oxford's library, and a full-size replica you can walk aboard is docked in London. A question for the kids: if you'd been at sea for three years and your life depended on whether one person back home was still alive, what would you ask first?
+Drake's Bay and Sir Francis Drake Boulevard near San Francisco are named after him. A chair made from the ship's timbers sits in Oxford's library, and a full-size replica you can walk aboard is docked in London.
 
 ## Side notes
 

@@ -43,7 +43,7 @@ beer: plain, specific, a little dry, and never padded.
 
 ## Length
 
-- **Main piece: about 750–800 words** (the reference is 780). This is the
+- **Main piece: about 750–800 words** (the reference is 749). This is the
   number the owner settled on: the first draft, around 1,300 words, was
   "a bit too long," and cutting to about 750 was right.
 - **Side notes: about 250–300 words**, 6 to 8 bullets. They don't count
@@ -58,7 +58,7 @@ beer: plain, specific, a little dry, and never padded.
   | The rest of the story | ~100 |
   | Where it fits | ~75 |
   | Why it matters today | ~85 |
-  | For the dinner table | ~70 |
+  | For the dinner table | ~40 |
   | Side notes | ~290 |
 
   "How" gets the most room because it is the story. When cutting, take from
@@ -92,9 +92,7 @@ happened" for an event with no single hero, but keep the order and purpose.
    lives in, such as why we speak English and where the money came from. If
    there is a real "it depends who's telling it," say so plainly.
 9. **For the dinner table** — things he can point at or mention today (places
-   named after it, objects you can still go and see), then **one question to
-   ask the kids**. The question should be easy to answer and open-ended, and
-   come out of the story, not out of a moral.
+   named after it, objects you can still go and see).
 10. **Side notes** — bullets, see below.
 
 ## Prose, not bullets
@@ -193,7 +191,6 @@ file; the note above `BRIEFS` has the field list and the Drake entry
 | the bold line under it | `dek` (without the `**`) |
 | the paragraph before the first header | `opening` |
 | each `## Header` and its paragraphs, up to and including "For the dinner table" | `sections: [{ heading, body: [...] }]` |
-| the text after "A question for the kids:" at the end of the dinner-table paragraph | `kidsQuestion`, exactly as written (the site prints the label); the paragraph keeps the rest |
 | each side-note bullet | `sideNotes: [{ lead, text }]`, lead with its full stop, without the `**` |
 
 Keep `*italics*` as they are (ship names); the page prints them in italics.
@@ -202,15 +199,15 @@ Then fill the fields every brief has:
 - `era` and `kind`, from `ERAS` and `KINDS` (a new entry is a decision for
   the owner, not a filing convenience).
 - `minutes`: count the words with `wc -w`, main piece plus side notes, at
-  about 200 a minute, rounded (the Drake piece is 780 + 296, so 5).
+  about 200 a minute, rounded (the Drake piece is 749 + 296, so 5).
 - `hook`: two or three sentences for the shelf, the receipt and a locked
   page. It is new copy, so show it to the owner.
 - A card (`CARDS`) is a separate decision. A brief does not name a
   bedtime story; the card is the only thing that puts a history and a
   story together, and the two don't need to relate.
 
-`node tools/check-content.js` fails a sectioned brief missing its opening,
-sections or kids' question, and warns when the main piece is outside 650 to
+`node tools/check-content.js` fails a sectioned brief missing its opening
+or sections, and warns when the main piece is outside 650 to
 900 words or the side notes are not 6 to 8. Then check it on the site as
 `CLAUDE.md` describes, as a paid reader and a free one.
 

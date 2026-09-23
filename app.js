@@ -696,7 +696,7 @@ function renderBedtime() {
    older briefs' flat body is not searched, as before. */
 function briefSearchText(b) {
   if (!b.sections) return "";
-  return [b.opening, b.kidsQuestion,
+  return [b.opening,
     ...b.sections.flatMap(s => [s.heading, ...s.body]),
     ...(b.sideNotes || []).flatMap(n => [n.lead, n.text])].join(" ");
 }
@@ -708,17 +708,14 @@ function inline(text) {
 }
 
 /* The shape written to docs/history-for-dads.md: an opening with no header,
-   headed sections, the question for the kids closing the last one, then
-   the side notes as optional reading. */
+   headed sections, then the side notes as optional reading. */
 function briefSectionsHTML(b) {
-  const last = b.sections.length - 1;
   return `<div class="post-body brief-body">
       <p>${inline(b.opening)}</p>
-      ${b.sections.map((s, i) => `
+      ${b.sections.map(s => `
       <section class="brief-section">
         <h3>${inline(s.heading)}</h3>
         ${s.body.map(p => `<p>${inline(p)}</p>`).join("")}
-        ${i === last && b.kidsQuestion ? `<p class="kids-q"><strong>A question for the kids:</strong> ${inline(b.kidsQuestion)}</p>` : ""}
       </section>`).join("")}
     </div>
     ${b.sideNotes && b.sideNotes.length ? `<aside class="side-notes" aria-labelledby="sideNotesHead">

@@ -77,14 +77,12 @@ const VIRTUES = ["Courage", "Obedience", "Mercy", "Honesty", "Humility", "Persev
      opening        the paragraph with no header
      sections       [{ heading, body: [paragraphs] }], in the standard's order,
                     ending with "For the dinner table"
-     kidsQuestion   printed after "A question for the kids:", closing the last
-                    section, so it is stored exactly as the piece has it
      sideNotes      [{ lead, text }], 6 to 8; lead is the bold lead-in
 
    Both shapes keep title, hook, era, kind, minutes and (optionally) tale and
    stillWithUs, which is all the shelf, the receipt, search and the filters
    read. `*word*` in a new-format brief prints in italics (ship names).
-   A locked brief loses body, opening, sections, kidsQuestion and sideNotes;
+   A locked brief loses body, opening, sections and sideNotes;
    see api/_lib/content.js. The dek stays, like the title. */
 
 const BRIEFS = {
@@ -291,7 +289,6 @@ const BRIEFS = {
         ]
       }
     ],
-    kidsQuestion: "if you'd been at sea for three years and your life depended on whether one person back home was still alive, what would you ask first?",
     sideNotes: [
       { lead: "The tree in Panama.", text: "Drake first saw the Pacific in 1573 from the top of a tree in the Panama jungle, and he vowed to sail an English ship on it. He got there with help from the Cimarrons, escaped African slaves who knew the land and hated Spain as much as he did." },
       { lead: "The name change may have been an apology.", text: "The executed Doughty was a friend of Sir Christopher Hatton, the patron the *Golden Hind* was named after. Many historians suspect Drake picked the new name partly to smooth that over." },

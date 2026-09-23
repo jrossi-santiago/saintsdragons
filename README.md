@@ -15,8 +15,7 @@ Two things it commits us to, both easy to break by accident:
   changed the subject.
 - **"Handed down rather than explained" is a refusal.** No moralising and
   no lesson spelled out after the story. Side notes are welcome, but a piece
-  is never a list of fun facts, and the question for the kids comes out of
-  the story, not out of a moral. The About page says the same thing at
+  is never a list of fun facts. The About page says the same thing at
   length under *What this is not*, and the landing page's section of the
   same name says it short; all three have to keep agreeing.
 
@@ -267,7 +266,7 @@ paying for it; a wall is not.
 
 A locked brief or tale keeps its title, hook, era, age, virtue and
 provenance and loses only its text: a tale's `body`, and a brief's `body` or,
-in the sectioned shape, its `opening`, `sections`, `kidsQuestion` and
+in the sectioned shape, its `opening`, `sections` and
 `sideNotes` (a locked card also loses its question, why-ours line and
 prayer). A sectioned brief keeps its `dek`, like its title. So the shelves stay full, search keeps working,
 and what a reader is being asked to pay for is visible. `lockPanel` in
@@ -398,7 +397,7 @@ node tools/check-content.js
 
 The only test this site has. It reads `data/content.js` and verifies the things
 that break silently: every card points at a brief and a tale that exist, every era, kind, theme, virtue and age band is in its taxonomy, a sectioned
-brief has its opening, headed sections and question for the kids, no card is missing its
+brief has its opening and headed sections, no card is missing its
 question, why-ours line or prayer, dates are real and in order, a series adds
 up to the number of nights it claims.
 

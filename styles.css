@@ -230,27 +230,13 @@ a { color: inherit; text-decoration: none; }
 .post-body p:last-child { margin-bottom: 0; }
 .post-body strong { color: var(--text); font-weight: 600; }
 
-/* a history written to docs/history-for-dads.md: dek, headed sections, the
-   question for the kids, then side notes. Older briefs draw none of these. */
+/* a history written to docs/history-for-dads.md: dek, headed sections, then
+   side notes. Older briefs draw none of these. */
 .page-head p.brief-dek { color: var(--text); font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
 .brief-section h3 {
   font-family: var(--serif); font-size: 1.3rem; font-weight: 600;
   margin: 34px 0 10px; color: var(--text); line-height: 1.3;
 }
-.post-body p.kids-q {
-  margin: 22px 0 0;
-  padding: 14px 18px;
-  border-left: 3px solid var(--accent);
-  border-radius: 0 var(--radius) var(--radius) 0;
-  background: var(--surface);
-  color: var(--text);
-  font-family: var(--serif);
-  font-size: 1.08rem;
-  line-height: 1.5;
-}
-/* inline, not a label on its own line: the question is stored as the piece
-   has it, starting lowercase after the colon */
-.post-body p.kids-q strong { color: var(--accent); font-weight: 600; }
 .side-notes { margin: 40px 0 0; padding-top: 22px; border-top: 1px solid var(--line); }
 .side-notes h3 {
   margin: 0 0 12px;
