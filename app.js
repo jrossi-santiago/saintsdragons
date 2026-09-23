@@ -785,6 +785,7 @@ function planLine() {
 
 function renderAccount() {
   const paid = isPaid();
+  const pastBilling = !paid && !!(ME && ME.hasBilling);   /* left, but has invoices */
   const ages = (ME && ME.childAges) || [];
 
   main.innerHTML = `
@@ -799,12 +800,13 @@ function renderAccount() {
         <div><dt>Name</dt><dd>${esc(ME.firstName || "\u2014")}</dd></div>
         <div><dt>Children</dt><dd>${ages.length ? esc(ageRangeLabels(ages)) : "\u2014"}</dd></div>
         <div><dt>Member since</dt><dd>${esc(longDate(String(ME.memberSince).slice(0, 10)))}</dd></div>
-        <div><dt>Plan</dt><dd>${esc(planLine())}</dd></div>
+        <div><dt>Plan</dt><dd>${esc(planLine())}${pastBilling
+          ? `<button class="co-linkish" type="button" id="portalBtn">Invoices and billing</button>` : ""}</dd></div>
       </dl>
 
       ${paid
-        ? `<p class="callout"><strong>Billing.</strong> Cards, invoices and cancelling all live with Stripe.
-             <button class="btn btn-quiet" type="button" id="portalBtn">Manage billing</button></p>`
+        ? `<p class="callout"><strong>Billing.</strong> Cancelling, cards and invoices all live with Stripe.
+             <button class="btn btn-quiet" type="button" id="portalBtn">Manage subscription</button></p>`
         : lockPanel("Every day, instead of once a week.",
             "A new history and a new bedtime story every day, and every past one to keep.")}
 
@@ -843,7 +845,7 @@ function renderAccount() {
   });
 }
 
-/* Manage billing: ask our side for a Billing Portal URL and hand the reader
+/* Manage subscription: ask our side for a Billing Portal URL and hand the reader
    over to Stripe. (Paying is on our own page now — see #checkout — but
    cancelling, cards and invoices still live in Stripe's portal.) */
 async function goToStripe(endpoint) {
