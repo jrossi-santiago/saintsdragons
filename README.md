@@ -362,6 +362,10 @@ era/kind, dek, theme, virtue, provenance, and the full text of a sectioned
 brief the reader has open) and swaps the receipt view for a results shelf while
 there's a query; clearing it goes back to tonight's receipt.
 
+Nights are normally made in batches. The owner fills in a copy of the batch
+Google Doc (its source is `docs/batches/template.html`), and the `card-batch`
+skill in `.claude/skills/` compiles it into the steps below.
+
 To add a night, edit `data/content.js`:
 
 1. Write the history first, to `docs/history-for-dads.md`, the only standard
