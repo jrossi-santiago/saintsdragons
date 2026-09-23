@@ -96,6 +96,14 @@
   };
 
   if (params.get('error')) say(ERRORS[params.get('error')] || 'Something went wrong. Try again.', true);
+  /* Back from a checkout paid for while signed out. The webhook made the
+     account from the email given to Stripe and sent the link there; being
+     sent back here signs nobody in. */
+  if (params.get('paid')) {
+    document.querySelector('.lede').textContent = 'Thank you — you are on Every day.';
+    say('We have emailed a link to the address you used at checkout. It signs you in. ' +
+        'If it has not arrived in a few minutes, put that address in above and we will send another.');
+  }
   if (params.get('sent')) say('Check ' + params.get('sent') + ' — the link is on its way. It works once, and lasts twenty minutes.');
 
   form.addEventListener('submit', function (ev) {

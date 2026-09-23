@@ -9,7 +9,7 @@
  * in kind: JSON to JSON, a redirect back to the page for a real form post.
  */
 
-const { sql } = require("../_lib/db");
+const { userForEmail } = require("../_lib/users");
 const { issueLoginToken, LINK_MINUTES, sweep } = require("../_lib/session");
 const { sendLoginLink } = require("../_lib/email");
 const {
@@ -49,16 +49,7 @@ module.exports = async function handler(req, res) {
     return json(res, 400, { error: "invalid_email", message: "That email address does not look right." });
   }
 
-  /* One statement so a double submit cannot make two accounts. A name or an
-     age range already on file is never overwritten by a blank one. */
-  const user = await sql.one`
-    insert into users (email, first_name, child_ages, source)
-    values (${email}, ${firstName}, ${childAges}, ${source})
-    on conflict (email) do update
-      set first_name = coalesce(users.first_name, excluded.first_name),
-          child_ages = case when cardinality(users.child_ages) = 0
-                            then excluded.child_ages else users.child_ages end
-    returning id, first_name, (xmax = 0) as is_new`;
+  const user = await userForEmail(email, { firstName, childAges, source });
 
   const token = await issueLoginToken(user.id, { redirectTo: next, ip: clientIP(req) });
   if (!token) {

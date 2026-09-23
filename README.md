@@ -241,6 +241,8 @@ receipt, on a shelf and on a story's own page.
 | `api/session.js` | What `/account` boots from: reader, plan, content. `401` means "not signed in" and is not an error. |
 | `api/profile.js` | The two onboarding answers, and any later edit of them. |
 | `api/billing/checkout.js`, `api/billing/portal.js` | Hand the reader to Stripe. No card detail ever touches this site; cancelling and invoices live in Stripe's portal, which is how "cancel any time" is kept. |
+| `api/_lib/users.js` | The one statement that turns an email into an account, shared by the login box and a checkout. |
+| `api/stripe/webhook.js` | The only writer of `subscriptions`. A checkout started while signed out (the paid plan on `/`) arrives here with no user: the email given to Stripe becomes the account, or finds the one it already is, and the sign-in link is emailed to it. Coming back from Stripe signs nobody in. |
 | `db/schema.sql` | Every table, re-runnable. |
 
 ### Setting it up
