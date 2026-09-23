@@ -881,6 +881,15 @@ const CARDS = [
     prayer: "For steady hands when the ground gives way beneath us, and for the small kindnesses that come back around exactly when we need them."
   },
   {
+    date: "2026-09-23",
+    title: "Drake Around the World, 1577\u20131580",
+    brief: "golden-hind",
+    tale: "three-little-pigs",
+    question: "The third little pig took the longest to build his house. What is something that was worth taking your time over?",
+    whyOurs: "Drake came home because the ship held and every man aboard pulled a rope, gentleman and sailor alike. We lay the bricks while the neighbours are dancing, so there is somewhere to run to when the wolf comes down the lane.",
+    prayer: "For the patience to build it properly, and for a door that holds when the wind gets up."
+  },
+  {
     date: "2026-09-24",
     title: "Patrick in Ireland, the 430s",
     brief: "patrick",
@@ -888,15 +897,6 @@ const CARDS = [
     question: "He went back to the people who took him. Who is someone hard for you to be kind to?",
     whyOurs: "The man walked back into the country that had taken six years off his life, and he walked in with his hands full. That direction — back toward the people who hurt you, carrying something to give — is the whole of what we believe, and it is the hardest thing on the list.",
     prayer: "For a heart that can go back, and for hands that carry something when it does."
-  },
-  {
-    date: "2026-09-28",
-    title: "Drake Around the World, 1577\u20131580",
-    brief: "golden-hind",
-    tale: "three-little-pigs",
-    question: "The third little pig took the longest to build his house. What is something that was worth taking your time over?",
-    whyOurs: "Drake came home because the ship held and every man aboard pulled a rope, gentleman and sailor alike. We lay the bricks while the neighbours are dancing, so there is somewhere to run to when the wolf comes down the lane.",
-    prayer: "For the patience to build it properly, and for a door that holds when the wind gets up."
   }
 ];
 
