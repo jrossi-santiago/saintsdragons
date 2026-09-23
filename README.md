@@ -86,6 +86,11 @@ API. Logins are the magic links described below, and every query goes through
   links point to (e.g. `stories/the-lion-and-the-mouse.html`). Each one is a
   single self-contained file, not a subdirectory `index.html`, so there's no
   bare-path/trailing-slash ambiguity to worry about.
+- `mockups/checkout.html` — the design reference for the on-site checkout
+  (`#checkout` in `/account`). Static, no Stripe; every state is one URL
+  (`?state=ready|promo|promo-bad|paying|declined|waiting|done&theme=light`).
+  Keep it while the live checkout is built from it — see *Design references*
+  in `CLAUDE.md`.
 - `7stories/` — the email-gated campaign page served at `/7stories`:
   - `index.html` — self-contained: same sidebar shell, email gate, download panel, with its CSS and JS inlined. Inlined on purpose — the page is reachable both as `/7stories` and `/7stories/`, and at the bare path a relative `<script src="stories.js">` would resolve against the site root and 404, leaving a blank page. Its nav links to the app use the absolute `/account#...` form for the same reason.
   - `7-bedtime-stories.pdf` — placeholder PDF. Overwrite this file with the real one; no code change needed.
