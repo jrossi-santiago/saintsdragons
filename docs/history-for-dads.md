@@ -8,12 +8,14 @@ That piece is the reference implementation:
 writing a new one. When this document and that piece disagree, the piece
 wins, and this document gets fixed.
 
-**This replaces the older brief voice** described in the header of
-`data/content.js` (the "military explainer": third person, no "you", no
-closing line, no fun facts). The histories already on the site were written
-to that voice and stay as they are. New histories follow this standard. The
-owner set that voice aside for this exercise and approved the result as the
-new standard.
+**This is the only standard for a new history.** It replaced the older
+brief voice (the "military explainer": third person, no "you", no closing
+line, no fun facts, Hastings as the reference), whose rules sat in the header
+of `data/content.js` until 2026-09-23 and were taken out then; they are in git
+at commit `358a053` if anyone needs to see them. The histories already on the
+site were written to that voice and stay as they are: don't rewrite them
+toward this one. The owner set that voice aside for this exercise and
+approved the result as the new standard.
 
 ## The usual job
 
@@ -141,6 +143,15 @@ No timeline tables in the main piece. The timeline goes into prose in
   about perseverance" is not.
 - **No jargon without a gloss.** If a term is needed (privateer, galleon),
   it gets a few plain words of explanation the first time.
+- **Religion is subject matter, not register.** Saints, councils, heresies
+  and feasts are history and get written like any other history. What stays
+  out is the devotional register: no preaching, no piety, and no miracle
+  asserted as fact when the evidence for it is a hagiographer writing three
+  centuries later. Name the source, say when it was written, and let the
+  reader weigh it. The only two places the site speaks in a religious voice
+  are a card's "Before lights out" prayer or verse and its one-line "Why
+  this is ours". (Carried over from the old header of `data/content.js`,
+  where it was the one rule that was not about the old voice.)
 
 ## Sources and accuracy
 
@@ -167,10 +178,41 @@ In chat:
    left out (and why), and the facts to check.
 
 Don't commit a new piece to the repo unless the owner asks. Approved pieces
-live in `docs/histories/<slug>.md`, next to the reference. Wiring these into
-the site (`BRIEFS` in `data/content.js`) is a separate job: the renderer
-today expects a flat `body` of paragraphs, with no section headers or side
-notes, so that needs a decision on how the site shows them.
+live in `docs/histories/<slug>.md`, next to the reference.
+
+### Putting it on the site
+
+Also only when the owner asks. An approved piece goes into `BRIEFS` in
+`data/content.js` in the sectioned shape, word for word from its Markdown
+file; the note above `BRIEFS` has the field list and the Drake entry
+(`"golden-hind"`) is the worked example:
+
+| Markdown | `BRIEFS` field |
+|---|---|
+| `# Title` | `title` |
+| the bold line under it | `dek` (without the `**`) |
+| the paragraph before the first header | `opening` |
+| each `## Header` and its paragraphs, up to and including "For the dinner table" | `sections: [{ heading, body: [...] }]` |
+| the text after "A question for the kids:" at the end of the dinner-table paragraph | `kidsQuestion`, exactly as written (the site prints the label); the paragraph keeps the rest |
+| each side-note bullet | `sideNotes: [{ lead, text }]`, lead with its full stop, without the `**` |
+
+Keep `*italics*` as they are (ship names); the page prints them in italics.
+Then fill the fields every brief has:
+
+- `era` and `kind`, from `ERAS` and `KINDS` (a new entry is a decision for
+  the owner, not a filing convenience).
+- `minutes`: count the words with `wc -w`, main piece plus side notes, at
+  about 200 a minute, rounded (the Drake piece is 780 + 296, so 5).
+- `hook`: two or three sentences for the shelf, the receipt and a locked
+  page. It is new copy, so show it to the owner.
+- `tale`, only if a bedtime story for it exists. The checker allows a brief
+  with none; don't invent one to fill the slot. A card (`CARDS`) is also a
+  separate decision.
+
+`node tools/check-content.js` fails a sectioned brief missing its opening,
+sections or kids' question, and warns when the main piece is outside 650 to
+900 words or the side notes are not 6 to 8. Then check it on the site as
+`CLAUDE.md` describes, as a paid reader and a free one.
 
 ## How the reference got here
 

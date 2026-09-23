@@ -37,5 +37,17 @@ description: Write a "history for dads" piece for Saints & Dragons from an uploa
    Don't commit it unless the owner asks. If they approve it and ask, save it
    as `docs/histories/<slug>.md` and merge it the way `CLAUDE.md` describes.
 
-Ignore the older brief voice rules in `data/content.js` for this: this
-standard replaced them for new histories.
+6. **Put it on the site only when asked.** When the owner asks for an
+   approved piece to go live, enter it into `BRIEFS` in `data/content.js`
+   following **Putting it on the site** in `docs/history-for-dads.md`: the
+   sectioned shape (`dek`, `opening`, `sections`, `kidsQuestion`,
+   `sideNotes`), word for word from the Markdown, with `"golden-hind"` as
+   the worked example. Generate the entry from the file with a short script
+   rather than retyping it. Fill `era`, `kind`, `minutes` and a `hook`, show
+   the owner the hook, and don't invent a tale or a card to pair it with.
+   Then `npm run check` and every step of **Before you merge** in
+   `CLAUDE.md`, including a free reader's `/api/session` carrying none of
+   the piece.
+
+The standard is the only set of rules. The flat-`body` briefs already in
+`data/content.js` were written to an older voice; leave them alone.

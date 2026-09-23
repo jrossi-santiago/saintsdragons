@@ -13,10 +13,12 @@ Two things it commits us to, both easy to break by accident:
 - **The subject is the dad, not the product.** It opens with what he does,
   not with what arrives. Copy that starts "The receipt is…" has quietly
   changed the subject.
-- **"Handed down rather than explained" is a refusal.** No moralising, no
-  lesson spelled out after the story, no fun facts. The About page says the
-  same thing at length under *What this is not*; that section and this line
-  have to keep agreeing.
+- **"Handed down rather than explained" is a refusal.** No moralising and
+  no lesson spelled out after the story. Side notes are welcome, but a piece
+  is never a list of fun facts, and the question for the kids comes out of
+  the story, not out of a moral. The About page says the same thing at
+  length under *What this is not*, and the landing page's section of the
+  same name says it short; all three have to keep agreeing.
 
 **The product** is a daily pair: a piece of history the dad reads on his own
 time (morning, lunch, before he leaves work) and a bedtime story on the same
@@ -247,8 +249,10 @@ tonight's was and offering the plan. Meeting the product is the argument for
 paying for it; a wall is not.
 
 A locked brief or tale keeps its title, hook, era, age, virtue and
-provenance and loses only its `body` (a locked card also loses its question,
-why-ours line and prayer). So the shelves stay full, search keeps working,
+provenance and loses only its text: a tale's `body`, and a brief's `body` or,
+in the sectioned shape, its `opening`, `sections`, `kidsQuestion` and
+`sideNotes` (a locked card also loses its question, why-ours line and
+prayer). A sectioned brief keeps its `dek`, like its title. So the shelves stay full, search keeps working,
 and what a reader is being asked to pay for is visible. `lockPanel` in
 `app.js` is the one place the ask is worded, so it reads the same on the
 receipt, on a shelf and on a story's own page.
@@ -344,13 +348,19 @@ has not, and asks `/api/session` until the webhook has granted the plan,
 then "You're in", with the address receipts go to and a way to change it.
 
 The sidebar search box searches across `BRIEFS` and `TALES` (title, hook,
-era/kind, theme, virtue, provenance) and swaps the receipt view for a results shelf while
+era/kind, dek, theme, virtue, provenance, and the full text of a sectioned
+brief the reader has open) and swaps the receipt view for a results shelf while
 there's a query; clearing it goes back to tonight's receipt.
 
 To add a night, edit `data/content.js`:
 
-1. Add the brief to `BRIEFS` and its paired tale to `TALES` (a tale names its
-   brief with `brief:`, and a brief names its tale with `tale:`).
+1. Write the history first, to `docs/history-for-dads.md`, the only standard
+   for a new one, with `docs/histories/golden-hind.md` as the reference.
+   (The briefs already on the site with a flat `body` were written to an
+   older voice and stay that way.) Enter it into `BRIEFS` in the sectioned
+   shape as that document's **Putting it on the site** describes, and its
+   paired tale into `TALES` (a tale names its brief with `brief:`, and a
+   brief names its tale with `tale:`).
 2. Add a `CARDS` entry with the date, both slugs, the question, the why-ours
    line and the prayer. Cards are newest last, and the page shows the most
    recent one that is not in the future.
@@ -366,7 +376,8 @@ node tools/check-content.js
 The only test this site has. It reads `data/content.js` and verifies the things
 that break silently: every card points at a brief and a tale that exist, every
 pairing reciprocates (the brief names the tale *and* the tale names the brief),
-every era, kind, theme, virtue and age band is in its taxonomy, no card is missing its
+every era, kind, theme, virtue and age band is in its taxonomy, a sectioned
+brief has its opening, headed sections and question for the kids, no card is missing its
 question, why-ours line or prayer, dates are real and in order, a series adds
 up to the number of nights it claims, and every slug in `TODAY` resolves.
 
@@ -375,6 +386,7 @@ to evaluate `data/content.js` the way a browser does, then walks what it defined
 
 **Errors fail the run (exit 1). Warnings never do.** Warnings are things worth
 a look that are not broken: a brief on the shelf that no card ever sent, a
+sectioned brief outside the standard's 650-to-900 words or 6-to-8 side notes, a
 `TODAY` entry outside the 100-to-150-word house length, and any chip in `ERAS`,
 `KINDS`, `THEMES` or `VIRTUES` with nothing behind it. That last one is not a
 fault — the shelves only draw a chip once something is filed under it — it is
