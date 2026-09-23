@@ -113,7 +113,8 @@ async function currentUser(req) {
            s.id as session_id,
            sub.status as sub_status,
            sub.current_period_end,
-           sub.cancel_at_period_end
+           sub.cancel_at_period_end,
+           exists (select 1 from subscriptions where user_id = u.id) as has_billing
       from sessions s
       join users u on u.id = s.user_id
       left join lateral (
@@ -137,6 +138,10 @@ async function currentUser(req) {
     createdAt: row.created_at,
     stripeCustomerId: row.stripe_customer_id,
     plan: row.sub_status ? "paid" : "free",
+    /* Any subscription, live or ended: somebody who has left still has
+       invoices and a card on file with Stripe, and should be able to reach
+       them from #account without paying again. */
+    hasBilling: !!row.has_billing,
     subscription: row.sub_status
       ? {
           status: row.sub_status,
