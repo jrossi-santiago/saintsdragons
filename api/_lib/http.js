@@ -3,7 +3,25 @@
  * Vercel's Node runtime hands a handler the Node req/res pair, so these are
  * deliberately plain: no framework, nothing to learn. */
 
-const SITE_URL = (process.env.SITE_URL || "http://localhost:8000").replace(/\/+$/, "");
+/* The origin every login link and Stripe return URL is built from, in the
+   order it should be trusted:
+
+     SITE_URL      what you set. On production this is the domain readers
+                   actually type, and it is the only one that is right.
+     VERCEL_URL    the URL of *this* deployment, which Vercel sets itself.
+                   It is the fallback so preview deployments work on their
+                   own terms: without it, a login link generated on a
+                   preview would point at production and log you into the
+                   live site while you were testing a branch. So set
+                   SITE_URL on Production only, and leave Preview to this.
+     localhost     development.
+
+   Note VERCEL_URL carries no scheme, and preview deployments are https. */
+const SITE_URL = (
+  process.env.SITE_URL ||
+  (process.env.VERCEL_URL ? "https://" + process.env.VERCEL_URL : "") ||
+  "http://localhost:8000"
+).replace(/\/+$/, "");
 
 function json(res, status, body) {
   res.statusCode = status;
