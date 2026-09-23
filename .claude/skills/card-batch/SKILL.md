@@ -21,17 +21,19 @@ need something from the owner, ask in chat.
 - **Source:** `docs/batches/template.html`. This file is the template; the
   Google Doc was made from it.
 - **The Doc:** "Saints & Dragons — Batch Template" in the owner's Drive
-  (id `175CihgfHHf2BQVttdMp2lUdVcdEskv5lDOeJwrKiJIc`, 2026-09-23). The
-  owner makes a copy of it for each batch. The first, longer version was
-  renamed "OLD — …" in the same Drive.
+  (id `1l2RiaKcaebOg8xpdQTlpsyK39BKYsXjPr9ci8nkabo8`, 2026-09-23, the
+  version with the Image field). The owner makes a copy of it for each
+  batch. The two earlier versions were renamed "OLD — …" and
+  "OLD 2 — …" in the same Drive.
 - **To change the template:** edit the HTML, then upload it with the Google
   Drive connector's `create_file` (`contentMimeType: text/html`; Drive
   converts it to a Doc; the connector cannot rewrite an existing Doc's
   contents). Read the result back with `read_file_content` to confirm it
   converted, then give the owner the new link and update the id above.
 
-Each night has five fields: **Date**, **Today in History**, **History for
-Dads**, **Bedtime Story** and **Notes**. Each is free-form. The owner may
+Each night has six fields: **Date**, **Today in History**, **History for
+Dads**, **Image** (optional, added 2026-09-23 at the owner's request),
+**Bedtime Story** and **Notes**. Each is free-form. The owner may
 paste finished text, name a topic, or give a link or a PDF.
 
 ## Reading a batch
@@ -73,6 +75,28 @@ anything ships:
   is entered. A pasted piece is entered as it is. Either way, follow
   **Putting it on the site** in that document. You fill in `title`,
   `dek`, `era`, `kind`, `hook`, `stillWithUs` (optional) and `minutes`.
+- **Image:** one picture for the top of the history's page, stored as
+  `image: { src, alt, credit }` on the brief (see the note above `BRIEFS`).
+  The owner gives a link. A picture pasted into the Doc can't be pulled
+  out through the Drive connector, so ask for its link instead.
+  1. **Rights first.** Use it only if it's public domain or licensed for
+     reuse (Wikimedia Commons says which on the file's page). For a
+     Commons file, the API gives the file URL, the artist and the licence:
+     `https://commons.wikimedia.org/w/api.php?action=query&titles=File:<name>&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1200&format=json`.
+     Download with `curl -A "SaintsDragons/1.0"`, because Wikimedia refuses
+     requests without a user agent. For anything else, ask the owner
+     where it's from before using it.
+  2. **Shrink it** with Pillow (`pip install pillow`) to fit 900×1200,
+     as a JPEG at quality 82, saved to
+     `assets/histories/<brief slug>.jpg`. That keeps it around 150 KB.
+  3. **Look at it** (Read the file), then write `alt` as what is actually
+     in the picture. Write `credit` as who made it, the date, the licence
+     and where it's from: "Francis Drake, painted by Marcus Gheeraerts the
+     Younger, 1591. Public domain, via Wikimedia Commons."
+  4. `npm run check` fails a path that doesn't resolve or an image with
+     no alt text. Files under `assets/` are public, so an image for a
+     queued night can be fetched before its date, though nothing links
+     to it yet.
 - **Bedtime Story:** a named traditional story is retold for reading
   aloud. A named idea with no source is a new tale, and its `origin`
   says so. You fill in `title`, `age` (a band from `AGE_BANDS`,

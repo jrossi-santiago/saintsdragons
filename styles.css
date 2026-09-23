@@ -233,6 +233,18 @@ a { color: inherit; text-decoration: none; }
 /* a history written to docs/history-for-dads.md: dek, headed sections, then
    side notes. Older briefs draw none of these. */
 .page-head p.brief-dek { color: var(--text); font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
+
+/* the one picture a history may carry, under its meta line. Left-aligned
+   with the text and never taller than a screenful, so a tall portrait does
+   not push the opening off the page. */
+.brief-figure { margin: 4px 0 28px; }
+.brief-figure img {
+  display: block;
+  max-width: 100%; max-height: 460px; width: auto; height: auto;
+  border-radius: 4px;
+  box-shadow: 0 1px 0 var(--line);
+}
+.brief-figure figcaption { margin-top: 8px; font-size: .8rem; color: var(--text-faint); line-height: 1.4; }
 .brief-section h3 {
   font-family: var(--serif); font-size: 1.3rem; font-weight: 600;
   margin: 34px 0 10px; color: var(--text); line-height: 1.3;

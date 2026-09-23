@@ -94,6 +94,19 @@ for (const [slug, b] of Object.entries(BRIEFS)) {
   requireText(where, b, "title");
   requireText(where, b, "hook");
 
+  /* The one picture a history may carry. A path that does not resolve
+     draws a broken image on the page, and nothing else would notice. */
+  if (b.image !== undefined) {
+    const img = b.image || {};
+    if (!/^\/assets\/histories\/[a-z0-9-]+\.(jpe?g|png|webp)$/.test(img.src || "")) {
+      err(where, `image.src ${JSON.stringify(img.src)} should be "/assets/histories/<slug>.jpg"`);
+    } else if (!fs.existsSync(path.join(__dirname, "..", img.src))) {
+      err(where, `image.src "${img.src}" is not a file in the repo`);
+    }
+    if (!img.alt) err(where, "image has no alt text");
+    if (!img.credit) warn(where, "image has no credit line — say who made it and its licence");
+  }
+
   /* Two shapes (see the note above BRIEFS in content.js). A brief carrying
      any of the sectioned fields is written to docs/history-for-dads.md and
      is checked against it; anything else is an older brief with a flat body. */
