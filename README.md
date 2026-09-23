@@ -8,6 +8,9 @@ That line is the positioning. It is the meta description on `/` and
 external profile. **If you change it, change it in all of those places at
 once** — it is the one sentence that has to match everywhere.
 
+Why it exists, in the owner's words, is in `docs/why.md`. That is the
+standard behind this line, not a replacement for it.
+
 Two things it commits us to, both easy to break by accident:
 
 - **The subject is the dad, not the product.** It opens with what he does,
