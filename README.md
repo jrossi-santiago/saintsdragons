@@ -239,6 +239,11 @@ that Stripe calls `active`, `trialing` or `past_due` — `past_due` on purpose,
 because locking a father out of tonight's story over a retry that may
 succeed in an hour is the wrong trade.
 
+The one exception is `users.comp_access`, a true/false a person sets by hand
+in the database: true is the paid plan with no Stripe involved, for testing
+the paid view or giving someone the site on the house. Stripe never writes
+it, and false never takes access from a reader who is paying.
+
 **The gate is on the server, not in the page.** `/account` no longer loads
 `content.js`; it boots from `GET /api/session`, which answers with the
 reader, their plan, and the content that plan entitles them to. A free

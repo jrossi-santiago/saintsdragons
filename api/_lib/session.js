@@ -103,13 +103,18 @@ async function startSession(res, userId, userAgent) {
    trialing or past_due. past_due is deliberate — Stripe is still retrying
    the card, and locking a father out of tonight's story over a retry that
    may succeed in an hour is the wrong trade. When it gives up, the status
-   becomes canceled or unpaid and access ends with it. */
+   becomes canceled or unpaid and access ends with it.
+
+   users.comp_access grants the paid plan by hand, alongside Stripe rather
+   than instead of it: set by a person in the database, for testing or for
+   a reader given the site on the house. It has no subscription behind it,
+   so `subscription` stays null and nothing offers a billing portal. */
 async function currentUser(req) {
   const token = cookies(req)[SESSION_COOKIE];
   if (!token) return null;
   const row = await sql.one`
     select u.id, u.email, u.first_name, u.child_ages, u.onboarded_at,
-           u.created_at, u.stripe_customer_id,
+           u.created_at, u.stripe_customer_id, u.comp_access,
            s.id as session_id,
            sub.status as sub_status,
            sub.current_period_end,
@@ -137,7 +142,7 @@ async function currentUser(req) {
     onboarded: !!row.onboarded_at,
     createdAt: row.created_at,
     stripeCustomerId: row.stripe_customer_id,
-    plan: row.sub_status ? "paid" : "free",
+    plan: row.sub_status || row.comp_access ? "paid" : "free",
     /* Any subscription, live or ended: somebody who has left still has
        invoices and a card on file with Stripe, and should be able to reach
        them from #account without paying again. */

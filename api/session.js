@@ -32,7 +32,7 @@ module.exports = async function handler(req, res) {
       memberSince: user.createdAt,
       plan: user.plan,
       subscription: user.subscription,
-      hasBilling: user.hasBilling || paid
+      hasBilling: user.hasBilling
     },
     content: payloadFor({ paid }),
     /* The publishable key is meant to be public — it can only start things
