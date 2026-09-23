@@ -243,6 +243,7 @@ receipt, on a shelf and on a story's own page.
 | `api/billing/checkout.js`, `api/billing/portal.js` | Hand the reader to Stripe. No card detail ever touches this site; cancelling and invoices live in Stripe's portal, which is how "cancel any time" is kept. |
 | `api/_lib/users.js` | The one statement that turns an email into an account, shared by the login box and a checkout. |
 | `api/stripe/webhook.js` | The only writer of `subscriptions`. A checkout started while signed out (the paid plan on `/`) arrives here with no user: the email given to Stripe becomes the account, or finds the one it already is, and the sign-in link is emailed to it. Coming back from Stripe signs nobody in. |
+| `api/health.js` | Open `/api/health` in a browser when something fails with no reason given. It says whether the database connects, which tables are missing, and which keys are unset, with a hint for each. It never shows a value. |
 | `db/schema.sql` | Every table, re-runnable. |
 
 ### Setting it up

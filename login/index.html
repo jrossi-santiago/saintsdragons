@@ -123,7 +123,10 @@
     }).then(function (res) {
       return res.json().then(function (body) { return { ok: res.ok, body: body }; });
     }).then(function (r) {
-      if (!r.ok) throw new Error(r.body && r.body.message || 'that did not work');
+      /* Our own failures always carry a message. One without is the
+         platform reporting a crash, which is ours to fix, not theirs. */
+      if (!r.ok) throw new Error(r.body && r.body.message ||
+        'Something broke on our side, not yours. Please try again in a few minutes.');
       say('Check ' + email + ' — the link is on its way. It works once, and lasts twenty minutes.');
       form.reset();
       btn.textContent = 'Send another';
