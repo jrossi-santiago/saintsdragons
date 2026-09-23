@@ -205,9 +205,9 @@ Then fill the fields every brief has:
   about 200 a minute, rounded (the Drake piece is 780 + 296, so 5).
 - `hook`: two or three sentences for the shelf, the receipt and a locked
   page. It is new copy, so show it to the owner.
-- `tale`, only if a bedtime story for it exists. The checker allows a brief
-  with none; don't invent one to fill the slot. A card (`CARDS`) is also a
-  separate decision.
+- A card (`CARDS`) is a separate decision. A brief does not name a
+  bedtime story; the card is the only thing that puts a history and a
+  story together, and the two don't need to relate.
 
 `node tools/check-content.js` fails a sectioned brief missing its opening,
 sections or kids' question, and warns when the main piece is outside 650 to

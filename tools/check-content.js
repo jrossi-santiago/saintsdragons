@@ -5,8 +5,8 @@
  *   node tools/check-content.js            # checks ./content.js
  *   node tools/check-content.js FILE       # checks another copy of it
  *
- * Adding a night means hand-editing four structures that point at each other:
- * a brief, its tale, a CARDS entry naming both, and optionally a TODAY entry.
+ * Adding a night means hand-editing several structures: a brief, a tale, a
+ * CARDS entry naming both by slug, and optionally a TODAY entry.
  * There is no build step and no test suite, so a slug typed one character
  * wrong ships silently and a reader gets a card with half of it missing.
  * This reads content.js and says so instead.
@@ -145,13 +145,6 @@ for (const [slug, b] of Object.entries(BRIEFS)) {
   if (!ERAS.includes(b.era)) err(where, `era ${JSON.stringify(b.era)} is not in ERAS — ${list(ERAS)}`);
   if (!KINDS.includes(b.kind)) err(where, `kind ${JSON.stringify(b.kind)} is not in KINDS — ${list(KINDS)}`);
 
-  if (b.tale !== undefined) {
-    if (!TALES[b.tale]) {
-      err(where, `tale "${b.tale}" is not in TALES`);
-    } else if (TALES[b.tale].brief !== slug) {
-      err(where, `tale "${b.tale}" does not point back — TALES["${b.tale}"].brief is ${JSON.stringify(TALES[b.tale].brief)}`);
-    }
-  }
 }
 
 /* ----------------------------------------------------------------- tales */
@@ -176,14 +169,6 @@ for (const [slug, t] of Object.entries(TALES)) {
   }
   if (t.source !== undefined && !isText(t.source)) err(where, "source is present but empty");
   if (t.ageLabel !== undefined && !isText(t.ageLabel)) err(where, "ageLabel is present but empty");
-
-  if (t.brief !== undefined) {
-    if (!BRIEFS[t.brief]) {
-      err(where, `brief "${t.brief}" is not in BRIEFS`);
-    } else if (BRIEFS[t.brief].tale !== slug) {
-      err(where, `brief "${t.brief}" does not point back — BRIEFS["${t.brief}"].tale is ${JSON.stringify(BRIEFS[t.brief].tale)}`);
-    }
-  }
 
   if (t.night !== undefined) {
     const n = t.night;
@@ -252,16 +237,6 @@ CARDS.forEach((c, i) => {
   if (!isText(c.tale)) err(where, "tale slug is missing");
   else if (!TALES[c.tale]) err(where, `tale "${c.tale}" is not in TALES`);
   else (taleUse[c.tale] = taleUse[c.tale] || []).push(c.date);
-
-  /* The pairing the card asserts must be the pairing the data agrees to. */
-  if (BRIEFS[c.brief] && TALES[c.tale]) {
-    if (BRIEFS[c.brief].tale !== c.tale) {
-      err(where, `pairs "${c.brief}" with "${c.tale}", but BRIEFS["${c.brief}"].tale is ${JSON.stringify(BRIEFS[c.brief].tale)}`);
-    }
-    if (TALES[c.tale].brief !== c.brief) {
-      err(where, `pairs "${c.tale}" with "${c.brief}", but TALES["${c.tale}"].brief is ${JSON.stringify(TALES[c.tale].brief)}`);
-    }
-  }
 });
 
 for (const [slug, dates] of Object.entries(briefUse)) {
@@ -296,10 +271,6 @@ for (const [key, entries] of Object.entries(TODAY)) {
       const words = e.text.trim().split(/\s+/).length;
       if (words < 100 || words > 150) warn(at, `${words} words — the house length is 100 to 150`);
     }
-
-    /* null is a deliberate "there isn't one"; a slug has to be real. */
-    if (e.brief != null && !BRIEFS[e.brief]) err(at, `brief "${e.brief}" is not in BRIEFS`);
-    if (e.tale != null && !TALES[e.tale]) err(at, `tale "${e.tale}" is not in TALES`);
   });
 }
 

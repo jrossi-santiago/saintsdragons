@@ -42,10 +42,10 @@ const PAGES = {
       <div class="prose">
         <p>You stopped learning things for fun at about the same time you stopped being graded on it. Not on purpose. School ended, work started, and everything you have read since has been read for a reason — a decision at work, a thing that needed fixing, the news. Nobody has handed you anything in years that was simply worth knowing.</p>
         <p>Then you had kids, and the reading became somebody else's twelve-page book about a truck, for the fourth night running.</p>
-        <p>Saints &amp; Dragons puts both back. Every day, one true piece of history for you, written for a grown adult, to read whenever you get a few minutes. And one bedtime story to read out loud to them that night, on the same idea.</p>
+        <p>Saints &amp; Dragons puts both back. Every day, one true piece of history for you, written for a grown adult, to read whenever you get a few minutes. And one bedtime story to read out loud to them that night.</p>
 
         <h3>How it works</h3>
-        <p>You read how Patrick, a man with no family on the island and so no legal protection at all, had to pay for the right not to be killed — and went back anyway to the country that had enslaved him. That night you sit on the edge of a bed and read them a story about a boy on a cold hill who walks all the way home, and then turns around. They get what you got, shaped for a five-year-old.</p>
+        <p>You read how Patrick, a man with no family on the island and so no legal protection at all, had to pay for the right not to be killed — and went back anyway to the country that had enslaved him. That night you sit on the edge of a bed and read them a story about a boy on a cold hill who walks all the way home, and then turns around.</p>
         <p>You learn something real, they hear a story worth hearing, and the two of you have something to talk about that isn't school or a screen. Under 10 minutes of reading for you, and none of it to plan.</p>
 
         <h3>What this is not</h3>
@@ -314,25 +314,21 @@ function chip(group, field, value, label) {
    Hiding it instead would make the shelves look thin and the offer
    invisible, which serves nobody. */
 function briefCardHTML(slug, b) {
-  const tale = TALES[b.tale];
   return `<article class="shelf-item${b.locked ? " is-locked" : ""}">
     <h3>${esc(b.title)}${b.locked ? LOCK_TAG : ""}</h3>
     <p class="shelf-meta">${esc(b.era)} · ${esc(b.kind)} · ${b.minutes} min</p>
     <p class="shelf-hook">${esc(b.hook)}</p>
     ${b.stillWithUs ? `<p class="shelf-line"><strong>Still around today:</strong> ${esc(b.stillWithUs)}</p>` : ""}
-    ${tale ? `<p class="shelf-line"><strong>Bedtime story:</strong> <a href="#tale/${b.tale}">${esc(tale.title)}</a></p>` : ""}
     <a class="btn btn-quiet" href="#brief/${slug}">${b.locked ? "See what's in it" : `Read it (${b.minutes} min)`}</a>
   </article>`;
 }
 
 function taleCardHTML(slug, t) {
-  const brief = t.brief ? BRIEFS[t.brief] : null;
   return `<article class="shelf-item${t.locked ? " is-locked" : ""}">
     <h3>${esc(t.title)}${t.locked ? LOCK_TAG : ""}</h3>
     <p class="shelf-meta">${esc(ageText(t))} · ${esc(t.minutes)} min read-aloud${t.theme ? ` · ${esc(t.theme)}` : ""} · ${esc(t.virtue)}</p>
     <p class="shelf-tag">${esc(t.origin)}</p>
     ${t.night ? `<p class="shelf-line"><strong>${t.night.n === 1 ? `A ${t.night.of}-part story.` : `Part ${t.night.n} of ${t.night.of}.`}</strong></p>` : ""}
-    ${brief ? `<p class="shelf-line"><strong>Goes with:</strong> <a href="#brief/${t.brief}">${esc(brief.title)}</a></p>` : ""}
     <a class="btn btn-quiet" href="#tale/${slug}">${t.locked ? "See what's in it" : "Read it aloud"}</a>
   </article>`;
 }
@@ -619,10 +615,6 @@ function renderToday(md) {
         <p class="entry-year">${esc(e.year)}</p>
         ${e.text ? `<p class="entry-text">${esc(e.text)}</p>`
                  : `<p class="entry-text is-held">Kept for Every day members.</p>`}
-        ${e.brief || e.tale ? `<p class="entry-links">
-          ${e.brief ? `<a href="#brief/${e.brief}">Read the full history</a>` : ""}
-          ${e.tale ? `<a href="#tale/${e.tale}">Read the bedtime story that goes with it</a>` : ""}
-        </p>` : ""}
       </article>`).join("") : `<p class="empty">Nothing here yet.</p>`}
 
       ${list && list.length && !list[0].text
@@ -732,7 +724,6 @@ function briefSectionsHTML(b) {
 function renderBrief(slug) {
   const b = BRIEFS[slug];
   if (!b) return renderMissing("That page isn't here.", "history", "History for Dads");
-  const tale = TALES[b.tale];
 
   /* An open new-format brief starts on its own opening, which does the hook's
      job; printing both would say the same thing twice. Locked, the hook is
@@ -754,14 +745,12 @@ function renderBrief(slug) {
         : lockPanel("This one is in the archive.",
             `${b.minutes} minutes, and it is one of every history written so far \u2014 all of them yours on Every day, with a new one each morning.`)}
       ${b.stillWithUs ? `<p class="callout"><strong>Still around today.</strong> ${esc(b.stillWithUs)}</p>` : ""}
-      ${tale ? `<p class="callout"><strong>Bedtime story.</strong> <a href="#tale/${b.tale}">${esc(tale.title)}</a> · ${esc(tale.minutes)} min read-aloud</p>` : ""}
     </div>`;
 }
 
 function renderTale(slug) {
   const t = TALES[slug];
   if (!t) return renderMissing("That story isn't here.", "bedtime", "Bedtime stories");
-  const brief = t.brief ? BRIEFS[t.brief] : null;
   const siblings = t.series
     ? Object.entries(TALES).filter(([, x]) => x.series === t.series)
         .sort((a, b) => a[1].night.n - b[1].night.n)
@@ -781,7 +770,6 @@ function renderTale(slug) {
             `${ageText(t)}, about ${t.minutes} minutes out loud. Every story so far is yours on Every day, and a new one lands each night.`)}
       ${siblings.length ? `<p class="callout"><strong>All parts.</strong> ${siblings.map(([s, x]) =>
         s === slug ? `<span class="is-here">Part ${x.night.n}</span>` : `<a href="#tale/${s}">Part ${x.night.n}</a>`).join(" · ")}</p>` : ""}
-      ${brief ? `<p class="callout"><strong>Goes with.</strong> <a href="#brief/${t.brief}">${esc(brief.title)}</a> · ${brief.minutes} min read for you</p>` : ""}
     </div>`;
 }
 
@@ -1153,7 +1141,7 @@ function renderCheckout() {
           </div>
           <ul class="co-includes">
             <li><svg class="ic"><use href="#i-check"/></svg><span><strong>A history for you, every day.</strong> Under 10 minutes, on your own time.</span></li>
-            <li><svg class="ic"><use href="#i-check"/></svg><span><strong>A bedtime story for them</strong> on the same idea, to read aloud that night.</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span><strong>A bedtime story for them,</strong> to read aloud that night.</span></li>
             <li><svg class="ic"><use href="#i-check"/></svg><span><strong>The whole archive,</strong> and every day of Today in history.</span></li>
           </ul>
           <dl class="co-tally" id="coTally">
@@ -1604,7 +1592,7 @@ const META = {
   home:    ["Saints & Dragons | History for Dads, tales for bedtime",
             "Dads learning things worth knowing & passing them on to their kids. History, faith and virtue, handed down rather than explained."],
   history: ["History for Dads | Saints & Dragons",
-            "Short history on how things actually worked \u2014 battles, builders, saints and Romans, each with a bedtime story on the same idea."],
+            "Short history on how things actually worked \u2014 battles, builders, saints and Romans."],
   today:   ["Today in History | Saints & Dragons",
             "One short, true story for each date on the calendar."],
   bedtime: ["Bedtime Stories for Ages 4 to 9 | Saints & Dragons",

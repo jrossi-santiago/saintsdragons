@@ -95,7 +95,6 @@ const BRIEFS = {
     minutes: 3,
     hook: "The last great battle fought by oared galleys, and the last decided by men crossing from one deck to another. Both fleets moved by muscle: three or four men to an oar, and most of them chained to the bench.",
     stillWithUs: "A ship\u2019s kitchen is still called the galley.",
-    tale: "boy-who-counted-oars",
     body: [
       "A war galley was not a sailing ship that happened to carry oars. It was a rowing machine about a hundred and fifty feet long, with twenty-five or thirty oars a side and three or four men on each, pulling to a drum. In both fleets at Lepanto most of those men were slaves or convicts, chained at the ankle, unable to see out.",
       "That engine dictated everything else. A galley could move in a flat calm and hold its place in a line, which no sailing ship of the period could do, but it had to carry food and water for three or four hundred men in a hull built for speed. So galley fleets hugged coastlines, never strayed far from a friendly port, and fought where the coast forced them together. On 7 October 1571 that meant the Gulf of Patras, off the west coast of Greece, where about four hundred ships and roughly a hundred and forty thousand men found each other.",
@@ -115,7 +114,6 @@ const BRIEFS = {
     minutes: 3,
     hook: "Ottoman siege engineering did not attack walls. It went underneath them. For two months the tunnels crept toward Vienna\u2019s defences, and the garrison fought most of the siege underground and in the dark.",
     stillWithUs: "The story that the croissant was invented at this siege is almost certainly false, and people still tell it.",
-    tale: "riders-with-wings",
     body: [
       "In July 1683 Vienna held about fifteen thousand defenders behind walls that were good but not new. Outside sat an Ottoman army of perhaps a hundred and fifty thousand under the Grand Vizier Kara Mustafa.",
       "He did not storm the walls, because storming walls kills the men doing it. He dug. Ottoman siege engineering was the best in the world and it worked on a simple observation: a wall resists what comes at its face and nothing else. So the engineers drove tunnels forward, packed the ends with gunpowder, and brought the defences down from beneath. The trenches crept in for two months. The defenders answered the only way anyone could, by digging their own tunnels to intercept, which meant fighting underground in the dark with the roof low enough to touch. By early September the outer works had holes in them and the garrison was down to roughly four thousand men who could still fight.",
@@ -135,7 +133,6 @@ const BRIEFS = {
     minutes: 3,
     hook: "Umayyad cavalry had beaten every army it met by the same method: charge the line, break it, and kill the men once they were running. Charles built his entire week around denying it the break.",
     stillWithUs: "His nickname ended up as his grandson\u2019s name. Charlemagne is just Charles the Great.",
-    tale: "wall-that-would-not-move",
     body: [
       "In October 732, on wooded ground between Tours and Poitiers, a Frankish army stood on a hill for seven days and refused to come down.",
       "The man who put them there was Charles, mayor of the palace. The Frankish kings of that generation did almost nothing: servants carried them about in ox carts and they produced heirs, while an official whose job had begun as household steward ran the government. Charles held that job. He was also the most experienced soldier in western Europe, and he had one thing nobody else in the West had \u2014 a standing army of full-time professional infantry. Full-time soldiers cost money he did not have, so he confiscated church lands to pay and equip them, and the chroniclers who praised him for the battle never quite forgave him for the funding.",
@@ -154,7 +151,6 @@ const BRIEFS = {
     minutes: 3,
     hook: "Florence approved a dome nobody knew how to build, and the problem was never the finished dome. It was how to hold the masonry up during the years before it could hold itself up.",
     stillWithUs: "Four million bricks, no steel, six hundred years. It is still the largest masonry dome in the world.",
-    tale: "egg-and-the-dome",
     body: [
       "In 1367 Florence approved a design for its cathedral with a dome a hundred and forty-three feet across. Nobody in Europe knew how to build a dome that size. The city approved it anyway, on the assumption that somebody would work it out before they got to the top. They built the rest of the cathedral and got to the top. By 1418 a church stood in the middle of Florence with an octagonal hole in its roof a hundred and forty feet up, open to the weather, and it had been like that for years.",
       "The obstacle was a piece of ordinary building physics called centering. A masonry arch does not stand until the last stone goes in \u2014 until then every stone in it is trying to fall inward \u2014 so every vault in Europe went up on a full wooden skeleton that held the stone in place until the mortar cured. Centering a dome this size needed more timber than Tuscany had, and it needed a scaffold rising from the cathedral floor a hundred and forty feet below. Anyone who costed it honestly came back with a number the city would not pay.",
@@ -173,7 +169,6 @@ const BRIEFS = {
     minutes: 3,
     hook: "A surprise attack at Christmas cost Alfred his kingdom, because a country defended by farmers is undefended in the season when the farmers are at home. What he built afterwards was a set of answers to exactly that.",
     stillWithUs: "He had the law and the histories put into English because he thought a country that cannot read its own language stops being one.",
-    tale: "king-who-burnt-the-bread",
     body: [
       "The Great Heathen Army landed in England in 865. Within ten years it had ended three of the four English kingdoms \u2014 Northumbria, East Anglia and Mercia were gone \u2014 and by the winter of 877 only Wessex was left, under a young king named Alfred who had been buying time with money for years.",
       "In early January 878 the Danish leader Guthrum broke the truce and attacked Chippenham during the twelve days of Christmas. He picked the date deliberately. Nobody campaigned in January, the king\u2019s household was scattered, and the men who made up the army were at home on their farms, which is the standing weakness of any kingdom defended by part-time soldiers. It worked. Alfred got out into the Somerset Levels with what one chronicle calls a small company.",
@@ -193,7 +188,6 @@ const BRIEFS = {
     minutes: 3,
     hook: "Rome built its constitution to stop any one man taking power, which made it very good against tyranny and very bad in an emergency. So the Romans wrote themselves a trapdoor.",
     stillWithUs: "Cincinnati is named after him, by army officers who thought Washington had done the same thing.",
-    tale: "farmer-who-was-king-for-sixteen-days",
     body: [
       "Men who were frightened of kings built the Roman Republic. They had thrown one out, and the constitution they wrote afterwards was one long argument about making sure nobody became another. They split the top office between two consuls who could each veto the other, and they let them hold it for one year only.",
       "That arrangement prevents tyranny well and handles an emergency badly, because two men with mutual vetoes cannot decide anything quickly. So the Romans built a trapdoor into it. In a crisis the Senate could name a dictator: one man, no colleague, no veto, total authority over the state and the army. The office lasted six months at most and then expired on its own. The expiry is the whole design \u2014 absolute power that switches itself off without anyone having to take it back.",
@@ -214,7 +208,6 @@ const BRIEFS = {
     minutes: 5,
     hook: "Two armies built to fight in incompatible ways met on a ridge north of Hastings on 14 October 1066. The fighting lasted from nine in the morning until dusk, which was extraordinarily long for the period, because neither system could quickly undo the other.",
     stillWithUs: "Nearly every English word for meat at the table \u2014 beef, pork, mutton \u2014 comes from the French the Normans brought. The animals in the field kept their old English names: cow, pig, sheep.",
-    tale: "lion-and-the-mouse",
     body: [
       "Harold Godwinson\u2019s men fought on foot, in line, with spears and two-handed axes, and they carried almost no bows. Half of William of Normandy\u2019s force also fought on foot; the other half rode horses or shot arrows. Those two systems cancel each other almost perfectly, which is why a battle that both sides expected to settle in an hour or two ran all day.",
       "England had no machinery for settling a disputed succession, and when Edward the Confessor died childless on 5 January 1066 three men had arguable claims. Harold, the richest noble in England, had himself crowned the next morning. Harald Hardrada of Norway invoked an old treaty between two Scandinavian kings. William claimed a promise from Edward and an oath Harold had sworn him over relics. No court existed to choose between them, so armies decided it.",
@@ -235,7 +228,6 @@ const BRIEFS = {
     minutes: 4,
     hook: "Fifth-century Ireland had no cities, no roads and no court a stranger could appeal to. A man standing outside his own kin-group had no legal standing at all, which made a foreign missionary less hated than simply unprotected.",
     stillWithUs: "The snakes are a later invention. Ireland has had no snakes since the last ice age, and people repeat the story every March anyway.",
-    tale: "boy-who-went-back",
     body: [
       "Two documents survive that Patrick wrote himself: a short account of his life he called the Confessio, and an angry open letter to a British warlord named Coroticus. Almost everything else attached to his name — the snakes, the shamrock, the fire on the hill at Slane — comes from monks writing two or three centuries after he died, in houses that had an interest in claiming him.",
       "The Confessio gives the outline. Patrick grew up British and Roman, the son of a town councillor, in the last decades when Britain still counted as a Roman province. Irish raiders took him off his father's estate at about sixteen and sold him inland. He spent six years herding animals on a hillside, learned the language from the people who owned him, and then walked something like two hundred miles to the coast, talked his way onto a ship, and got home.",
@@ -255,7 +247,6 @@ const BRIEFS = {
     era: "Kings and gunpowder",
     kind: "A person",
     minutes: 5,
-    tale: "three-little-pigs",
     hook: "One small English ship sailed all the way around the world, and on the way robbed Spain's Pacific treasure fleet of the biggest haul anyone had ever taken. The Queen came aboard to knight her captain. Spain called him a pirate.",
     opening: "An English sea captain took a ship about 100 feet long around the entire planet. On the way he robbed Spain's Pacific treasure fleet, and he came home so rich that his investors made 47 times their money. The Queen paid off her whole national debt with her share.",
     sections: [
@@ -334,7 +325,6 @@ const TALES = {
     virtue: "Perseverance",
     origin: "Original story, based on Lepanto, 1571",
     source: "Tomas is invented. The galley, the drum, the men chained to the benches and the morning somebody struck the pins out are not.",
-    brief: "lepanto",
     body: [
       "There was once a boy named Tomas who was small for his age and good at counting.",
       "He lived by the sea, in a town where the fishing boats came in at dusk, and he had a trick he did every evening. He would stand on the wall at the end of the harbour and count the oars of every boat that came home. Six oars. Four oars. Eight oars on the wide one that belonged to the man with the beard.",
@@ -375,7 +365,6 @@ const TALES = {
     virtue: "Courage",
     origin: "Original story, based on Vienna, 1683",
     source: "Mila is invented. The tunnels creeping under the wall, the march over a mountain nobody thought an army could cross, and the winged hussars at the top of it are not.",
-    brief: "vienna",
     body: [
       "In a city with a wall around it there lived a girl called Mila, and above her house there was a bell.",
       "The bell had one job. If help was ever coming, the bell would ring. That was all. Nobody had ever heard it ring, not her mother, not her grandmother, and Mila was fairly sure it did not work.",
@@ -414,7 +403,6 @@ const TALES = {
     virtue: "Obedience",
     origin: "Original story, based on Tours, 732",
     source: "Odo is invented. The Frankish line that stood on a wooded hill for seven days and would not break is not.",
-    brief: "tours",
     body: [
       "There was a boy called Odo who wanted, more than anything in the world, to do something.",
       "He had joined the army in spring. He had been given a spear, a shield taller than he was, and a place in the line. And then for six months he had been told to stand.",
@@ -456,7 +444,6 @@ const TALES = {
     virtue: "Humility",
     origin: "Vasari, 1550",
     source: "Giorgio Vasari put the egg in his Lives of the Artists, a hundred and thirty years after the dome was begun. A near-identical story is told about Columbus, which usually means the story travelled.",
-    brief: "dome",
     body: [
       "Once there was a city with a hole in it.",
       "Not a small hole. The city had built itself the most beautiful church anyone had ever seen, with marble the colour of cream and roses, and when they got to the top they discovered a problem.",
@@ -496,7 +483,6 @@ const TALES = {
     virtue: "Humility",
     origin: "English legend, about 1000 AD",
     source: "No account written in Alfred's lifetime mentions the cakes. The story first appears in an anonymous Life of St Neot roughly a century after he died, and English children have been told it ever since.",
-    brief: "athelney",
     body: [
       "Once there was a king with nothing.",
       "He had been a king with a crown and a hall and a great many horses. Then the winter came, and the men with the long ships came with it, and now he had a wet cloak, a marsh full of reeds, and six tired friends.",
@@ -530,7 +516,6 @@ const TALES = {
     virtue: "Obedience",
     origin: "Livy, about 25 BC",
     source: "Livy tells it in book three of his history of Rome, four centuries after it was supposed to have happened. Washington's officers named a society after Cincinnatus, and the society named a city in Ohio.",
-    brief: "cincinnatus",
     body: [
       "Once there was a farmer with a small field and an old plough.",
       "He had four acres. He had a wife called Racilia. He had a hut, and a hat, and a great deal of digging to do, and that was the whole of it.",
@@ -713,7 +698,6 @@ const TALES = {
     virtue: "Mercy",
     origin: "Aesop, roughly 600 BC",
     source: "One of the Aesop fables, told in Greek for centuries before anyone wrote the collection down. Caxton printed it in English in 1484, which makes it one of the first stories ever printed in this language.",
-    brief: "hastings",
     body: [
       "A lion was asleep in the long grass, with his head down on his paws.",
       "A little mouse came along, not looking where she was going, and ran right over his nose.",
@@ -741,7 +725,6 @@ const TALES = {
     virtue: "Forgiveness",
     origin: "Patrick's Confession, 5th century",
     source: "Patrick wrote his own account of the raid, the six years and the walk back. It is one of the very few documents from fifth-century Britain by somebody who was there.",
-    brief: "patrick",
     body: [
       "There was once a boy who lived in a warm house with a red door, and one morning men came up from the sea in boats and took him away.",
       "They took him a long way over the water, to a green country he had never heard of, and they put him on a hill with a flock of sheep and told him to mind them.",
@@ -772,7 +755,6 @@ const TALES = {
     virtue: "Perseverance",
     origin: "English folk tale, first printed 1843",
     source: "An English nursery tale, printed by James Halliwell in 1843 and by Joseph Jacobs in 1890. This telling follows Flora Annie Steel's, in which the first two pigs get away. Here the wolf gets away too, and the last line is new.",
-    brief: "golden-hind",
     body: [
       "Once upon a time there was an old mother pig who had three little pigs, and not enough food to go round. So when they were old enough, she kissed them each on the snout and sent them out into the world to make their own way.",
       "The first little pig did not like work at all. He found a pile of straw, and he built his house out of that, and it was finished by lunchtime.",
@@ -909,8 +891,6 @@ const TODAY = {
   "09-12": [{
     year: "1683",
     text: "The largest cavalry charge in history came down the Vienna Woods in the late afternoon. Vienna had been under siege for two months, and the siege was not being fought at the walls but underneath them, with tunnels packed with gunpowder creeping closer every day. The relief army dragged its guns over forested ridges nobody thought an army could cross. John III Sobieski of Poland put twenty thousand horsemen on the high ground and waited until the infantry had ground its way down the vineyards. Three thousand of them were winged hussars, carrying lances nineteen feet long and wearing frames of eagle feathers on their backs. The Ottoman line did not break so much as come apart. Within three hours Sobieski was standing in the Grand Vizier's tent.",
-    brief: "vienna",
-    tale: "riders-with-wings"
   }],
   "09-20": [{
     year: "1519",
@@ -920,7 +900,6 @@ const TODAY = {
     {
       year: "19 BC",
       text: "Virgil died at Brundisium, coming home from Greece with a fever. He had spent eleven years on the Aeneid and considered it unfinished. About sixty lines in it are still incomplete, breaking off mid-sentence, and you can find them in any edition today. His instruction, given on his deathbed, was that the manuscript should be burned. His friends refused, and the emperor Augustus personally overruled him and ordered it published. So the most influential poem in Latin exists because two people ignored a dying man's last request. Dante made him the guide through hell and purgatory thirteen centuries later, and for most of the Middle Ages people opened him at random to tell fortunes, which he would have hated.",
-      tale: null
     },
     {
       year: "1937",
@@ -944,32 +923,22 @@ const TODAY = {
   "10-07": [{
     year: "1571",
     text: "Two fleets of oared galleys met in the Gulf of Patras and fought for four hours at close quarters, ships grappled together so that men crossed from deck to deck as if the sea had been paved. Around 140,000 men were there, and most of them had not chosen to be: the engines of these ships were rowers, three or four to an oar, usually chained at the ankle. Before the fighting, Don John of Austria had the chains struck off his own rowers and promised them their freedom. When it ended, some twelve thousand Christian galley slaves came off the benches alive and free. A wounded Spanish soldier named Cervantes lost the use of his left hand there and spent the rest of his life proud of it.",
-    brief: "lepanto",
-    tale: "boy-who-counted-oars"
   }],
   "10-10": [{
     year: "732",
     text: "Charles, mayor of the palace of the Franks, spent seven days on a wooded hill near Poitiers refusing to come down, and won the battle largely because of it. His opponents were cavalry, and cavalry needs an enemy line that breaks. Charles had built something nobody else in the West had, a standing army of professional infantry, paid for by confiscating church land, which made him permanently unpopular with the men who wrote the histories. He formed them into a square on high ground among the trees and made them stand. A chronicler wrote that they stood like a wall, like a belt of ice frozen together. The cavalry came up the hill eight days running and could not break it. Charles was called Martel afterwards: the Hammer.",
-    brief: "tours",
-    tale: "wall-that-would-not-move"
   }],
   "05-12": [{
     year: "878",
     text: "Alfred of Wessex came out of the Somerset marshes. In January he had lost his kingdom to a surprise attack during the twelve days of Christmas and escaped into a flooded swamp with a handful of men. He spent three months on an island at Athelney, raiding for food, while the rest of England assumed he was dead. In May he sent word through the shire levies to meet him at Egbert's Stone, and men came from Somerset, Wiltshire and Hampshire and, one chronicler says, rejoiced to see him. Two days later he broke the Danish army at Edington. Then he did the strange thing that made him Great: he stood godfather at his enemy's baptism, gave him gifts, and sent him home to rule under a treaty.",
-    brief: "athelney",
-    tale: "king-who-burnt-the-bread"
   }],
   "08-07": [{
     year: "1420",
     text: "Work began on the dome of Florence cathedral, fifty-three years after the city approved a design nobody knew how to build. The church had stood with an octagonal hole in its roof, a hundred and forty feet up and open to the weather, for so long that people had stopped noticing. Every known method needed a wooden skeleton to hold the masonry until it set, and there was not enough timber in Tuscany. Filippo Brunelleschi said he could do it without one and refused to explain how, on the grounds that he would be thanked and then dismissed. He was right about that. It took sixteen years and four million bricks, laid in a herringbone pattern that locked each course so the dome held itself up as it rose.",
-    brief: "dome",
-    tale: "egg-and-the-dome"
   }],
   "07-04": [{
     year: "458 BC",
     text: "The traditional date for the Senate delegation that crossed the Tiber to a four-acre farm and found a former consul at the plough. A Roman army was trapped in a valley. The Republic had a trapdoor for emergencies: one man, total authority, expiring automatically after six months. Cincinnatus asked whether everything was all right, sent his wife for his toga so he could hear the news decently dressed, and took the job. He called up every man of military age, ordered each to bring five days of food and twelve stakes, marched through the night, and had his men dig a ring around the enemy while they slept. They surrendered by the next afternoon. He resigned on the sixteenth day, with five months of absolute power unused, and went home.",
-    brief: "cincinnatus",
-    tale: "farmer-who-was-king-for-sixteen-days"
   }],
   "12-25": [{
     year: "800",

@@ -98,8 +98,7 @@ push the branch straight after, as step 5 does.
    you touched `api/`, `node --check` those files too; nothing else will.
 4. `node tools/check-content.js` if you touched `data/content.js`. It catches the
    cross-reference breakage `node --check` cannot see — a card pointing at a
-   slug that does not exist, a pairing only one side agrees to, an era or
-   virtue that is not in its list. Exit 1 means do not merge.
+   slug that does not exist, an era or virtue that is not in its list. Exit 1 means do not merge.
 5. Click through the other hash routes. `app.js` renders every page from one
    file; a change to a shared helper reaches all of them.
 6. **Look at it as a free reader and as a paid one.** They get different

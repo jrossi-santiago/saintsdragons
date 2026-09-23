@@ -20,9 +20,12 @@ Two things it commits us to, both easy to break by accident:
   length under *What this is not*, and the landing page's section of the
   same name says it short; all three have to keep agreeing.
 
-**The product** is a daily pair: a piece of history the dad reads on his own
-time (morning, lunch, before he leaves work) and a bedtime story on the same
-idea he reads to them that night, plus today in history. The receipt is how
+**The product** is three separate picks a day: a piece of history the dad
+reads on his own time (morning, lunch, before he leaves work), a bedtime story
+he reads to them that night, and today in history. They share a date and a
+receipt, not an idea: the story does not have to relate to the history (the
+owner's call, 2026-09-23; it reverses the earlier "a bedtime story on the same
+idea" design). The receipt is how
 `/account` *draws* it, not what it is called. `/` sells it; `/account` is it.
 
 **Cadence and plans.** Paid: a new history and bedtime story every day, 7 of
@@ -33,7 +36,7 @@ printed in full at `#seven` in the account (`SEVEN` in `data/content.js`). The o
 both dropped on purpose — don't bring them back.)
 
 **Outward words.** Readers see *history* and *bedtime story*. "Brief",
-"card", "shelf", "pairing", "band" and "night" (for a day's edition) are
+"card", "shelf", "band" and "night" (for a day's edition) are
 code names only — fine in `data/content.js`, comments and URL slugs (`#brief/…`
 stays, so old links keep working), never in visible text.
 
@@ -145,9 +148,8 @@ that serves the directory index without redirecting — see `LESSONS-LEARNED.md`
     on.", then the format line "A true story for you. A bedtime story for
     them.") → *What you get* (real screenshots) → *How one day goes* → *Why
     dads use it* → *Who it's for* → *What this is not* → library → reader
-    quotes → plans → signup. The hero receipt shows the pairing, history
-    then bedtime story, because the pairing is the product; today in history
-    is the tag line under it.
+    quotes → plans → signup. The hero receipt shows a day's receipt, history
+    then bedtime story; today in history is the tag line under it.
   - **Screenshots** in *What you get* are real captures of `/account`, one
     per theme, in `assets/landing/`. They bake in the day's content, so
     re-render them with `node tools/render-landing-shots.js` (server running
@@ -372,9 +374,9 @@ To add a night, edit `data/content.js`:
    for a new one, with `docs/histories/golden-hind.md` as the reference.
    (The briefs already on the site with a flat `body` were written to an
    older voice and stay that way.) Enter it into `BRIEFS` in the sectioned
-   shape as that document's **Putting it on the site** describes, and its
-   paired tale into `TALES` (a tale names its brief with `brief:`, and a
-   brief names its tale with `tale:`).
+   shape as that document's **Putting it on the site** describes, and the
+   night's bedtime story into `TALES`. The two don't name each other and
+   don't need to relate.
 2. Add a `CARDS` entry with the date, both slugs, the question, the why-ours
    line and the prayer. Cards are newest last. A card dated ahead is
    queued: it goes live at 12:01am US Eastern on its date, and until then
@@ -390,12 +392,10 @@ node tools/check-content.js
 ```
 
 The only test this site has. It reads `data/content.js` and verifies the things
-that break silently: every card points at a brief and a tale that exist, every
-pairing reciprocates (the brief names the tale *and* the tale names the brief),
-every era, kind, theme, virtue and age band is in its taxonomy, a sectioned
+that break silently: every card points at a brief and a tale that exist, every era, kind, theme, virtue and age band is in its taxonomy, a sectioned
 brief has its opening, headed sections and question for the kids, no card is missing its
 question, why-ours line or prayer, dates are real and in order, a series adds
-up to the number of nights it claims, and every slug in `TODAY` resolves.
+up to the number of nights it claims.
 
 No dependencies, and none are wanted — it uses `vm` from the standard library
 to evaluate `data/content.js` the way a browser does, then walks what it defined.
@@ -411,8 +411,8 @@ the roadmap, and the warning list is what has not been written yet.
 Run it after editing `data/content.js` and before merging, alongside the
 `node --check` step in `CLAUDE.md`.
 
-Tales without a brief are fine — they show on the bedtime shelf and simply have
-no "Goes with" line. Cards, however, should always carry both halves. A
+A card is the only thing that puts a history and a bedtime story together;
+briefs and tales do not name each other. Cards should always carry both. A
 multi-night tale sets `night: { n, of }` and a shared `series` key.
 
 ### Age on a tale
