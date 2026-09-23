@@ -1,99 +1,104 @@
 ---
 name: card-batch
-description: Turn the owner's batch Google Doc (several nights of Today in History, History for Dads and a bedtime story) into receipt cards in data/content.js, each with its own release date. Use whenever the owner sends a batch doc link, says a batch is ready, asks to "make the cards", or asks for the batch template again.
+description: Turn the owner's batch Google Doc (for each night, a date and their picks for Today in History, History for Dads and a bedtime story) into receipt cards in data/content.js, filling in everything else, each with its own release date. Use whenever the owner sends a batch doc link, says a batch is ready, asks to "make the cards", or asks for the batch template again.
 ---
 
 # Card batch
 
-The owner chooses every night's content. The job here is to compile it,
-not to write it. The owner fills in a Google Doc made from the batch
-template, one NIGHT section per card, and sends the link. It becomes
-`CARDS`, `BRIEFS`, `TALES` and `TODAY` entries in `data/content.js`.
+The owner chooses each night's three pieces: the Today in History event,
+the history for dads, and the bedtime story. Everything else is yours to
+fill in. The owner fills in a Google Doc made from the batch template,
+one NIGHT section per card, and sends the link. It becomes `CARDS`,
+`BRIEFS`, `TALES` and `TODAY` entries in `data/content.js`.
+
+The template was simplified on 2026-09-23 at the owner's request: the
+first version asked for every field (hook, era, virtue, prayer and so
+on), and that was too many moving pieces. Don't add fields back. If you
+need something from the owner, ask in chat.
 
 ## The template
 
 - **Source:** `docs/batches/template.html`. This file is the template; the
   Google Doc was made from it.
 - **The Doc:** "Saints & Dragons — Batch Template" in the owner's Drive
-  (id `19Tv7R6Gx-uASzy1GDWJ4MpgSvrZEqa4Z-542JDF9DU0`, created 2026-09-23).
-  The owner makes a copy of it for each batch.
+  (id `175CihgfHHf2BQVttdMp2lUdVcdEskv5lDOeJwrKiJIc`, 2026-09-23). The
+  owner makes a copy of it for each batch. The first, longer version was
+  renamed "OLD — …" in the same Drive.
 - **To change the template:** edit the HTML, then upload it with the Google
   Drive connector's `create_file` (`contentMimeType: text/html`; Drive
-  converts it to a Doc). Read the result back with `read_file_content` to
-  confirm it converted, then give the owner the new link. Keep the bold
-  labels stable. Parsing depends on them, and the owner's past batches
-  use them.
-- **If the pick lists at the top of the template no longer match
-  `ERAS`/`KINDS`/`VIRTUES`/`THEMES`/`AGE_BANDS`,** fix the HTML and
-  re-upload it.
+  converts it to a Doc; the connector cannot rewrite an existing Doc's
+  contents). Read the result back with `read_file_content` to confirm it
+  converted, then give the owner the new link and update the id above.
+
+Each night has five fields: **Date**, **Today in History**, **History for
+Dads**, **Bedtime Story** and **Notes**. Each is free-form. The owner may
+paste finished text, name a topic, or give a link or a PDF.
 
 ## Reading a batch
 
 1. **Read the Doc** with the Drive connector (`read_file_content`, and
    `includeComments: true`, because the owner may leave notes as
-   comments). It comes back as Markdown. Each `# NIGHT n` is one card;
-   `## 01 / 02 / 03 / The card` are its parts. A field is the bold label
-   `**Label:**` followed by the text up to the next bold label or heading.
+   comments). Each `# NIGHT n` is one card. A field is its bold label
+   followed by the text up to the next bold label or heading.
 2. **Ignore the grey italic hint lines.** They are the template's own
-   text, and they come back as `*...*` paragraphs. Compare them against
+   text, and come back as `*...*` paragraphs. Compare them against
    `docs/batches/template.html` rather than guessing, because the owner
    may write in italics too.
-3. **Only compile nights whose Status is `Ready`.** List the others in
-   your reply and leave them out.
-4. **Before writing anything, report back:**
-   - which nights are Ready and their release dates
-   - which fields are blank (you will draft these)
-   - anything that looks wrong: a date that clashes with an existing
-     card, a pick-list value that is not in the list, an entry far
-     outside its length, a fact you doubt
+3. **Skip a night with nothing filled in.** A night with a date and at
+   least one piece chosen is meant to ship. If a piece is missing, ask.
+4. **Decide, for each piece: is it written or named?**
+   - **Written:** the owner pasted the text. It ships word for word.
+     Ask about apparent slips; don't fix them. See **Wording** in
+     `CLAUDE.md`.
+   - **Named:** a topic, title or link. You write it (see below).
+5. **Before writing anything, say back in a few lines** which nights you
+   read, their dates, which pieces you will write, and anything that
+   looks wrong: a date that clashes with an existing card, a fact you
+   doubt, a story that doesn't fit the history. Then do the work.
 
-   Ask about apparent slips; don't fix them. See **Wording** in
-   `CLAUDE.md`: the owner's wording ships as written.
+## What you write
 
-## Where each field goes
+Draft everything the owner did not paste, and show it all before
+anything ships:
 
-| Doc field | `data/content.js` |
-|---|---|
-| Release date | `CARDS[].date` (`YYYY-MM-DD`). Keep `CARDS` sorted, newest last. |
-| 01 Year / Entry | `TODAY["MM-DD"]` for the release date: `[{ year, text }]`. Several Year/Entry pairs become several entries in the list. Add `brief:`/`tale:` to an entry only when it is about that night's history. If the date already has an entry, ask whether to add to it or replace it. |
-| 02 Title | `BRIEFS[slug].title` |
-| Who / what / when | `dek` |
-| Era, Kind | `era`, `kind`, exactly as spelled in `ERAS`/`KINDS` |
-| Hook | `hook` |
-| Still around today | `stillWithUs` (leave the field out if blank) |
-| Option A piece | the sectioned shape: `opening`, `sections`, `kidsQuestion`, `sideNotes`. Follow **Putting it on the site** in `docs/history-for-dads.md`. Heading 3 lines in the Doc are the section headings. Side notes are `Lead — text` lines, which become `{ lead, text }`. Save the approved piece to `docs/histories/<slug>.md` too, as that document says. |
-| Option B angle | Invoke the `history-for-dads` skill with the Source and the angle, and send the piece back for approval. Don't compile a night until its piece is approved. |
-| 03 Title | `TALES[slug].title` |
-| Ages | `age` is the band id from `AGE_BANDS` (`1` = 4–6, `3` = 7–9). A label that is not a band's exact text also goes in `ageLabel`, with `age` set to the nearest band. |
-| Virtue, Theme | `virtue` (required), `theme` (optional; leave it out if blank) |
-| Origin | `origin`. It must follow **Provenance on a tale** in `README.md`. If it overstates, ask. |
-| Where it comes from | `source` |
-| Part of a series | `night: { n, of }` and a shared `series` key |
-| Story | `body`, one string per paragraph |
-| Card title | `CARDS[].title` |
-| Question / Why it's ours / Prayer | `question`, `whyOurs`, `prayer` |
-| Notes for Claude | Instructions to you; never shipped. |
-
-You fill in these yourself; the Doc does not ask for them:
-
-- **Slugs:** lowercase and hyphenated, from the title (`"lion-and-the-mouse"`).
-  Check the slug isn't already taken.
-- **Pairing:** the brief gets `tale: <tale slug>`, the tale gets
-  `brief: <brief slug>`, and the card names both.
-- **`minutes`:**
-  - brief: words ÷ 200, rounded, counting the main piece and the side notes
-    (`wc -w`)
-  - tale: the read-aloud time as a string (`"3"`), at about 130 words a
-    minute
+- **Today in History:** keyed `TODAY["MM-DD"]` on the release date, as
+  `[{ year, text }]`. The text is 100–150 words and the first sentence is
+  the hook, because the receipt prints only that sentence. If the date
+  already has an entry, ask whether to add to it or replace it.
+- **History for Dads:** use the `history-for-dads` skill with whatever the
+  owner gave (a topic, a link or a PDF). It writes to
+  `docs/history-for-dads.md`, and the owner approves the piece before it
+  is entered. A pasted piece is entered as it is. Either way, follow
+  **Putting it on the site** in that document. You fill in `title`,
+  `dek`, `era`, `kind`, `hook`, `stillWithUs` (optional) and `minutes`.
+- **Bedtime Story:** a named traditional story is retold for reading
+  aloud. A named idea with no source is a new tale, and its `origin`
+  says so. You fill in `title`, `age` (a band from `AGE_BANDS`,
+  `ageLabel` only if it sits between bands), `virtue` (required),
+  `theme` (optional), `origin` and `source` (following **Provenance on a
+  tale** in `README.md`), `minutes` (a string, about 130 words a minute)
+  and `body` (one string per paragraph). Series: `night: { n, of }`
+  plus a shared `series` key.
+- **The card:** `date`, `title` (usually the history's title with its
+  year), `brief`, `tale`, `question`, `whyOurs` and `prayer`. Take the
+  last three's voice from the existing `CARDS`.
+- **Tags:** use `era`, `kind`, `virtue` and `theme` only from `ERAS`,
+  `KINDS`, `VIRTUES` and `THEMES`. A piece that fits none is a question
+  for the owner, not a new entry.
+- **Slugs and pairing:** lowercase and hyphenated, from the title. Check
+  the slug is free. The brief names the tale (`tale:`), the tale names
+  the brief (`brief:`), and the card names both.
+- **Brief `minutes`:** the main piece plus the side notes, divided by
+  200 and rounded (`wc -w`).
 
 Quote marks inside the text need escaping for a JS string. Match what is
-already in the file (`’`, `\"`) and don't retype the owner's
-punctuation. Paste it through.
+already in the file (`\u2019`, `\"`) and don't retype the owner's
+punctuation.
 
-## Blank fields
-
-Draft any blank field, and mark it as yours when you report back:
-"Hook (drafted): …". Nothing you drafted ships until the owner has seen it.
+**Showing the owner:** one message per batch. For each night, list what
+you wrote (hook, question, why it's ours, prayer, tags, and any piece you
+wrote in full), and mark what was theirs as "yours, unchanged". Then
+send the receipt screenshots.
 
 ## Release dates
 
