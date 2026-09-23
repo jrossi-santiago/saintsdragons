@@ -20,6 +20,10 @@
  *
  * ---------------------------------------------------------------- voice
  *
+ * Superseded for new histories on 2026-09-23 by docs/history-for-dads.md
+ * (reference: docs/histories/golden-hind.md). The briefs below were written
+ * to the rules in this section and stay as they are.
+ *
  * The BRIEFS are written for a competent adult reader, in one voice: the
  * military explainer. Every brief is organised around how the thing
  * physically worked and why that produced the result it did. The reader
