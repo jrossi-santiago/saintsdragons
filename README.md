@@ -255,10 +255,10 @@ receipt, on a shelf and on a story's own page.
 | `api/_lib/stripe.js` | One configured client; creates a Stripe customer once per reader and reuses it. |
 | `api/session.js` | What `/account` boots from: reader, plan, content. `401` means "not signed in" and is not an error. |
 | `api/profile.js` | The two onboarding answers, and any later edit of them. |
-| `api/billing/checkout.js` | Starts the subscription for a signed-in reader: a Checkout Session in Stripe's custom UI mode, answered with its `client_secret` for the on-site checkout (`#checkout`) to mount Stripe's Payment Element. The card goes into Stripe's iframe and never touches this site. |
+| `api/billing/checkout.js` | Starts the subscription for a signed-in reader: a Checkout Session in Stripe's custom UI mode, answered with its `client_secret` for the on-site checkout (`#checkout`) to mount Stripe's Payment Element. The card goes into Stripe's iframe and never touches this site. Falls back to Stripe's hosted page (answered as `{ url }`) when there is no publishable key, when Stripe.js cannot start on the page, or when Stripe refuses the custom session. |
 | `api/billing/portal.js` | Hands the reader to Stripe's Billing Portal. Cancelling and invoices live there, which is how "cancel any time" is kept. |
 | `api/_lib/users.js` | The one statement that turns an email into an account, shared by the login box and a checkout. |
-| `api/stripe/webhook.js` | The only writer of `subscriptions`. A checkout started while signed out (the paid plan on `/`) arrives here with no user: the email given to Stripe becomes the account, or finds the one it already is, and the sign-in link is emailed to it. Coming back from Stripe signs nobody in. |
+| `api/stripe/webhook.js` | The only writer of `subscriptions`. Every checkout now starts signed in and carries its user in `client_reference_id`. The older shape, a checkout started while signed out, is still handled for sessions made before the on-site checkout: the email given to Stripe becomes the account, or finds the one it already is, and the sign-in link is emailed to it. Coming back from Stripe signs nobody in. |
 | `api/health.js` | Open `/api/health` in a browser when something fails with no reason given. It says whether the database connects, which tables are missing, and which keys are unset, with a hint for each. It never shows a value. |
 | `db/schema.sql` | Every table, re-runnable. |
 

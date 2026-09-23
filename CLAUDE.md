@@ -109,8 +109,13 @@ push the branch straight after, as step 5 does.
    reload, delete it, reload. A locked brief, a locked tale, a locked Today
    in history entry and `#home` with tonight's card held back are four
    different drawings — the last one only appears when the newest card is
-   not the first of its ISO week.
+   not the first of its ISO week. "Reload" means a real reload: changing
+   only the hash keeps the payload the page booted with, so a test that
+   flips the plan and then sets `location.hash` is looking at the old plan.
 
+   `#checkout` is a fifth drawing for the free reader (the card form, or
+   its "pay on Stripe's secure page" fallback when the publishable key is
+   unset or Stripe.js cannot load) and "You're already in" for the paid one.
 7. **Money and mail paths without real keys.** Stripe and Resend can be
    exercised locally by stubbing the module with a preload, which keeps
    the real handlers, database writes and redirects in the test:
@@ -121,6 +126,8 @@ push the branch straight after, as step 5 does.
    `/api/stripe/webhook` yourself and route `checkout.stripe.com` to a
    blank page in Playwright. It proves our side only. Say so, and ask
    for one real test-mode payment before calling billing done.
+   Give `customers.create` a fresh id per call: `users.stripe_customer_id`
+   is unique, and one fixed id fails the second reader's checkout.
 
 Report what the screenshot actually shows, including what still looks wrong.
 "Should be fine" is not a check.
@@ -142,12 +149,22 @@ rather than looking fine until it ships.
 Every key the site reads is named in `.env.example`, with nothing real in
 it. Add a name there when you add one.
 
-**Coming back from Stripe signs nobody in.** A checkout started while signed
-out makes the account from the email typed at Stripe, and the only way into
-that account is the sign-in link emailed to that address. Stripe does not
-check that an address belongs to whoever typed it, so a session handed out
-on the return trip (a `session_id` in the success URL, say) would let anyone
-pay a few dollars to take over someone else's account.
+**Coming back from Stripe signs nobody in.** Stripe does not check that an
+address belongs to whoever typed it, so a session handed out on the return
+trip (a `session_id` in the return URL, say) would let anyone pay a few
+dollars to take over someone else's account. Every checkout now starts
+signed in, so there is nobody to sign in on the way back anyway; keep it so.
+
+**Who is signed in without a link, and why that is safe.** On the owner's
+call (2026-09-23), a *new* address is signed in the moment it signs up, with
+no email round trip; an address we already know still gets a link. Two
+things hold that together, and both must stay: `request-link` only does it
+for a request from this site's own origin, and the first link an address
+ever uses (`verify.js`) signs out every other session on the account, so
+somebody who signed up with an address before its owner did is thrown out
+when the owner turns up. Both depend on `users.email_verified_at`; until
+`db/schema.sql` has been re-run on a database, new addresses get a link like
+everybody else.
 
 When something fails in production with no reason given, open `/api/health`
 first — see `LESSONS-LEARNED.md`, 2026-09-23.

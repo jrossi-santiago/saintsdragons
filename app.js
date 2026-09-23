@@ -1036,10 +1036,9 @@ function renderCheckout() {
   });
 
   startCheckout(run).catch(err => {
-    if (run !== checkoutRun) return;
+    if (run !== checkoutRun || (err && err.leaving)) return;
     console.error("checkout did not start", err);
-    showCheckoutError(err && err.readerMessage ||
-      "<strong>The card form did not load.</strong> Nothing has been taken. Reload the page to try again, and if it keeps happening it is us, not you.");
+    offerHostedCheckout(err && err.readerMessage);
     /* Nothing below the plan can work without the form, so take it all
        away rather than leave a pay button that cannot pay. */
     ["coPromo", "coCard", "coPay"].forEach(id => {
@@ -1048,6 +1047,45 @@ function renderCheckout() {
     });
     main.querySelectorAll(".co-pay .co-section, .co-pay .co-fine").forEach(el => { el.hidden = true; });
   });
+}
+
+/* When our card form cannot run here (no publishable key on this
+   deployment, Stripe.js blocked or failing), Stripe's own hosted page still
+   can. Say so plainly and offer it, rather than leave a dead end: paying
+   must never be more broken than it was before this page existed. */
+function offerHostedCheckout(readerMessage) {
+  showCheckoutError(readerMessage ||
+    "<strong>The card form did not load here.</strong> Nothing has been taken. " +
+    "You can pay on Stripe&rsquo;s own secure page instead.");
+  const box = document.getElementById("coError");
+  if (!box) return;
+  const btn = document.createElement("button");
+  btn.className = "btn co-submit";
+  btn.type = "button";
+  btn.textContent = "Pay on Stripe\u2019s secure page";
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    btn.textContent = "Opening Stripe\u2026";
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ hosted: true })
+      });
+      if (res.status === 409) return location.reload();
+      const body = await res.json();
+      if (!res.ok || !body.url) throw new Error(body.message || "HTTP " + res.status);
+      location.href = body.url;
+    } catch (e) {
+      console.error("hosted checkout did not open", e);
+      btn.disabled = false;
+      btn.textContent = "Pay on Stripe\u2019s secure page";
+      showCheckoutError("<strong>Stripe did not open either.</strong> Nothing has been taken. " +
+        "Try again in a few minutes, and if it keeps happening it is us, not you.");
+      box.after(btn);
+    }
+  });
+  box.after(btn);
 }
 
 function showCheckoutError(html) {
@@ -1061,7 +1099,8 @@ async function startCheckout(run) {
   const key = STRIPE_KEY;
   if (!key) {
     const e = new Error("no publishable key");
-    e.readerMessage = "<strong>Checkout is not switched on yet.</strong> Nothing has been taken. Please try again later.";
+    e.readerMessage = "<strong>Payment opens on Stripe&rsquo;s own secure page.</strong> " +
+      "Your card goes straight to Stripe; we never see it.";
     throw e;
   }
 
@@ -1075,7 +1114,10 @@ async function startCheckout(run) {
       const body = await res.json().catch(() => ({}));
       /* Already paying: the server refuses a second subscription, and a
          reload shows them what they already have. */
-      if (res.status === 409) { location.reload(); throw new Error("already subscribed"); }
+      const leave = (why, go) => { go(); const e = new Error(why); e.leaving = true; throw e; };
+      if (res.status === 409) leave("already subscribed", () => location.reload());
+      /* The server fell back to Stripe's hosted page (see checkout.js). */
+      if (res.ok && body.url) leave("sent to the hosted page", () => { location.href = body.url; });
       if (!res.ok || !body.clientSecret) {
         const e = new Error(body.message || "HTTP " + res.status);
         e.readerMessage = esc(body.message || "The card form did not load. Nothing has been taken. Reload the page to try again.");

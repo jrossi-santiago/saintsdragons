@@ -16,12 +16,18 @@
  * to belong to and nobody has to be matched up by email afterwards. The
  * webhook is still the only thing that grants the plan; return_url is just
  * a page.
+ *
+ * Stripe's hosted Checkout is kept as the fallback, answered as { url }
+ * instead of { clientSecret }: when this deployment has no publishable key,
+ * when the page asks for it ({ hosted: true }) because Stripe.js could not
+ * start, or when Stripe refuses the custom session. Paying is never more
+ * broken than it was before the on-site checkout existed.
  */
 
 const { sql } = require("../_lib/db");
 const { currentUser } = require("../_lib/session");
 const { stripe, priceId, customerFor } = require("../_lib/stripe");
-const { SITE_URL, json, methodNotAllowed } = require("../_lib/http");
+const { SITE_URL, json, methodNotAllowed, readBody } = require("../_lib/http");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return methodNotAllowed(res, ["POST"]);
@@ -34,19 +40,45 @@ module.exports = async function handler(req, res) {
     return json(res, 409, { error: "already_subscribed", message: "You are already on Every day." });
   }
 
-  const session = await stripe().checkout.sessions.create({
-    ui_mode: "custom",
+  const common = {
     mode: "subscription",
     line_items: [{ price: priceId(), quantity: 1 }],
     allow_promotion_codes: true,
     billing_address_collection: "auto",
     customer: await customerFor(user, sql),
     client_reference_id: user.id,
-    subscription_data: { metadata: { user_id: user.id } },
-    /* Stripe fills in the session id. The page uses it to ask how the
-       payment went while it waits for the webhook. */
-    return_url: `${SITE_URL}/account?checkout=done&session_id={CHECKOUT_SESSION_ID}#checkout`
-  });
+    subscription_data: { metadata: { user_id: user.id } }
+  };
+  /* Stripe fills in the session id. The page uses it to ask how the
+     payment went while it waits for the webhook. */
+  const back = `${SITE_URL}/account?checkout=done&session_id={CHECKOUT_SESSION_ID}#checkout`;
+
+  /* Stripe's own hosted page, as before the on-site checkout existed. The
+     fallback whenever ours cannot run, so paying is never more broken than
+     it used to be: no publishable key on this deployment, the page asking
+     for it because Stripe.js failed to start, or Stripe refusing the custom
+     session below. Cancelling goes to the account, not back to #checkout,
+     which would only try the same thing again. */
+  const hosted = async () => {
+    const session = await stripe().checkout.sessions.create({
+      ...common,
+      success_url: back,
+      cancel_url: `${SITE_URL}/account#account`
+    });
+    return json(res, 200, { url: session.url });
+  };
+
+  const body = await readBody(req).catch(() => ({}));
+  if (!process.env.STRIPE_PUBLISHABLE_KEY || (body && body.hosted)) return hosted();
+
+  let session;
+  try {
+    session = await stripe().checkout.sessions.create({ ...common, ui_mode: "custom", return_url: back });
+  } catch (e) {
+    if (e.type !== "StripeInvalidRequestError") throw e;
+    console.error("checkout: Stripe refused the custom session, sending to the hosted page:", e.message);
+    return hosted();
+  }
 
   return json(res, 200, { clientSecret: session.client_secret });
 };

@@ -40,6 +40,22 @@ function ages(value) {
   return list;
 }
 
+/* Signing a new address straight in is only safe because verify.js signs
+   out everybody else the first time the owner uses a link, and that needs
+   users.email_verified_at. Until schema.sql has been re-run on a database,
+   new addresses get a link like everybody else: the old behaviour, never a
+   broken one. */
+async function canProveLater(userId) {
+  try {
+    await sql`select email_verified_at from users where id = ${userId}`;
+    return true;
+  } catch (e) {
+    if (e.code !== "42703") throw e;
+    console.error("request-link: users.email_verified_at is missing — re-run db/schema.sql");
+    return false;
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return methodNotAllowed(res, ["POST"]);
 
@@ -61,7 +77,7 @@ module.exports = async function handler(req, res) {
   /* New here: straight in. Only from a page on this site, so another site's
      form cannot sign a visitor into an account it made; anything else falls
      through to the link, which is always safe. */
-  if (user.is_new && sameOrigin(req)) {
+  if (user.is_new && sameOrigin(req) && await canProveLater(user.id)) {
     await startSession(res, user.id, req.headers["user-agent"]);
     await sql`update users set last_seen_at = now() where id = ${user.id}`;
     const to = next || "/account#welcome";

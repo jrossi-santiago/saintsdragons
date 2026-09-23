@@ -28,10 +28,20 @@ module.exports = async function handler(req, res) {
      and still hold a session on it. End every one of them before starting
      the owner's. Only the first time: after that, a link is an ordinary
      login and the reader's other devices stay signed in. */
-  const proving = await sql.one`
-    update users set email_verified_at = now()
-     where id = ${row.user_id} and email_verified_at is null
-    returning id`;
+  let proving = null;
+  try {
+    proving = await sql.one`
+      update users set email_verified_at = now()
+       where id = ${row.user_id} and email_verified_at is null
+      returning id`;
+  } catch (e) {
+    /* 42703: the column is not there yet — schema.sql has not been re-run
+       on this database. A login must never fail over that; request-link
+       does not sign anybody in without a link until it has, so there is
+       nothing to sign out. /api/health names the missing column. */
+    if (e.code !== "42703") throw e;
+    console.error("verify: users.email_verified_at is missing — re-run db/schema.sql");
+  }
   if (proving) await sql`delete from sessions where user_id = ${row.user_id}`;
 
   await startSession(res, row.user_id, req.headers["user-agent"]);
