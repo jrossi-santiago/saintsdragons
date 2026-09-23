@@ -251,8 +251,11 @@ receipt, on a shelf and on a story's own page.
 1. **Supabase** — a project, then run `db/schema.sql` in the SQL Editor (or
    `psql "$DATABASE_URL" -f db/schema.sql`). Take the connection string from
    Project Settings → Database → **Transaction pooler, port 6543**; the
-   direct connection is IPv6-only and Vercel cannot reach it. `.env.example`
-   spells this out.
+   direct connection is IPv6-only and Vercel cannot reach it. Then download
+   the database's CA certificate (Database settings → SSL Configuration →
+   Download certificate) and paste the whole file into `DATABASE_CA_CERT`:
+   Supabase signs with its own CA, and without it every query fails with
+   `SELF_SIGNED_CERT_IN_CHAIN`. `.env.example` spells this out.
 
    The schema ends by enabling row-level security on all five tables and
    revoking `anon`/`authenticated`. That is not decoration: Supabase

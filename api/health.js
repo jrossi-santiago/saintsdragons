@@ -16,8 +16,14 @@ const TABLES = ["users", "login_tokens", "sessions", "subscriptions", "stripe_ev
 
 const KEYS = [
   "DATABASE_URL", "RESEND_API_KEY", "EMAIL_FROM",
-  "STRIPE_SECRET_KEY", "STRIPE_PRICE_ID", "STRIPE_WEBHOOK_SECRET", "SITE_URL"
+  "STRIPE_SECRET_KEY", "STRIPE_PRICE_ID", "STRIPE_WEBHOOK_SECRET", "SITE_URL",
+  "DATABASE_CA_CERT"
 ];
+const OPTIONAL = ["SITE_URL", "DATABASE_CA_CERT"];
+
+const SUPABASE_CA = "Supabase signs its database certificate with its own CA: download it " +
+  "(Database settings -> SSL Configuration -> Download certificate) and paste the whole " +
+  "file into DATABASE_CA_CERT in Vercel, then redeploy";
 
 /* The codes a misconfigured DATABASE_URL actually produces, in words. */
 const HINTS = {
@@ -28,6 +34,11 @@ const HINTS = {
   "28P01": "the password in DATABASE_URL is wrong (it is the database password, not the Supabase account one)",
   "28000": "that user is not allowed in — the pooler user looks like postgres.<project-ref>",
   "3D000": "the database name at the end of DATABASE_URL does not exist — it should be /postgres",
+  SELF_SIGNED_CERT_IN_CHAIN: SUPABASE_CA,
+  UNABLE_TO_GET_ISSUER_CERT_LOCALLY: SUPABASE_CA,
+  UNABLE_TO_VERIFY_LEAF_SIGNATURE: SUPABASE_CA,
+  BAD_CA_CERT: "DATABASE_CA_CERT is not a certificate — paste the whole .crt file, BEGIN and END lines included",
+  ERR_TLS_CERT_ALTNAME_INVALID: "the certificate does not match the host — use the host exactly as Supabase shows it",
   XX000: "Supabase refused the connection — often a pooler user without the .<project-ref> suffix"
 };
 
@@ -52,7 +63,7 @@ module.exports = async function handler(req, res) {
   }
 
   const ok = database.connected && !database.missingTables.length &&
-    KEYS.filter(k => k !== "SITE_URL").every(k => env[k]);
+    KEYS.filter(k => !OPTIONAL.includes(k)).every(k => env[k]);
 
   return json(res, ok ? 200 : 503, { ok, database, env });
 };
