@@ -643,7 +643,12 @@
           <li><svg><use href="#i-check"/></svg> Browse by era, age and theme</li>
           <li><svg><use href="#i-check"/></svg> Cancel any time</li>
         </ul>
-        <a class="lp-cta" href="#start">Start free, upgrade any time</a>
+        <!-- Straight to Stripe for a reader who is already signed in. Anyone
+             else has to have an account first (checkout is tied to one), so
+             this link takes them through the magic link and /account opens
+             Stripe the moment they land. The script below only skips that
+             detour when it can. -->
+        <a class="lp-cta" id="upgradeCta" href="/login?next=%2Faccount%3Fupgrade%3D1%23account">Get every day</a>
       </div>
     </div>
   </div>
@@ -698,6 +703,32 @@
   requestAnimationFrame(function(){
     document.querySelectorAll('.lp-reveal').forEach(function(el){ el.classList.add('is-in'); });
   });
+
+  /* The paid plan. Signed in, /api/billing/checkout answers with a Stripe
+     URL and the reader goes straight there; already paying, their account
+     page; signed out (401) or anything else, the link's own href, which
+     signs them in and opens checkout on the way back. */
+  (function(){
+    var cta = document.getElementById('upgradeCta');
+    cta.addEventListener('click', function(ev){
+      ev.preventDefault();
+      var label = cta.textContent;
+      cta.textContent = 'Opening Stripe\u2026';
+      fetch('/api/billing/checkout', { method: 'POST', headers: { Accept: 'application/json' } })
+        .then(function(res){
+          if (res.status === 409) { location.href = '/account#account'; return; }
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json().then(function(body){
+            if (!body.url) throw new Error('no url');
+            location.href = body.url;
+          });
+        })
+        .catch(function(){
+          cta.textContent = label;
+          location.href = cta.href;
+        });
+    });
+  })();
 
   /* Signup, which is also login: /api/auth/request-link makes the account if
      the address is new and emails a link either way, so nobody is ever asked
