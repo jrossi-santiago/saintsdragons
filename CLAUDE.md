@@ -231,3 +231,10 @@ of `data/content.js`; the flat-`body` briefs written to it stay as they are.
 The `history-for-dads` skill runs the standard when the owner uploads a
 source PDF, and knows how to enter an approved piece into `BRIEFS` when
 asked.
+
+Nights are made in batches. The owner fills in a Google Doc made from
+`docs/batches/template.html`, one section per night with its release date,
+and sends the link. The `card-batch` skill reads it and compiles it into
+`data/content.js`: which field goes where, what to ask before writing, and
+what to check before shipping. The owner's content choices and wording
+are theirs. The job is to compile them, not to rewrite them.
