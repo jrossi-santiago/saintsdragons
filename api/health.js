@@ -23,7 +23,9 @@ const KEYS = [
   "STRIPE_SECRET_KEY", "STRIPE_PRICE_ID", "STRIPE_WEBHOOK_SECRET", "SITE_URL",
   "DATABASE_CA_CERT"
 ];
-const OPTIONAL = ["SITE_URL", "DATABASE_CA_CERT"];
+/* EMAIL_FROM has a default in api/_lib/email.js; the email check below
+   reports the address actually in use either way. */
+const OPTIONAL = ["SITE_URL", "DATABASE_CA_CERT", "EMAIL_FROM"];
 
 const SUPABASE_CA = "Supabase signs its database certificate with its own CA: download it " +
   "(Database settings -> SSL Configuration -> Download certificate) and paste the whole " +
