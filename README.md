@@ -204,7 +204,16 @@ session, and sends a first-time reader to `#welcome` and everybody else to
 `#home`. **The first link an address ever uses signs out every other session
 on that account** and stamps `users.email_verified_at`: somebody who signed
 up with an address before its owner did does not get to stay in once the
-owner turns up. Tokens and session cookies are 32 random bytes; the database
+owner turns up.
+
+**Changing the address goes by link too.** "Change it" on "You're in", or
+"Change" on `#account`, posts to `/api/account/email`, which sends a link to
+the *new* address and changes nothing. Opening it (`verify.js` again, the
+link carries `login_tokens.new_email`) moves the account there, marks it
+proved, and updates the Stripe customer so receipts follow. An address that
+already has its own account is refused, not merged. It is the way out for a
+typo made at signup, which a new reader, signed straight in, may only
+discover when the receipt never comes. Tokens and session cookies are 32 random bytes; the database
 only ever holds their SHA-256, so a dump of it cannot be replayed as a login.
 
 **The webhook is the only thing that grants access.** Not Checkout's success
@@ -255,7 +264,9 @@ receipt, on a shelf and on a story's own page.
 | `api/_lib/stripe.js` | One configured client; creates a Stripe customer once per reader and reuses it. |
 | `api/session.js` | What `/account` boots from: reader, plan, content. `401` means "not signed in" and is not an error. |
 | `api/profile.js` | The two onboarding answers, and any later edit of them. |
-| `api/billing/checkout.js` | Starts the subscription for a signed-in reader: a Checkout Session in Stripe's custom UI mode, answered with its `client_secret` for the on-site checkout (`#checkout`) to mount Stripe's Payment Element. The card goes into Stripe's iframe and never touches this site. Falls back to Stripe's hosted page (answered as `{ url }`) when there is no publishable key, when Stripe.js cannot start on the page, or when Stripe refuses the custom session. |
+| `api/billing/checkout.js` | Starts the subscription for a signed-in reader: a Checkout Session in Stripe's custom UI mode, answered with its `client_secret` for the on-site checkout (`#checkout`) to mount Stripe's Payment Element. The card goes into Stripe's iframe and never touches this site. Falls back to Stripe's hosted page (answered as `{ url }`) when there is no publishable key, when Stripe.js cannot start on the page, or when Stripe refuses the custom session. One open session per reader (`users.checkout_session_id`): coming back, or a second tab, resumes it with any code still applied; one close to lapsing, or of the other kind, is expired and replaced. A session already paid whose webhook has not landed is answered `409 payment_processing`, never with a second session. |
+| `api/billing/checkout-status.js` | For the "opening the door" screen: what Stripe says about the reader's own returning session (`open`, `complete`, `expired`). Reports only; the webhook still grants. |
+| `api/account/email.js` | Moving the account to another address: sends a link to the new one and changes nothing until it is opened. |
 | `api/billing/portal.js` | Hands the reader to Stripe's Billing Portal. Cancelling and invoices live there, which is how "cancel any time" is kept. |
 | `api/_lib/users.js` | The one statement that turns an email into an account, shared by the login box and a checkout. |
 | `api/stripe/webhook.js` | The only writer of `subscriptions`. Every checkout now starts signed in and carries its user in `client_reference_id`. The older shape, a checkout started while signed out, is still handled for sessions made before the on-site checkout: the email given to Stripe becomes the account, or finds the one it already is, and the sign-in link is emailed to it. Coming back from Stripe signs nobody in. |
@@ -326,8 +337,11 @@ and `#tale/<slug>`, the detail pages. So is `#checkout`, the on-site checkout
 for Every day, drawn from `mockups/checkout.html`: Stripe's card form mounted
 on our page (Checkout Sessions, custom UI mode, Stripe.js pinned to basil to
 match the API version). After paying, Stripe returns the reader to
-`/account?checkout=done…#checkout`, which says "opening the door" and asks
-`/api/session` until the webhook has granted the plan, then "You're in".
+`/account?checkout=done&session_id=…#checkout`. That page asks Stripe (through
+`/api/billing/checkout-status`) whether the payment went through, saying
+"Paid. Opening the door" once it has or "That payment did not finish" if it
+has not, and asks `/api/session` until the webhook has granted the plan,
+then "You're in", with the address receipts go to and a way to change it.
 
 The sidebar search box searches across `BRIEFS` and `TALES` (title, hook,
 era/kind, theme, virtue, provenance) and swaps the receipt view for a results shelf while

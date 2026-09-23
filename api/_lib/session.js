@@ -27,25 +27,53 @@ function hash(value) {
 
 /* Returns the token to email, or null when the address has asked too often.
    Rate limiting is per address rather than per IP: a shared office IP is
-   common and a shared mailbox is not. */
-async function issueLoginToken(userId, { redirectTo = null, ip = null } = {}) {
+   common and a shared mailbox is not.
+
+   newEmail makes it a link that moves the account to that address when it
+   is opened (see api/account/email.js). It shares the same limit, so the
+   change form cannot be used to mail somebody over and over. */
+async function issueLoginToken(userId, { redirectTo = null, ip = null, newEmail = null } = {}) {
   const [{ count }] = await sql`
     select count(*)::int as count from login_tokens
      where user_id = ${userId} and created_at > now() - interval '1 hour'`;
   if (count >= LINK_MAX_PER_HOUR) return null;
 
   const token = secret();
-  await sql`
-    insert into login_tokens (user_id, token_hash, redirect_to, expires_at, requested_ip)
-    values (${userId}, ${hash(token)}, ${redirectTo},
-            now() + (${LINK_MINUTES} || ' minutes')::interval, ${ip})`;
+  if (newEmail) {
+    await sql`
+      insert into login_tokens (user_id, token_hash, redirect_to, expires_at, requested_ip, new_email)
+      values (${userId}, ${hash(token)}, ${redirectTo},
+              now() + (${LINK_MINUTES} || ' minutes')::interval, ${ip}, ${newEmail})`;
+  } else {
+    await sql`
+      insert into login_tokens (user_id, token_hash, redirect_to, expires_at, requested_ip)
+      values (${userId}, ${hash(token)}, ${redirectTo},
+              now() + (${LINK_MINUTES} || ' minutes')::interval, ${ip})`;
+  }
   return token;
 }
 
 /* Single use: the update only matches a row that is unused and unexpired, so
-   two clicks on the same link race in the database rather than in node. */
+   two clicks on the same link race in the database rather than in node.
+
+   new_email is asked for too, and left off when the column is not there
+   yet (schema.sql not re-run): then no link carries one anyway, and a login
+   must never fail over a migration. A failed statement changes nothing, so
+   asking again is safe. */
 async function consumeLoginToken(token) {
   if (!token) return null;
+  try {
+    const row = await sql.one`
+      update login_tokens
+         set used_at = now()
+       where token_hash = ${hash(token)}
+         and used_at is null
+         and expires_at > now()
+      returning user_id, redirect_to, new_email`;
+    return row || null;
+  } catch (e) {
+    if (e.code !== "42703") throw e;
+  }
   const row = await sql.one`
     update login_tokens
        set used_at = now()

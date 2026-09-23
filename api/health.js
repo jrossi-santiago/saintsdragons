@@ -17,6 +17,9 @@ const { json, methodNotAllowed } = require("./_lib/http");
 const { checkSending } = require("./_lib/email");
 
 const TABLES = ["users", "login_tokens", "sessions", "subscriptions", "stripe_events"];
+/* Added to a table after it shipped. Each is tolerated while missing (see
+   LESSONS-LEARNED.md, rule 14), so this is the only place it shows. */
+const COLUMNS = ["users.email_verified_at", "users.checkout_session_id", "login_tokens.new_email"];
 
 const KEYS = [
   "DATABASE_URL", "RESEND_API_KEY", "EMAIL_FROM",
@@ -57,15 +60,17 @@ module.exports = async function handler(req, res) {
   try {
     const rows = await sql`select ${TABLES}::text[] as wanted,
       array(select t from unnest(${TABLES}::text[]) t where to_regclass('public.' || t) is null) as missing,
-      exists(select 1 from information_schema.columns
-              where table_schema = 'public' and table_name = 'users'
-                and column_name = 'email_verified_at') as has_verified`;
+      array(select c from unnest(${COLUMNS}::text[]) c
+             where not exists (select 1 from information_schema.columns
+                                where table_schema = 'public'
+                                  and table_name = split_part(c, '.', 1)
+                                  and column_name = split_part(c, '.', 2))) as missing_columns`;
     database.connected = true;
     database.missingTables = rows[0].missing;
-    /* A column added after the table shipped: schema.sql adds it, but only
-       once somebody re-runs it. Signup fails without it. */
-    if (!rows[0].has_verified && !database.missingTables.includes("users")) {
-      database.missingTables.push("users.email_verified_at");
+    /* Columns added after their table shipped: schema.sql adds them, but
+       only once somebody re-runs it. A missing table already says that. */
+    for (const c of rows[0].missing_columns) {
+      if (!database.missingTables.includes(c.split(".")[0])) database.missingTables.push(c);
     }
     if (database.missingTables.length) {
       database.hint = "run db/schema.sql against this database (Supabase: SQL Editor)";

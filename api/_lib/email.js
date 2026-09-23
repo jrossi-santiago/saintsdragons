@@ -89,6 +89,46 @@ async function sendLoginLink({ to, url, firstName, minutes, isNew, paid = false 
   return send({ to, ...loginEmail({ url, firstName, minutes, isNew, paid }) });
 }
 
+/* Sent to the address a reader wants to move to, never to the old one: the
+   point is to prove the new address works and is theirs. Nothing changes
+   until it is opened. */
+function changeEmail({ url, firstName, minutes }) {
+  const hello = firstName ? `${firstName},` : "Hello,";
+  const line = "Open this link to make this the address on your Saints & Dragons account. Receipts and sign-in links come here after that.";
+  const aside = "If you did not ask for this, ignore it and nothing changes.";
+
+  const text =
+`${hello}
+
+${line}
+
+${url}
+
+The link works once and lasts ${minutes} minutes. ${aside}
+
+Saints & Dragons
+History for dads. Tales for bedtime.`;
+
+  const html =
+`<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#221c15;max-width:480px">
+  <p>${esc(hello)}</p>
+  <p>${esc(line)}</p>
+  <p style="margin:28px 0">
+    <a href="${esc(url)}" style="display:inline-block;background:#e5825a;color:#1a1208;font-weight:700;text-decoration:none;padding:13px 24px;border-radius:999px">Use this address</a>
+  </p>
+  <p style="font-size:14px;color:#6b6257">The link works once and lasts ${minutes} minutes. ${esc(aside)}</p>
+  <p style="font-size:14px;color:#6b6257">Or paste this in: <br><span style="word-break:break-all">${esc(url)}</span></p>
+  <hr style="border:none;border-top:1px solid #e3ddcf;margin:24px 0">
+  <p style="font-size:13px;color:#6b6257">Saints &amp; Dragons — history for dads, tales for bedtime.<br>${esc(SITE_URL)}</p>
+</div>`;
+
+  return { subject: "Confirm your new address for Saints & Dragons", html, text };
+}
+
+async function sendChangeEmailLink({ to, url, firstName, minutes }) {
+  return send({ to, ...changeEmail({ url, firstName, minutes }) });
+}
+
 /* For /api/health: can Resend send from FROM at all? Reads the account's
    domains, which sends nothing and spends no quota. A key made with
    "sending access" only is not allowed to list them, and says so. */
@@ -129,4 +169,4 @@ async function checkSending() {
     }) };
 }
 
-module.exports = { send, sendLoginLink, loginEmail, checkSending };
+module.exports = { send, sendLoginLink, loginEmail, sendChangeEmailLink, checkSending };

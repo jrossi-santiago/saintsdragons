@@ -76,6 +76,12 @@ update users u
           from login_tokens where used_at is not null group by user_id) t
  where t.user_id = u.id and u.email_verified_at is null;
 
+-- Changing the address on an account (a typo made at signup, say) goes by
+-- link, like everything else: the link goes to the new address, and the
+-- account only moves to it when that link is opened (api/auth/verify.js).
+-- Until then the pending address lives here, on the link, and nowhere else.
+alter table login_tokens add column if not exists new_email text;
+
 -- -------------------------------------------------------------------- money
 --
 -- Written only by api/stripe/webhook.js. One row per Stripe subscription;
@@ -94,6 +100,12 @@ create table if not exists subscriptions (
 );
 
 create index if not exists subscriptions_user on subscriptions (user_id);
+
+-- The reader's open Checkout Session, so leaving #checkout halfway and coming
+-- back picks up the same one (with any code already applied) instead of
+-- starting another. Written by api/billing/checkout.js; Stripe's own record
+-- is the truth about whether it is still open.
+alter table users add column if not exists checkout_session_id text;
 
 -- Stripe retries, and sends the same event more than once. An insert that
 -- loses the race here is an event already handled.
